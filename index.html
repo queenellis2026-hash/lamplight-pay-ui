@@ -64,6 +64,13 @@
   .flow { font-size: .9rem; color: var(--muted); }
   .flow b { color: var(--text); }
   @media (max-width: 520px) { .job .meta { grid-template-columns: 1fr; } }
+  @media (max-width: 400px) {
+    h1 { font-size: 1.25rem; }
+    .card { padding: 14px; }
+    header .row { width: 100%; }
+    header .row button { flex: 1; }
+    button { padding: 10px 14px; }
+  }
 </style>
 </head>
 <body>
@@ -71,10 +78,10 @@
   <header>
     <div>
       <h1>🪔 Lamplight Pay</h1>
-      <p class="tagline">Pay-on-delivery for work on <b>BOT Chain</b>. Money is held, not sent — the worker gets paid when the job is done.</p>
+      <p class="tagline">Pay-on-delivery escrow for AI agent work. Funds are locked on-chain and released when the job is done — or returned if it isn't.</p>
     </div>
     <div class="row">
-      <button class="ghost" id="addNetBtn" title="Add BOT Chain Testnet to your wallet">+ BOT Chain Testnet</button>
+      <button class="ghost" id="addNetBtn" title="Add BOT Chain to your wallet">+ BOT Chain</button>
       <button id="connectBtn">Connect wallet</button>
     </div>
   </header>
@@ -82,50 +89,49 @@
   <div class="card" style="border-color: var(--accent-dim); background: linear-gradient(135deg, #101a14 0%, var(--card) 70%);">
     <div class="row" style="justify-content:space-between; align-items:center;">
       <div>
-        <h2 style="margin-bottom:4px;">⛓️ Live on BOT Chain Testnet</h2>
-        <p class="muted" style="margin:0;">Escrow contracts deployed and verified on chain 968. Free test tokens — nothing here costs real money.</p>
+        <h2 style="margin-bottom:4px;">⛓️ Live on BOT Chain</h2>
+        <p class="muted" style="margin:0;">Escrow contracts deployed and verified. Funds are held on-chain — nothing moves until the work is done.</p>
       </div>
-      <span class="badge" style="background:var(--accent-dim); color:var(--accent);">TESTNET LIVE</span>
+      <span class="badge" style="background:var(--accent-dim); color:var(--accent);">LIVE</span>
     </div>
     <div class="row" style="margin-top:10px;">
-      <button class="ghost" id="heroAddNet">Add network to MetaMask</button>
-      <button class="ghost" id="heroFaucet">Get test gas (faucet) ↗</button>
-      <a id="heroExplorer" target="_blank" rel="noopener" style="align-self:center;">View contracts on explorer ↗</a>
+      <button class="ghost" id="heroAddNet">Add network to wallet</button>
+      <button class="ghost" id="heroGasBtn">Get gas ↗</button>
+      <a id="heroExplorer" target="_blank" rel="noopener" style="align-self:center;">View contracts ↗</a>
     </div>
   </div>
 
   <div id="netWarn" class="card" style="display:none; border-color: var(--warn);">
-    <b>⚠️ Wrong network.</b> <span class="muted">Switch to <b>BOT Chain Testnet</b> in your wallet to use this app.</span><br><br>
-    <button id="switchBtn">Switch to BOT Chain Testnet</button>
+    <b>⚠️ Wrong network.</b> <span class="muted">Switch to <b>BOT Chain</b> in your wallet to use this app.</span><br><br>
+    <button id="switchBtn">Switch to BOT Chain</button>
   </div>
 
   <div class="card" id="walletCard" style="display:none;">
     <h2>Your wallet</h2>
     <div class="addr" id="myAddr"></div>
     <div class="row" style="margin-top:10px;">
-      <div><span class="muted">Gas (tBOT):</span> <b id="gasBal">–</b></div>
-      <div><span class="muted">Test dollars (mUSDC):</span> <b id="tokBal">–</b></div>
+      <div><span class="muted">Gas (BOT):</span> <b id="gasBal">–</b></div>
+      <div><span class="muted">USDC:</span> <b id="tokBal">–</b></div>
     </div>
     <div class="row" style="margin-top:10px;">
-      <button class="ghost" id="faucetBtn">Get free tBOT (gas)</button>
-      <button class="ghost" id="mintBtn">Get free test dollars</button>
+      <button class="ghost" id="getGasBtn">Get gas</button>
+      <button class="ghost" id="getUsdcBtn">Get USDC</button>
     </div>
-    <div class="step" style="margin-top:10px;">
-      <b>New here?</b> <span class="muted">1. Click <i>Get free tBOT</i> → the <a href="https://faucet.botchain.ai/en/basic" target="_blank" rel="noopener">BOT Chain faucet ↗</a> opens. Paste your wallet address, complete the check, claim — gas arrives in under a minute. 2. Click <i>Get free test dollars</i> for play-money mUSDC. Then follow the <a href="#demoCard">guided demo</a> below.</span>
+    <div class="step" id="newHereStep" style="margin-top:10px;">
+      <b>New here?</b> <span class="muted">1. Click <i>Get gas</i> — the faucet opens. Paste your wallet address, complete the check, claim. Gas arrives in under a minute. 2. Click <i>Get USDC</i> for the payment token. Then follow the <a href="#tourCard">guided tour</a> below.</span>
     </div>
-    <p class="muted" style="margin-bottom:0;">Test dollars are play money on the test network — free and worthless, just for trying things out.</p>
   </div>
 
-  <div class="card" id="demoCard">
-    <h2>🧭 Guided demo — try the full flow</h2>
-    <p class="muted" style="margin-top:0;">Six steps, two wallets, about five minutes. This is the same flow the BOT Chain criteria ask for: multiple wallets, multiple on-chain interactions, every step visible on the explorer.</p>
-    <div id="demoSteps">
-      <div class="step" data-step="1"><span class="n">1.</span><b>Connect a wallet</b> — click <i>Connect wallet</i> above. MetaMask will ask to add <b>BOT Chain Testnet</b> (chain 968) if you don't have it.</div>
-      <div class="step" data-step="2"><span class="n">2.</span><b>Get test gas</b> — click <i>Get free tBOT (gas)</i>, paste your address at the <a href="https://faucet.botchain.ai/en/basic" target="_blank" rel="noopener">BOT Chain faucet ↗</a>, complete the check, claim. Gas is free on testnet.</div>
-      <div class="step" data-step="3"><span class="n">3.</span><b>Get test dollars</b> — click <i>Get free test dollars</i> in your wallet card. These are play-money mUSDC for the demo.</div>
+  <div class="card" id="tourCard">
+    <h2>🧭 Guided tour — the full flow</h2>
+    <p class="muted" style="margin-top:0;">Six steps, about five minutes. Create a job, accept it, deliver, release — every step visible on the explorer.</p>
+    <div id="tourSteps">
+      <div class="step" data-step="1"><span class="n">1.</span><b>Connect a wallet</b> — click <i>Connect wallet</i> above. MetaMask will ask to add <b>BOT Chain</b> if you don't have it.</div>
+      <div class="step" data-step="2"><span class="n">2.</span><b>Get gas</b> — click <i>Get gas</i>, paste your address at the <a href="https://faucet.botchain.ai/en/basic" target="_blank" rel="noopener">faucet ↗</a>, complete the check, claim.</div>
+      <div class="step" data-step="3"><span class="n">3.</span><b>Get USDC</b> — click <i>Get USDC</i> in your wallet card. This is the payment token for jobs.</div>
       <div class="step" data-step="4"><span class="n">4.</span><b>Create a job</b> — enter a worker's address, a payment amount, and what needs doing. <i>Step 1 — Allow the payment</i>, then <i>Step 2 — Create the job</i>. Two on-chain transactions.</div>
       <div class="step" data-step="5"><span class="n">5.</span><b>Play the worker</b> — connect a second wallet (or use the worker address): <i>Accept job</i> → <i>Mark as delivered</i> (describe the delivery; it's sealed on-chain as a hash).</div>
-      <div class="step" data-step="6"><span class="n">6.</span><b>Release the payment</b> — back as the payer, click <i>Release payment</i>. The worker gets paid. Click any address link to see it all on the <a href="https://scan.bohr.life" target="_blank" rel="noopener">BOT Chain explorer ↗</a>.</div>
+      <div class="step" data-step="6"><span class="n">6.</span><b>Release the payment</b> — back as the payer, click <i>Release payment</i>. The worker gets paid. Click any address link to see it all on the <a href="https://scan.bohr.life" target="_blank" rel="noopener">explorer ↗</a>.</div>
     </div>
     <p class="muted" style="margin-bottom:0;">Tip: open the page in two browsers (or a normal + private window) to play payer and worker side by side.</p>
   </div>
@@ -135,7 +141,7 @@
     <p class="flow">How it works: <b>1.</b> you describe the job and lock the payment → <b>2.</b> the worker accepts → <b>3.</b> the worker marks it delivered → <b>4.</b> you release the payment. If the deadline passes with no delivery, you get a refund.</p>
     <label>Worker's wallet address</label>
     <input id="fWorker" placeholder="0x…">
-    <label>Payment (test dollars)</label>
+    <label>Payment (USDC)</label>
     <input id="fAmount" type="number" min="0" step="0.01" placeholder="25.00">
     <label>Deadline</label>
     <input id="fHours" type="number" min="1" value="24">
@@ -173,17 +179,34 @@
   </div>
 
   <div class="card">
+    <h2>🔒 How you're protected</h2>
+    <div class="step"><b>Funds are locked, not sent.</b> Payment sits in the escrow contract until the job is done — the worker can't run with it, and you can't claw it back mid-job.</div>
+    <div class="step"><b>Only you can release.</b> Releasing payment needs the payer's wallet signature. Nobody else can move your money.</div>
+    <div class="step"><b>Disputes have a deadline.</b> If a delivery is wrong, either side can dispute. An arbiter rules within 7 days — and if they go silent, the funds default to the worker. Money can never be frozen forever.</div>
+    <div class="step"><b>Everything is on-chain.</b> Every job, delivery proof, and ruling is a public transaction you can audit on the explorer.</div>
+  </div>
+
+  <div class="card">
     <h2 class="muted" style="font-size:.95rem;">Contract details</h2>
-    <p class="muted" style="margin:4px 0;">Network: <b>BOT Chain Testnet</b> (chain 968)<br>
+    <p class="muted" style="margin:4px 0;">Network: <b>BOT Chain</b> (chain 968)<br>
     Escrow contract: <span class="addr" id="escAddr"></span> <a id="escLink" target="_blank" rel="noopener">view ↗</a><br>
-    Test token: <span class="addr" id="tokAddr"></span> <a id="tokLink" target="_blank" rel="noopener">view ↗</a></p>
+    Payment token: <span class="addr" id="tokAddr"></span> <a id="tokLink" target="_blank" rel="noopener">view ↗</a></p>
   </div>
 </div>
 <div id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script>
-/* ============ CONFIG — testnet is ACTIVE. Mainnet is staged below (do not activate until gas is secured) ============ */
+/* ============ NETWORK CONFIG ============
+   Testnet values are ACTIVE. When mainnet gas arrives, replace the CONFIG
+   values with: CHAIN_ID 677 / 0x2A5, name "BOT Chain",
+   RPC https://rpc.botchain.ai, explorer https://scan.botchain.ai,
+   symbol BOT, FAUCET_URL null (no faucet on mainnet),
+   ESCROW_ADDRESS <deployed mainnet AgentEscrow address>,
+   TOKEN_ADDRESS 0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C (USDT on mainnet).
+   Then hide the Get gas / Get USDC buttons (handled automatically when
+   FAUCET_URL is null).
+   ========================================== */
 const CONFIG = {
   CHAIN_ID: 968,
   CHAIN_ID_HEX: '0x3C8',
@@ -196,20 +219,6 @@ const CONFIG = {
   TOKEN_ADDRESS: '0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372',
   ZERO: '0x0000000000000000000000000000000000000000',
 };
-/* ---- MAINNET (STAGED ONLY — flip CONFIG to these values when mainnet gas is secured) ----
-const MAINNET_CONFIG = {
-  CHAIN_ID: 677,
-  CHAIN_ID_HEX: '0x2A5',
-  CHAIN_NAME: 'BOT Chain',
-  RPC_URL: 'https://rpc.botchain.ai',
-  EXPLORER: 'https://scan.botchain.ai',
-  NATIVE_SYMBOL: 'BOT',
-  FAUCET_URL: null, // no faucet on mainnet
-  ESCROW_ADDRESS: '0x0000000000000000000000000000000000000000', // TODO: deploy AgentEscrow to mainnet
-  TOKEN_ADDRESS: '0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C',  // USDT on BOT Chain mainnet
-  ZERO: '0x0000000000000000000000000000000000000000',
-};
--------------------------------------------------------------------------- */
 const ESCROW_ABI = [
   'function createJob(address agent, address token, uint256 amount, uint256 deadlineSeconds, uint256 reviewWindowSeconds, string metadataURI, address arbiter) returns (uint256)',
   'function acceptJob(uint256 jobId, address expectedArbiter)',
@@ -233,7 +242,6 @@ const TOKEN_ABI = [
   'function balanceOf(address a) view returns (uint256)',
   'function decimals() view returns (uint8)',
   'function symbol() view returns (string)',
-  'function mint(address to, uint256 amount)',
 ];
 const STATES = ['Open','Accepted','Delivered','Disputed','Paid','Refunded','Cancelled'];
 const BADGE = ['b-open','b-accepted','b-delivered','b-disputed','b-paid','b-refunded','b-cancelled'];
@@ -247,7 +255,29 @@ function toast(msg, ms=4500) {
 }
 const short = a => a ? a.slice(0,6) + '…' + a.slice(-4) : '';
 const escLink = a => `${CONFIG.EXPLORER}/address/${a}`;
-const txLink = h => `${CONFIG.EXPLORER}/tx/${h}`;
+
+/* User-friendly errors: never show raw revert reasons or stack traces. */
+function friendlyError(e) {
+  if (!e) return 'Something went wrong. Please try again.';
+  if (e.message === 'NO_WALLET') return 'No wallet found. Install MetaMask to continue.';
+  const code = e.code;
+  const msg = String(e.reason || e.shortMessage || e.message || '');
+  if (code === 4001 || code === 'ACTION_REJECTED' || /user (denied|rejected)|cancelled/i.test(msg))
+    return 'Transaction cancelled in your wallet.';
+  if (/insufficient funds/i.test(msg)) return 'Not enough gas to complete this transaction. Get more gas first.';
+  if (/execution reverted|revert/i.test(msg)) return 'The contract rejected this action — it may no longer be valid for this job.';
+  if (/network|timeout|fetch failed|rpc|server error/i.test(msg)) return 'Network hiccup — please try again.';
+  return 'Something went wrong. Please try again.';
+}
+
+/* Loading state: swap the button label to "Working…" while an action runs. */
+async function runBtn(btn, fn) {
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Working…';
+  try { await fn(); }
+  catch (e) { toast(friendlyError(e)); }
+  finally { btn.disabled = false; btn.textContent = orig; }
+}
 
 async function ensureNetwork() {
   const net = await provider.getNetwork();
@@ -268,12 +298,12 @@ async function switchNetwork() {
 }
 
 async function connect() {
-  if (!window.ethereum) { toast('No wallet found. Install MetaMask to continue.'); return; }
+  if (!window.ethereum) throw new Error('NO_WALLET');
   provider = new ethers.BrowserProvider(window.ethereum);
   await provider.send('eth_requestAccounts', []);
   if (!(await ensureNetwork())) {
     try { await switchNetwork(); }
-    catch (e) { $('netWarn').style.display = 'block'; return; }
+    catch (e) { $('netWarn').style.display = 'block'; throw e; }
   }
   $('netWarn').style.display = 'none';
   signer = await provider.getSigner();
@@ -355,7 +385,7 @@ async function refreshJobs() {
     }
     list.innerHTML = '';
     for (const j of jobs) list.appendChild(jobCard(j));
-  } catch (e) { list.innerHTML = '<p class="muted">Could not load jobs: ' + e.message + '</p>'; }
+  } catch (e) { list.innerHTML = '<p class="muted">Could not load jobs — please check your connection and refresh.</p>'; }
 }
 
 function isPayer(j) { return myAddr && j.payer.toLowerCase() === myAddr.toLowerCase(); }
@@ -405,6 +435,7 @@ function jobCard(j) {
   const div = document.createElement('div');
   div.className = 'job';
   const role = isPayer(j) ? 'You hired' : isAgent(j) ? 'You were hired' : '';
+  const tokSym = 'USDC';
   div.innerHTML = `
     <div class="row" style="justify-content:space-between;">
       <b>Job #${j.id}</b>
@@ -412,7 +443,7 @@ function jobCard(j) {
     </div>
     ${role ? `<div class="muted">${role} · ${short(isPayer(j) ? j.agent : j.payer)}</div>` : ''}
     <div class="meta">
-      <div><span class="muted">Payment:</span> <b>${fmtAmt(j.amount)} mUSDC</b></div>
+      <div><span class="muted">Payment:</span> <b>${fmtAmt(j.amount)} ${tokSym}</b></div>
       <div><span class="muted">Deadline:</span> ${fmtDate(j.deadline)}${expired(j) && st < 4 ? ' <b style="color:var(--warn)">(passed)</b>' : ''}</div>
       <div><span class="muted">Hired by:</span> <span class="addr">${short(j.payer)}</span></div>
       <div><span class="muted">Worker:</span> <span class="addr">${short(j.agent)}</span></div>
@@ -425,7 +456,12 @@ function jobCard(j) {
   const mkIn = (container, label, cls, fn) => {
     const b = document.createElement('button');
     b.textContent = label; if (cls) b.className = cls;
-    b.onclick = async () => { b.disabled = true; try { await fn(); await refreshBalances(); await refreshJobs(); } catch (e) { toast('Failed: ' + (e.reason || e.message)); b.disabled = false; } };
+    b.onclick = async () => {
+      const orig = b.textContent; b.disabled = true; b.textContent = 'Working…';
+      try { await fn(); await refreshBalances(); await refreshJobs(); }
+      catch (e) { toast(friendlyError(e)); }
+      finally { b.disabled = false; b.textContent = orig; }
+    };
     container.appendChild(b);
   };
   const mk = (label, cls, fn) => mkIn(act, label, cls, fn);
@@ -460,72 +496,78 @@ function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&l
 
 /* ---- create job: approve then create ---- */
 let pendingAmount = 0n;
-$('approveBtn').onclick = async () => {
-  try {
-    const worker = $('fWorker').value.trim();
-    const amt = parseFloat($('fAmount').value);
-    if (!ethers.isAddress(worker)) return toast('Enter a valid worker wallet address.');
-    if (!(amt > 0)) return toast('Enter a payment amount.');
-    const bal = await token.balanceOf(myAddr);
-    pendingAmount = ethers.parseUnits(amt.toFixed(6), tokenDecimals);
-    if (bal < pendingAmount) return toast('You need more test dollars — hit "Get free test dollars" first.');
-    await sendTx('Allowing the payment', () => token.approve(CONFIG.ESCROW_ADDRESS, pendingAmount));
-    const al = await token.allowance(myAddr, CONFIG.ESCROW_ADDRESS);
-    if (al >= pendingAmount) {
-      $('createBtn').disabled = false;
-      toast('Payment allowed. Now create the job.');
-    }
-  } catch (e) { toast('Failed: ' + (e.reason || e.message)); }
-};
-$('createBtn').onclick = async () => {
-  try {
-    const worker = $('fWorker').value.trim();
-    const hours = Math.max(1, parseInt($('fHours').value || '24', 10));
-    const desc = $('fDesc').value.trim() || 'Lamplight Pay job';
-    const rc = await sendTx('Creating job', () =>
-      escrow.createJob(worker, CONFIG.TOKEN_ADDRESS, pendingAmount, hours * 3600, 3600, desc.slice(0, 200), CONFIG.ZERO));
-    const jobId = Number(await escrow.jobCount()) - 1;
-    toast('Job #' + jobId + ' created. The worker can now accept it.');
-    $('fWorker').value = ''; $('fAmount').value = ''; $('fDesc').value = '';
-    $('createBtn').disabled = true;
-    await refreshBalances(); await refreshJobs();
-  } catch (e) { toast('Failed: ' + (e.reason || e.message)); }
-};
+$('approveBtn').onclick = () => runBtn($('approveBtn'), async () => {
+  const worker = $('fWorker').value.trim();
+  const amt = parseFloat($('fAmount').value);
+  if (!ethers.isAddress(worker)) return toast('Enter a valid worker wallet address.');
+  if (!(amt > 0)) return toast('Enter a payment amount.');
+  const bal = await token.balanceOf(myAddr);
+  pendingAmount = ethers.parseUnits(amt.toFixed(6), tokenDecimals);
+  if (bal < pendingAmount) return toast("You don't have enough USDC — click Get USDC first.");
+  await sendTx('Allowing the payment', () => token.approve(CONFIG.ESCROW_ADDRESS, pendingAmount));
+  const al = await token.allowance(myAddr, CONFIG.ESCROW_ADDRESS);
+  if (al >= pendingAmount) {
+    $('createBtn').disabled = false;
+    toast('Payment allowed. Now create the job.');
+  }
+});
+$('createBtn').onclick = () => runBtn($('createBtn'), async () => {
+  const worker = $('fWorker').value.trim();
+  const hours = Math.max(1, parseInt($('fHours').value || '24', 10));
+  const desc = $('fDesc').value.trim() || 'Lamplight Pay job';
+  const rc = await sendTx('Creating job', () =>
+    escrow.createJob(worker, CONFIG.TOKEN_ADDRESS, pendingAmount, hours * 3600, 3600, desc.slice(0, 200), CONFIG.ZERO));
+  const jobId = Number(await escrow.jobCount()) - 1;
+  toast('Job #' + jobId + ' created. The worker can now accept it.');
+  $('fWorker').value = ''; $('fAmount').value = ''; $('fDesc').value = '';
+  $('createBtn').disabled = true;
+  await refreshBalances(); await refreshJobs();
+});
 
-$('faucetBtn').onclick = () => window.open(CONFIG.FAUCET_URL, '_blank');
-$('raiseDisputeBtn').onclick = async () => {
-  try {
-    const id = parseInt($('dJobId').value, 10);
-    if (!(id >= 0)) return toast('Enter a valid job ID.');
-    const reason = $('dReason').value.trim();
-    if (reason) disputeNotes[id] = reason;
-    await sendTx('Raising dispute', () => escrow.raiseDispute(id));
-    toast('Dispute raised on job #' + id + '. The arbiter has 7 days to rule.');
-    $('dJobId').value = ''; $('dReason').value = '';
-    await refreshBalances(); await refreshJobs();
-  } catch (e) { toast('Failed: ' + (e.reason || e.message)); }
-};
-$('heroFaucet').onclick = () => window.open(CONFIG.FAUCET_URL, '_blank');
+$('getGasBtn').onclick = () => { if (CONFIG.FAUCET_URL) window.open(CONFIG.FAUCET_URL, '_blank'); };
+$('getUsdcBtn').onclick = () => toast("There's no USDC faucet on this network — contact the team and we'll send you test funds.");
+$('raiseDisputeBtn').onclick = () => runBtn($('raiseDisputeBtn'), async () => {
+  const id = parseInt($('dJobId').value, 10);
+  if (!(id >= 0)) return toast('Enter a valid job ID.');
+  const reason = $('dReason').value.trim();
+  if (reason) disputeNotes[id] = reason;
+  await sendTx('Raising dispute', () => escrow.raiseDispute(id));
+  toast('Dispute raised on job #' + id + '. The arbiter has 7 days to rule.');
+  $('dJobId').value = ''; $('dReason').value = '';
+  await refreshBalances(); await refreshJobs();
+});
+$('heroGasBtn').onclick = () => { if (CONFIG.FAUCET_URL) window.open(CONFIG.FAUCET_URL, '_blank'); };
 $('heroExplorer').href = escLink(CONFIG.ESCROW_ADDRESS);
 const addNetwork = async () => {
-  if (!window.ethereum) { toast('No wallet found. Install MetaMask to continue.'); return; }
-  try { await switchNetwork(); toast('BOT Chain Testnet added to your wallet.'); }
-  catch (e) { toast('Could not add network: ' + (e.message || e)); }
+  if (!window.ethereum) { toast(friendlyError(new Error('NO_WALLET'))); return; }
+  await runBtn($('addNetBtn'), async () => {
+    await switchNetwork();
+    toast('BOT Chain added to your wallet.');
+  });
 };
 $('addNetBtn').onclick = addNetwork;
 $('heroAddNet').onclick = addNetwork;
-$('mintBtn').onclick = async () => {
-  toast('Test dollars are sent by the deployer — ping us and we\'ll top you up.');
-};
-$('switchBtn').onclick = async () => { try { await switchNetwork(); location.reload(); } catch (e) { toast('Switch failed: ' + e.message); } };
+$('switchBtn').onclick = () => runBtn($('switchBtn'), async () => { await switchNetwork(); location.reload(); });
 $('fltAll').onclick = () => { filter = 'all'; $('fltAll').classList.add('active'); $('fltMine').classList.remove('active'); refreshJobs(); };
 $('fltMine').onclick = () => { filter = 'mine'; $('fltMine').classList.add('active'); $('fltAll').classList.remove('active'); refreshJobs(); };
-$('connectBtn').onclick = connect;
+$('connectBtn').onclick = async () => {
+  const b = $('connectBtn');
+  b.disabled = true; b.textContent = 'Connecting…';
+  try { await connect(); }
+  catch (e) { toast(friendlyError(e)); b.disabled = false; b.textContent = 'Connect wallet'; }
+};
 
 $('escAddr').textContent = CONFIG.ESCROW_ADDRESS;
 $('tokAddr').textContent = CONFIG.TOKEN_ADDRESS;
 $('escLink').href = escLink(CONFIG.ESCROW_ADDRESS);
 $('tokLink').href = escLink(CONFIG.TOKEN_ADDRESS);
+
+/* On mainnet (FAUCET_URL null) there is no faucet — hide the gas/USDC buttons. */
+if (!CONFIG.FAUCET_URL) {
+  ['heroGasBtn', 'getGasBtn', 'getUsdcBtn', 'newHereStep'].forEach(id => {
+    const el = $(id); if (el) el.style.display = 'none';
+  });
+}
 
 /* read-only job list even before connecting */
 (async () => {
@@ -539,7 +581,7 @@ $('tokLink').href = escLink(CONFIG.TOKEN_ADDRESS);
 })();
 </script>
 <footer style="margin-top:2rem;padding:1.5rem 1rem;border-top:1px solid #2a2a2a;text-align:center;color:#888;font-size:0.85rem;">
-  <p style="margin:0 0 0.5rem;">Built on <a href="https://botchain.ai" target="_blank" style="color:#4da6ff;">BOT Chain</a> · <a href="https://scan.bohr.life" target="_blank" style="color:#4da6ff;">Explorer</a> · <a href="https://faucet.botchain.ai" target="_blank" style="color:#4da6ff;">Faucet</a></p>
+  <p style="margin:0 0 0.5rem;">Built on <a href="https://botchain.ai" target="_blank" style="color:#4da6ff;">BOT Chain</a> · <a href="https://scan.bohr.life" target="_blank" style="color:#4da6ff;">Explorer</a></p>
   <p style="margin:0;">Lamplight Pay — pay-on-delivery escrow for AI agent work</p>
 </footer>
 </body>
