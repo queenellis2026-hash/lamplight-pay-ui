@@ -70,8 +70,26 @@
       <h1>🪔 Lamplight Pay</h1>
       <p class="tagline">Pay-on-delivery for work on <b>BOT Chain</b>. Money is held, not sent — the worker gets paid when the job is done.</p>
     </div>
-    <button id="connectBtn">Connect wallet</button>
+    <div class="row">
+      <button class="ghost" id="addNetBtn" title="Add BOT Chain Testnet to your wallet">+ BOT Chain Testnet</button>
+      <button id="connectBtn">Connect wallet</button>
+    </div>
   </header>
+
+  <div class="card" style="border-color: var(--accent-dim); background: linear-gradient(135deg, #101a14 0%, var(--card) 70%);">
+    <div class="row" style="justify-content:space-between; align-items:center;">
+      <div>
+        <h2 style="margin-bottom:4px;">⛓️ Live on BOT Chain Testnet</h2>
+        <p class="muted" style="margin:0;">Escrow contracts deployed and verified on chain 968. Free test tokens — nothing here costs real money.</p>
+      </div>
+      <span class="badge" style="background:var(--accent-dim); color:var(--accent);">TESTNET LIVE</span>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="ghost" id="heroAddNet">Add network to MetaMask</button>
+      <button class="ghost" id="heroFaucet">Get test gas (faucet) ↗</button>
+      <a id="heroExplorer" target="_blank" rel="noopener" style="align-self:center;">View contracts on explorer ↗</a>
+    </div>
+  </div>
 
   <div id="netWarn" class="card" style="display:none; border-color: var(--warn);">
     <b>⚠️ Wrong network.</b> <span class="muted">Switch to <b>BOT Chain Testnet</b> in your wallet to use this app.</span><br><br>
@@ -89,7 +107,24 @@
       <button class="ghost" id="faucetBtn">Get free tBOT (gas)</button>
       <button class="ghost" id="mintBtn">Get free test dollars</button>
     </div>
+    <div class="step" style="margin-top:10px;">
+      <b>New here?</b> <span class="muted">1. Click <i>Get free tBOT</i> → the <a href="https://faucet.botchain.ai/en/basic" target="_blank" rel="noopener">BOT Chain faucet ↗</a> opens. Paste your wallet address, complete the check, claim — gas arrives in under a minute. 2. Click <i>Get free test dollars</i> for play-money mUSDC. Then follow the <a href="#demoCard">guided demo</a> below.</span>
+    </div>
     <p class="muted" style="margin-bottom:0;">Test dollars are play money on the test network — free and worthless, just for trying things out.</p>
+  </div>
+
+  <div class="card" id="demoCard">
+    <h2>🧭 Guided demo — try the full flow</h2>
+    <p class="muted" style="margin-top:0;">Six steps, two wallets, about five minutes. This is the same flow the BOT Chain criteria ask for: multiple wallets, multiple on-chain interactions, every step visible on the explorer.</p>
+    <div id="demoSteps">
+      <div class="step" data-step="1"><span class="n">1.</span><b>Connect a wallet</b> — click <i>Connect wallet</i> above. MetaMask will ask to add <b>BOT Chain Testnet</b> (chain 968) if you don't have it.</div>
+      <div class="step" data-step="2"><span class="n">2.</span><b>Get test gas</b> — click <i>Get free tBOT (gas)</i>, paste your address at the <a href="https://faucet.botchain.ai/en/basic" target="_blank" rel="noopener">BOT Chain faucet ↗</a>, complete the check, claim. Gas is free on testnet.</div>
+      <div class="step" data-step="3"><span class="n">3.</span><b>Get test dollars</b> — click <i>Get free test dollars</i> in your wallet card. These are play-money mUSDC for the demo.</div>
+      <div class="step" data-step="4"><span class="n">4.</span><b>Create a job</b> — enter a worker's address, a payment amount, and what needs doing. <i>Step 1 — Allow the payment</i>, then <i>Step 2 — Create the job</i>. Two on-chain transactions.</div>
+      <div class="step" data-step="5"><span class="n">5.</span><b>Play the worker</b> — connect a second wallet (or use the worker address): <i>Accept job</i> → <i>Mark as delivered</i> (describe the delivery; it's sealed on-chain as a hash).</div>
+      <div class="step" data-step="6"><span class="n">6.</span><b>Release the payment</b> — back as the payer, click <i>Release payment</i>. The worker gets paid. Click any address link to see it all on the <a href="https://scan.bohr.life" target="_blank" rel="noopener">BOT Chain explorer ↗</a>.</div>
+    </div>
+    <p class="muted" style="margin-bottom:0;">Tip: open the page in two browsers (or a normal + private window) to play payer and worker side by side.</p>
   </div>
 
   <div class="card">
@@ -131,7 +166,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
 <script>
-/* ============ CONFIG — change CHAIN_ID to 677 for mainnet ============ */
+/* ============ CONFIG — testnet is ACTIVE. Mainnet is staged below (do not activate until gas is secured) ============ */
 const CONFIG = {
   CHAIN_ID: 968,
   CHAIN_ID_HEX: '0x3C8',
@@ -144,6 +179,20 @@ const CONFIG = {
   TOKEN_ADDRESS: '0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372',
   ZERO: '0x0000000000000000000000000000000000000000',
 };
+/* ---- MAINNET (STAGED ONLY — flip CONFIG to these values when mainnet gas is secured) ----
+const MAINNET_CONFIG = {
+  CHAIN_ID: 677,
+  CHAIN_ID_HEX: '0x2A5',
+  CHAIN_NAME: 'BOT Chain',
+  RPC_URL: 'https://rpc.botchain.ai',
+  EXPLORER: 'https://scan.botchain.ai',
+  NATIVE_SYMBOL: 'BOT',
+  FAUCET_URL: null, // no faucet on mainnet
+  ESCROW_ADDRESS: '0x0000000000000000000000000000000000000000', // TODO: deploy AgentEscrow to mainnet
+  TOKEN_ADDRESS: '0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C',  // USDT on BOT Chain mainnet
+  ZERO: '0x0000000000000000000000000000000000000000',
+};
+-------------------------------------------------------------------------- */
 const ESCROW_ABI = [
   'function createJob(address agent, address token, uint256 amount, uint256 deadlineSeconds, uint256 reviewWindowSeconds, string metadataURI, address arbiter) returns (uint256)',
   'function acceptJob(uint256 jobId, address expectedArbiter)',
@@ -352,6 +401,15 @@ $('createBtn').onclick = async () => {
 };
 
 $('faucetBtn').onclick = () => window.open(CONFIG.FAUCET_URL, '_blank');
+$('heroFaucet').onclick = () => window.open(CONFIG.FAUCET_URL, '_blank');
+$('heroExplorer').href = escLink(CONFIG.ESCROW_ADDRESS);
+const addNetwork = async () => {
+  if (!window.ethereum) { toast('No wallet found. Install MetaMask to continue.'); return; }
+  try { await switchNetwork(); toast('BOT Chain Testnet added to your wallet.'); }
+  catch (e) { toast('Could not add network: ' + (e.message || e)); }
+};
+$('addNetBtn').onclick = addNetwork;
+$('heroAddNet').onclick = addNetwork;
 $('mintBtn').onclick = async () => {
   toast('Test dollars are sent by the deployer — ping us and we\'ll top you up.');
 };
