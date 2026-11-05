@@ -369,8 +369,8 @@
       <form class="form-stack" id="createForm" style="margin-top:1.25rem;">
         <div>
           <div class="choice-row" id="jobModeRow" role="group" aria-label="Job type" style="margin-bottom:1rem;">
-            <button type="button" class="choice" data-m="specific" aria-pressed="true">Specific worker</button>
-            <button type="button" class="choice" data-m="open" aria-pressed="false">Open to anyone</button>
+            <button type="button" class="choice" data-m="open" aria-pressed="true">Open to anyone</button>
+            <button type="button" class="choice" data-m="specific" aria-pressed="false">Specific worker</button>
           </div>
           <div id="workerFieldWrap">
             <label class="field-label" for="fWorker">Worker</label>
@@ -460,6 +460,38 @@
           </div>
         </div>
       </section>
+  <section class="trust" aria-label="How disputes work">
+    <h2>How disputes work</h2>
+    <p class="sub">Plain language, no fine print. The full rules live in the contract itself.</p>
+    <ul class="trust-grid">
+      <li><span class="trust-icon">🗝️</span><p class="trust-t">The arbiter team</p>
+        <p class="trust-b">Three wallets hold dispute keys. A ruling needs 2 of 3 to agree on the exact amount — one arbiter alone can't move anything.</p></li>
+      <li><span class="trust-icon">🔄</span><p class="trust-t">Atomic rotation</p>
+        <p class="trust-b">Arbiters change only when 2 of the current 3 sign off-chain and both signatures land in a single transaction. No proposal window, so nobody can front-run a change.</p></li>
+      <li><span class="trust-icon">🚫</span><p class="trust-t">Conflict rule</p>
+        <p class="trust-b">The contract blocks an arbiter from being the payer or worker on a job. An arbiter can't rule on their own job — it's enforced in code, not policy.</p></li>
+      <li><span class="trust-icon">⏱️</span><p class="trust-t">72-hour window</p>
+        <p class="trust-b">After delivery and the review window, disputes get 72 hours. If the arbiters can't agree on an exact amount in time, the worker is paid in full — so funds can never lock forever.</p></li>
+      <li><span class="trust-icon">👤</span><p class="trust-t">No names</p>
+        <p class="trust-b">Arbiters are wallet addresses only — no names, no profiles. The current set is listed in the Governance section below.</p></li>
+      <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back (V13)</p>
+        <p class="trust-b">Partial release only works <em>during</em> the review window and never down to zero — the payer can't take 100% back after delivery. After the window, only the worker can claim, or a dispute decides.</p></li>
+    </ul>
+  </section>
+
+  <section class="trust" aria-label="Roadmap">
+    <h2>What comes next</h2>
+    <p class="sub">What grant funding buys, in order.</p>
+    <ul class="trust-grid">
+      <li><span class="trust-icon">🧪</span><p class="trust-t">Today — testnet</p>
+        <p class="trust-b">Working escrow on BOT Chain testnet with play money (MockUSDC). Anyone can post a job or accept one. No real funds.</p></li>
+      <li><span class="trust-icon">🔒</span><p class="trust-t">Next — with grant funding</p>
+        <p class="trust-b">Independent security audit, then mainnet deployment on BOT Chain (chain 677) holding real USDT.</p></li>
+      <li><span class="trust-icon">📈</span><p class="trust-t">After — usage pays</p>
+        <p class="trust-b">Grant milestones pay for real usage: the more jobs run through the protocol, the more it earns.</p></li>
+    </ul>
+  </section>
+
       <section class="card" aria-label="Withdraw credits" style="margin-top:1rem;">
         <h2>Withdraw credits</h2>
         <p class="muted" style="font-size:0.875rem;">If a payout failed, your funds are held as withdrawable credit. Enter the token address to check and withdraw.</p>
@@ -666,7 +698,7 @@ const CONFIG = {
   RPC_URL: 'https://rpc.bohr.life',
   EXPLORER: 'https://scan.bohr.life',
   NATIVE_SYMBOL: 'tBOT',
-  ESCROW_ADDRESS: '0x5a5Db2633d610BCC6aaAE100E9696248D66e8257',
+  ESCROW_ADDRESS: '0xBF456d68EB58123d5BBFa262d06622C46Fb5Fb46',
   TOKEN_ADDRESS: '0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372',
   ZERO: '0x0000000000000000000000000000000000000000',
 };
@@ -703,6 +735,17 @@ const ESCROW_ABI = [
   'function allowedTokens(address token) view returns (bool)',
   'function DISPUTE_PERIOD() view returns (uint256)',
   'function jobWindows(uint256 jobId) view returns (uint256 deliveredAt, uint256 agentClaimAt, uint256 disputeTimeoutAt, uint256 credit)',
+  'event JobCreated(uint256 indexed jobId, address indexed payer, address indexed agent, address token, uint256 amount, uint256 deadline, string metadataURI)',
+  'event JobAccepted(uint256 indexed jobId, address indexed agent)',
+  'event DeliverySubmitted(uint256 indexed jobId, bytes32 deliveryHash, string deliveryText)',
+  'event JobReleased(uint256 indexed jobId, address indexed agent, uint256 amount)',
+  'event JobRefunded(uint256 indexed jobId, address indexed payer, uint256 amount)',
+  'event JobCancelled(uint256 indexed jobId)',
+  'event JobCancelledUnaccepted(uint256 indexed jobId)',
+  'event DisputeRaised(uint256 indexed jobId, address indexed by)',
+  'event DisputeResolved(uint256 indexed jobId, uint256 amountToWorker, uint256 amountToPayer)',
+  'event DisputeTimedOut(uint256 indexed jobId, address indexed agent, uint256 amount)',
+  'event JobPartiallyReleased(uint256 indexed jobId, address indexed agent, uint256 amountToAgent, uint256 amountToPayer)',
   'event DisputeRaised(uint256 indexed jobId, address indexed by)',
   'event DisputeResolved(uint256 indexed jobId, uint256 amountToWorker, uint256 amountToPayer)',
   'event DisputeVote(uint256 indexed jobId, address indexed arbiter, uint256 amountToWorker)',
@@ -725,8 +768,9 @@ const STATES = ['Open','Accepted','Delivered','Under Review','Paid','Refunded','
 const PILL = ['pill-open','pill-accepted','pill-delivered','pill-disputed','pill-paid','pill-refunded','pill-cancelled'];
 const PILL_LABEL = {0:'Open',1:'In progress',2:'Delivered',3:'Under Review',4:'Released',5:'Refunded',6:'Cancelled'};
 
-let provider, signer, escrow, token, myAddr = null, tokenDecimals = 6, filter = 'all', jobMode = 'specific';
+let provider, signer, escrow, token, myAddr = null, tokenDecimals = 6, filter = 'all', jobMode = 'open';
 let cachedJobs = [];
+let roProvider = null; /* read-only RPC provider, survives wallet connect */
 
 const $ = id => document.getElementById(id);
 function toast(msg, ms=4500) {
@@ -1089,7 +1133,16 @@ function wireJobActions() {
     const inReview = now <= Number(j.deliveredAt) + Number(j.reviewWindow);
     const deadlineSet = Number(j.deadline) > 0;
     const expired = deadlineSet && now > Number(j.deadline);
-    if (!myAddr) return;
+    if (!myAddr) {
+      /* read-only visitor: offer a connect prompt on open jobs */
+      if (st === 0 && isOpenJob(j) && !expired) {
+        const b = document.createElement('button');
+        b.type = 'button'; b.textContent = 'Connect wallet to accept'; b.className = 'btn-ghost';
+        b.onclick = () => doConnect();
+        act.appendChild(b);
+      }
+      return;
+    }
     if (st === 0 && isAgent(j) && !expired)
       addAction(act, 'Accept job', 'btn-amber', () => sendTx('Accepting job', () => escrow.acceptJob(id)));
     if (st === 0 && isOpenJob(j) && !expired && myAddr && !isPayer(j))
@@ -1172,6 +1225,7 @@ async function refreshJobs() {
     list.innerHTML = visible.map(jobCardHtml).join('');
     wireJobActions();
     refreshDisputeVotes();
+    updateActivity(jobs);
   } catch (e) {
     list.innerHTML = '<div class="empty">Could not load jobs — please check your connection and refresh.</div>';
   }
@@ -1272,6 +1326,8 @@ document.querySelectorAll('#jobModeRow .choice').forEach(b => {
     $('workerFieldWrap').style.display = jobMode === 'open' ? 'none' : '';
   };
 });
+// Default to open
+$('workerFieldWrap').style.display = 'none';
 
 
 /* filters */
@@ -1282,6 +1338,94 @@ document.querySelectorAll('#filterRow .choice').forEach(b => {
     refreshJobs();
   };
 });
+
+/* ---- activity section (works read-only, no wallet needed) ---- */
+function updateActivity(jobs) {
+  try {
+    $('statJobs').textContent = jobs.length;
+    let vol = 0, active = 0, paid = 0, closed = 0;
+    for (const j of jobs) {
+      const st = Number(j.state);
+      vol += Number(ethers.formatUnits(j.amount, tokenDecimals));
+      if (st <= 3) active++;
+      if (st === 4) { paid++; closed++; }
+      else if (st === 5 || st === 6) closed++;
+    }
+    $('statVolume').textContent = money(vol);
+    $('statActive').textContent = active;
+    $('statSuccess').textContent = closed ? Math.round(paid / closed * 100) + '%' : '–';
+    $('histRecent').innerHTML = jobs.slice(0, 5).map(j =>
+      '<div class="row" style="justify-content:space-between; padding:0.375rem 0; border-top:1px solid var(--line);">' +
+      '<span><b>#' + j.id + '</b> <span class="muted">' + escapeHtml((j.metadataURI || '').slice(0, 42)) + '</span></span>' +
+      '<span><span class="pill ' + PILL[Number(j.state)] + '">' + PILL_LABEL[Number(j.state)] + '</span> ' +
+      '<span class="tabular">' + fmtAmt(j.amount) + '</span></span></div>'
+    ).join('') || '<p class="muted">No jobs yet.</p>';
+  } catch (e) { /* stats are best-effort */ }
+}
+
+let histTab = 'recent';
+function switchHistTab(tab) {
+  histTab = tab;
+  $('tabRecent').setAttribute('aria-pressed', tab === 'recent' ? 'true' : 'false');
+  $('tabFeed').setAttribute('aria-pressed', tab === 'feed' ? 'true' : 'false');
+  $('histRecent').style.display = tab === 'recent' ? '' : 'none';
+  $('histFeed').style.display = tab === 'feed' ? '' : 'none';
+  if (tab === 'feed') loadFeed();
+}
+
+function feedLine(e) {
+  const a = e.args || {};
+  const id = a.jobId != null ? Number(a.jobId) : '?';
+  const amt = x => x != null ? money(Number(ethers.formatUnits(x, tokenDecimals))) : '';
+  switch (e.fragment.name) {
+    case 'JobCreated': return ['ev-create', '🆕 <b>Job #' + id + '</b> created — ' + amt(a.amount) + ' MockUSDC'];
+    case 'JobAccepted': return ['ev-create', '✋ <b>Job #' + id + '</b> accepted by ' + short(a.agent)];
+    case 'DeliverySubmitted': return ['ev-create', '📦 <b>Job #' + id + '</b> delivered'];
+    case 'JobReleased': return ['ev-release', '💰 <b>Job #' + id + '</b> released — ' + amt(a.amount) + ' to worker'];
+    case 'JobRefunded': return ['', '↩️ <b>Job #' + id + '</b> refunded — ' + amt(a.amount)];
+    case 'JobCancelled': case 'JobCancelledUnaccepted': return ['', '🚫 <b>Job #' + id + '</b> cancelled'];
+    case 'DisputeRaised': return ['ev-dispute', '⚖️ Dispute raised on <b>job #' + id + '</b>'];
+    case 'DisputeResolved': return ['ev-dispute', '✅ Dispute on <b>job #' + id + '</b> resolved'];
+    case 'DisputeTimedOut': return ['ev-dispute', '⏱️ Dispute on <b>job #' + id + '</b> timed out — worker paid'];
+    case 'JobPartiallyReleased': return ['ev-release', '🔀 <b>Job #' + id + '</b> split — ' + amt(a.amountToAgent) + ' to worker'];
+    default: return ['', e.fragment.name + ' on <b>job #' + id + '</b>'];
+  }
+}
+
+async function loadFeed() {
+  const tl = $('feedTimeline');
+  try {
+    if (!roProvider) { tl.innerHTML = '<p class="muted">Connecting…</p>'; return; }
+    tl.innerHTML = '<p class="muted">Loading events…</p>';
+    const latest = await roProvider.getBlockNumber();
+    const from = Math.max(0, latest - 50000);
+    const names = ['JobCreated','JobAccepted','DeliverySubmitted','JobReleased','JobRefunded',
+      'JobCancelled','JobCancelledUnaccepted','DisputeRaised','DisputeResolved','DisputeTimedOut','JobPartiallyReleased'];
+    const all = [];
+    for (const n of names) {
+      try {
+        const evts = await escrow.queryFilter(escrow.filters[n](), from, latest);
+        for (const e of evts) all.push(e);
+      } catch (e) {}
+    }
+    all.sort((a, b) => (b.blockNumber - a.blockNumber) || ((b.index || 0) - (a.index || 0)));
+    const items = all.slice(0, 25);
+    if (!items.length) { tl.innerHTML = '<p class="muted">No on-chain events in the recent range.</p>'; return; }
+    const rows = [];
+    for (const e of items) {
+      let when = '';
+      try { const blk = await e.getBlock(); when = new Date(Number(blk.timestamp) * 1000).toLocaleString(); }
+      catch (err) {}
+      const [cls, text] = feedLine(e);
+      rows.push('<div class="feed-event' + (cls ? ' ' + cls : '') + '"><div class="feed-text">' + text + '</div>' +
+        (when ? '<div class="feed-time">' + when + '</div>' : '') + '</div>');
+    }
+    tl.innerHTML = rows.join('');
+  } catch (e) {
+    tl.innerHTML = '<p class="muted">Could not load events.</p>';
+  }
+}
+setInterval(() => { if (histTab === 'feed' && roProvider) loadFeed(); }, 30000);
 
 /* ---- dispute modal ---- */
 let disputeJobId = null;
@@ -1336,7 +1480,7 @@ function amIArbiter() {
 /* ---- atomic governance (EIP-712 off-chain signatures) ---- */
 function govDomain() {
   return {
-    name: 'AgentEscrowV12',
+    name: 'AgentEscrowV13',
     version: '1',
     chainId: CONFIG.CHAIN_ID,
     verifyingContract: CONFIG.ESCROW_ADDRESS,
@@ -1620,6 +1764,7 @@ $('tokLink').href = escLink(CONFIG.TOKEN_ADDRESS);
 (async () => {
   try {
     provider = new ethers.JsonRpcProvider(CONFIG.RPC_URL);
+    roProvider = provider; /* keep a read-only handle that connect() never replaces */
     escrow = new ethers.Contract(CONFIG.ESCROW_ADDRESS, ESCROW_ABI, provider);
     token = new ethers.Contract(CONFIG.TOKEN_ADDRESS, TOKEN_ABI, provider);
     tokenDecimals = Number(await token.decimals());
