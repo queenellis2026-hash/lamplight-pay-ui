@@ -133,7 +133,11 @@
   input:focus-visible, textarea:focus-visible { border-color: var(--amber); }
   textarea { padding: 0.75rem; min-height: 6rem; resize: vertical; }
   .form-stack > * + * { margin-top: 1rem; }
+  .form-stack p.field-hint { margin: 0 0 0.375rem; }
   .choice-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  /* horizontally scrollable preset chips (deadline / review) — no wrapping on mobile */
+  .chip-scroll { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 0.25rem; scrollbar-width: thin; }
+  .chip-scroll .choice { flex-shrink: 0; }
   .choice {
     display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.375rem;
     border: none; border-radius: 999px; padding: 0 0.875rem;
@@ -264,6 +268,42 @@
   .arb-list { font-family: ui-monospace, monospace; font-size: 0.8rem; color: var(--clay); margin: 0.5rem 0 0; }
   .nonce-hint { font-size: 0.8rem; color: var(--clay); margin-top: 0.25rem; }
 
+
+  /* ---- Activity / History section ---- */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin: 1rem 0; }
+  .stat-box { background: var(--field); border: 1px solid var(--line); border-radius: 0.875rem; padding: 0.875rem 1rem; text-align: center; }
+  .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--amber); font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 0.75rem; color: var(--clay); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .hist-tabs { display: flex; gap: 0.5rem; margin: 1rem 0 0.75rem; }
+  .hist-item { display: flex; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.15s; border-radius: 0.5rem; }
+  .hist-item:hover { background: rgba(232, 160, 74, 0.06); }
+  .hist-item:last-child { border-bottom: none; }
+  .hist-dot { width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; background: var(--field); border: 1px solid var(--line); }
+  .hist-body { flex: 1; min-width: 0; }
+  .hist-title { font-weight: 600; font-size: 0.925rem; }
+  .hist-sub { font-size: 0.8rem; color: var(--clay); margin-top: 0.15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hist-meta { font-size: 0.75rem; color: var(--clay); margin-top: 0.25rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .hist-detail { display: none; margin-top: 0.5rem; padding: 0.75rem; background: var(--field); border-radius: 0.625rem; font-size: 0.825rem; }
+  .hist-item.expanded .hist-detail { display: block; }
+  .hist-detail .drow { display: flex; justify-content: space-between; gap: 1rem; padding: 0.2rem 0; }
+  .hist-detail .dlabel { color: var(--clay); }
+  .feed-timeline { position: relative; padding-left: 1.75rem; }
+  .feed-timeline::before { content: ''; position: absolute; left: 0.55rem; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--line); border-radius: 1px; }
+  .feed-event { position: relative; padding: 0.5rem 0; animation: feedIn 0.4s ease-out; }
+  @keyframes feedIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .feed-event::before { content: ''; position: absolute; left: -1.45rem; top: 0.85rem; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--amber); border: 2px solid var(--panel); }
+  .feed-event.ev-dispute::before { background: #e05c5c; }
+  .feed-event.ev-release::before { background: #5cb85c; }
+  .feed-event.ev-create::before { background: var(--amber); }
+  .feed-time { font-size: 0.72rem; color: var(--clay); }
+  .feed-text { font-size: 0.875rem; margin-top: 0.1rem; }
+  .collapsible-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 0.5rem 0; }
+  .collapsible-head .chev { transition: transform 0.2s; color: var(--clay); }
+  .collapsible.open .collapsible-head .chev { transform: rotate(180deg); }
+  .collapsible-body { display: none; }
+  .collapsible.open .collapsible-body { display: block; }
+  @media (max-width: 520px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
@@ -333,49 +373,45 @@
             <button type="button" class="choice" data-m="open" aria-pressed="false">Open to anyone</button>
           </div>
           <div id="workerFieldWrap">
-            <div class="field-row"><label class="field-label" for="fWorker" style="margin:0;">Worker</label>
-            <span class="field-hint">Who gets paid if you release.</span></div>
+            <label class="field-label" for="fWorker">Worker</label>
+            <p class="field-hint">Who gets paid if you release.</p>
             <input id="fWorker" placeholder="0x…" autocomplete="off" spellcheck="false">
           </div>
         </div>
-        <div style="display:grid; gap:1rem;">
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;" class="three-col">
-            <div>
-              <div class="field-row"><label class="field-label" for="fAmount" style="margin:0;">Payment</label>
-              <span class="field-hint">MockUSDC</span></div>
-              <input id="fAmount" inputmode="decimal" class="tabular" value="25.00">
-              <div class="choice-row" id="amtChoices">
-                <button type="button" class="choice" data-v="25" aria-pressed="false">25</button>
-                <button type="button" class="choice" data-v="100" aria-pressed="false">100</button>
-                <button type="button" class="choice" data-v="250" aria-pressed="false">250</button>
-              </div>
-            </div>
-            <div>
-              <div class="field-row"><label class="field-label" for="fHours" style="margin:0;">Deadline</label>
-              <span class="field-hint">Hours the worker gets once they accept.</span></div>
-              <input id="fHours" inputmode="numeric" class="tabular" value="24">
-              <div class="choice-row" id="hrsChoices">
-                <button type="button" class="choice" data-v="12" aria-pressed="false">12h</button>
-                <button type="button" class="choice" data-v="24" aria-pressed="true">24h</button>
-                <button type="button" class="choice" data-v="72" aria-pressed="false">3d</button>
-                <button type="button" class="choice" data-v="168" aria-pressed="false">7d</button>
-              </div>
-            </div>
-            <div>
-              <div class="field-row"><label class="field-label" for="fReviewHrs" style="margin:0;">Review window</label>
-              <span class="field-hint">Hours to dispute after delivery.</span></div>
-              <input id="fReviewHrs" inputmode="numeric" class="tabular" value="48">
-              <div class="choice-row" id="revChoices">
-                <button type="button" class="choice" data-v="24" aria-pressed="false">24h</button>
-                <button type="button" class="choice" data-v="48" aria-pressed="true">48h</button>
-                <button type="button" class="choice" data-v="72" aria-pressed="false">72h</button>
-                <button type="button" class="choice" data-v="168" aria-pressed="false">7d</button>
-              </div>
-            </div>
+        <div>
+          <label class="field-label" for="fAmount">Payment</label>
+          <p class="field-hint">MockUSDC</p>
+          <input id="fAmount" inputmode="decimal" class="tabular" value="25.00">
+          <div class="choice-row" id="amtChoices" aria-label="Payment presets">
+            <button type="button" class="choice" data-v="25" aria-pressed="false">25</button>
+            <button type="button" class="choice" data-v="100" aria-pressed="false">100</button>
+            <button type="button" class="choice" data-v="250" aria-pressed="false">250</button>
           </div>
         </div>
         <div>
-          <div class="field-row"><label class="field-label" for="fDesc" style="margin:0;">What needs doing</label></div>
+          <label class="field-label" for="fHours">Deadline</label>
+          <p class="field-hint">Hours the worker gets once they accept.</p>
+          <input id="fHours" inputmode="numeric" class="tabular" value="24">
+          <div class="choice-row chip-scroll" id="hrsChoices" aria-label="Deadline presets">
+            <button type="button" class="choice" data-v="12" aria-pressed="false">12h</button>
+            <button type="button" class="choice" data-v="24" aria-pressed="true">24h</button>
+            <button type="button" class="choice" data-v="72" aria-pressed="false">3d</button>
+            <button type="button" class="choice" data-v="168" aria-pressed="false">7d</button>
+          </div>
+        </div>
+        <div>
+          <label class="field-label" for="fReviewHrs">Review window</label>
+          <p class="field-hint">Hours to dispute after delivery.</p>
+          <input id="fReviewHrs" inputmode="numeric" class="tabular" value="48">
+          <div class="choice-row chip-scroll" id="revChoices" aria-label="Review window presets">
+            <button type="button" class="choice" data-v="24" aria-pressed="false">24h</button>
+            <button type="button" class="choice" data-v="48" aria-pressed="true">48h</button>
+            <button type="button" class="choice" data-v="72" aria-pressed="false">72h</button>
+            <button type="button" class="choice" data-v="168" aria-pressed="false">7d</button>
+          </div>
+        </div>
+        <div>
+          <label class="field-label" for="fDesc">What needs doing</label>
           <textarea id="fDesc" rows="3" maxlength="500" placeholder="Describe the job in complete detail — what needs doing, how you'll know it's done, and any requirements."></textarea>
         </div>
         <p class="muted" style="margin:0; font-size:0.875rem;">Disputes are resolved by 2-of-3 vote of the Lamplight arbiter team within 72 hours.</p>
@@ -398,6 +434,31 @@
           <button type="button" class="choice" data-f="open" aria-pressed="false">Open <span class="tabular" data-c="open"></span></button>
         </div>
         <div id="jobList" style="margin-top:1rem;"><p class="muted">Loading…</p></div>
+      </section>
+      <section class="card" aria-label="Activity history" style="margin-top:1rem;">
+        <div class="collapsible open" id="activityCollapsible">
+          <div class="collapsible-head" onclick="document.getElementById('activityCollapsible').classList.toggle('open')">
+            <h2 style="margin:0;">📊 Activity</h2>
+            <span class="chev">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <div class="stats-row" id="statsRow">
+              <div class="stat-box"><div class="stat-num" id="statJobs">–</div><div class="stat-label">Total jobs</div></div>
+              <div class="stat-box"><div class="stat-num" id="statVolume">–</div><div class="stat-label">Volume</div></div>
+              <div class="stat-box"><div class="stat-num" id="statActive">–</div><div class="stat-label">Active</div></div>
+              <div class="stat-box"><div class="stat-num" id="statSuccess">–</div><div class="stat-label">Success rate</div></div>
+            </div>
+            <div class="hist-tabs">
+              <button type="button" class="choice" id="tabRecent" aria-pressed="true" onclick="switchHistTab('recent')">Recent jobs</button>
+              <button type="button" class="choice" id="tabFeed" aria-pressed="false" onclick="switchHistTab('feed')">Live feed</button>
+            </div>
+            <div id="histRecent"></div>
+            <div id="histFeed" style="display:none;">
+              <div class="feed-timeline" id="feedTimeline"><p class="muted">Loading events…</p></div>
+              <p class="muted" style="font-size:0.75rem; margin-top:0.5rem;">Auto-refreshes every 30s · showing recent 60 jobs</p>
+            </div>
+          </div>
+        </div>
       </section>
       <section class="card" aria-label="Withdraw credits" style="margin-top:1rem;">
         <h2>Withdraw credits</h2>
@@ -645,6 +706,13 @@ const ESCROW_ABI = [
   'event DisputeRaised(uint256 indexed jobId, address indexed by)',
   'event DisputeResolved(uint256 indexed jobId, uint256 amountToWorker, uint256 amountToPayer)',
   'event DisputeVote(uint256 indexed jobId, address indexed arbiter, uint256 amountToWorker)',
+  'event JobCreated(uint256 indexed jobId, address indexed payer, address indexed agent, address token, uint256 amount, uint256 deadline, string metadataURI)',
+  'event JobAccepted(uint256 indexed jobId, address indexed agent)',
+  'event DeliverySubmitted(uint256 indexed jobId, bytes32 deliveryHash, string deliveryText)',
+  'event JobReleased(uint256 indexed jobId, address indexed agent, uint256 amount)',
+  'event JobRefunded(uint256 indexed jobId, address indexed payer, uint256 amount)',
+  'event JobCancelled(uint256 indexed jobId)',
+  'event DisputeTimedOut(uint256 indexed jobId, address indexed agent, uint256 amount)',
 ];
 const TOKEN_ABI = [
   'function approve(address spender, uint256 amount) returns (bool)',
