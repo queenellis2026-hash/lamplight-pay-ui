@@ -447,6 +447,7 @@
               <div class="stat-box"><div class="stat-num" id="statVolume">–</div><div class="stat-label">Volume</div></div>
               <div class="stat-box"><div class="stat-num" id="statActive">–</div><div class="stat-label">Active</div></div>
               <div class="stat-box"><div class="stat-num" id="statSuccess">–</div><div class="stat-label">Success rate</div></div>
+              <div class="stat-box"><div class="stat-num" id="statRefunded">–</div><div class="stat-label">Refunded</div></div>
             </div>
             <div class="hist-tabs">
               <button type="button" class="choice" id="tabRecent" aria-pressed="true" onclick="switchHistTab('recent')">Recent jobs</button>
@@ -472,8 +473,8 @@
         <p class="trust-b">The contract blocks an arbiter from being the payer or worker on a job. An arbiter can't rule on their own job — it's enforced in code, not policy.</p></li>
       <li><span class="trust-icon">⏱️</span><p class="trust-t">72-hour window</p>
         <p class="trust-b">After delivery and the review window, disputes get 72 hours. If the arbiters can't agree on an exact amount in time, the worker is paid in full — so funds can never lock forever.</p></li>
-      <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back (V13)</p>
-        <p class="trust-b">Partial release only works <em>during</em> the review window and never down to zero — the payer can't take 100% back after delivery. After the window, only the worker can claim, or a dispute decides.</p></li>
+      <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back (V14)</p>
+        <p class="trust-b">A split now needs the <em>worker's signature</em> for the exact amount — the payer can't take funds back unilaterally. Splits below 1% of the job amount revert as dust. The worker can also deliver and dispute atomically in one transaction, so the payer can't front-run the dispute. After the window, only the worker can claim, or a dispute decides.</p></li>
     </ul>
   </section>
 
@@ -506,11 +507,11 @@
         <!-- ROTATE -->
         <div class="gov-panel active" id="govRotate">
           <ol class="gov-steps">
-            <li>Enter the new 3-address arbiter set and a fresh nonce.</li>
+            <li>Enter the new 3-address arbiter set, a fresh nonce, and an expiry deadline (default: 1 hour from now).</li>
             <li>Click <b>Sign rotation</b> — your wallet signs an EIP-712 message (no gas).</li>
             <li>Share the signature <em>and</em> the exact parameters with a second arbiter.</li>
             <li>Once you have both signatures, paste them below and <b>Execute</b>.</li>
-            <li class="warn">⚠️ Signatures never expire. Treat a complete pair as a live transaction — do not leave in chat.</li>
+            <li class="warn">⚠️ Signatures expire at the deadline above. Treat a complete pair as a live transaction — do not leave in chat.</li>
           </ol>
           <div class="gov-grid">
             <div><label class="field-label" for="rotA1">New arbiter 1</label><input id="rotA1" placeholder="0x…" /></div>
@@ -524,6 +525,11 @@
               </div>
               <p class="nonce-hint">Each nonce works once. Never reuse a nonce.</p>
             </div>
+            <div>
+              <label class="field-label" for="rotDeadline">Expiry deadline</label>
+              <input id="rotDeadline" type="datetime-local" />
+              <p class="nonce-hint">Signatures expire at this time (default: 1 hour from now).</p>
+            </div>
           </div>
           <button type="button" class="btn-amber" id="rotSignBtn" style="width:100%; margin-top:0.75rem;">Sign rotation</button>
           <p class="err" id="rotErr" style="display:none;"></p>
@@ -533,7 +539,7 @@
               <textarea id="rotSigOut" readonly></textarea>
               <button type="button" class="btn" id="rotSigCopy">Copy</button>
             </div>
-            <p class="muted" style="font-size:0.8rem;">Send this signature <em>plus</em> the three addresses and nonce above to the second arbiter.</p>
+            <p class="muted" style="font-size:0.8rem;">Send this signature <em>plus</em> the three addresses, nonce, and deadline above to the second arbiter.</p>
           </div>
           <p class="gov-sub">Execute (needs 2 signatures)</p>
           <div class="gov-grid">
@@ -541,6 +547,7 @@
             <div><label class="field-label" for="rotExA2">Arbiter 2</label><input id="rotExA2" placeholder="0x…" /></div>
             <div><label class="field-label" for="rotExA3">Arbiter 3</label><input id="rotExA3" placeholder="0x…" /></div>
             <div><label class="field-label" for="rotExNonce">Nonce</label><input id="rotExNonce" inputmode="numeric" placeholder="same nonce both signed" /></div>
+            <div><label class="field-label" for="rotExDeadline">Expiry deadline</label><input id="rotExDeadline" type="datetime-local" /></div>
             <div><label class="field-label" for="rotExSig1">Signature 1</label><textarea id="rotExSig1" rows="2" placeholder="0x…"></textarea></div>
             <div><label class="field-label" for="rotExSig2">Signature 2</label><textarea id="rotExSig2" rows="2" placeholder="0x…"></textarea></div>
           </div>
@@ -551,11 +558,11 @@
         <!-- TOKEN -->
         <div class="gov-panel" id="govToken">
           <ol class="gov-steps">
-            <li>Enter the token address, allow/block, and a fresh nonce.</li>
+            <li>Enter the token address, allow/block, a fresh nonce, and an expiry deadline (default: 1 hour from now).</li>
             <li>Click <b>Sign token change</b> — your wallet signs an EIP-712 message (no gas).</li>
             <li>Share the signature <em>and</em> the exact parameters with a second arbiter.</li>
             <li>Once you have both signatures, paste them below and <b>Execute</b>.</li>
-            <li class="warn">⚠️ Signatures never expire. Treat a complete pair as a live transaction — do not leave in chat.</li>
+            <li class="warn">⚠️ Signatures expire at the deadline above. Treat a complete pair as a live transaction — do not leave in chat.</li>
           </ol>
           <div class="gov-grid">
             <div><label class="field-label" for="tokAddr">Token address</label><input id="tokAddr" placeholder="0x…" /></div>
@@ -571,6 +578,11 @@
               </div>
               <p class="nonce-hint">Each nonce works once. Never reuse a nonce.</p>
             </div>
+            <div>
+              <label class="field-label" for="tokDeadline">Expiry deadline</label>
+              <input id="tokDeadline" type="datetime-local" />
+              <p class="nonce-hint">Signatures expire at this time (default: 1 hour from now).</p>
+            </div>
           </div>
           <button type="button" class="btn-amber" id="tokSignBtn" style="width:100%; margin-top:0.75rem;">Sign token change</button>
           <p class="err" id="tokErr" style="display:none;"></p>
@@ -580,7 +592,7 @@
               <textarea id="tokSigOut" readonly></textarea>
               <button type="button" class="btn" id="tokSigCopy">Copy</button>
             </div>
-            <p class="muted" style="font-size:0.8rem;">Send this signature <em>plus</em> the token address, allow/block, and nonce above to the second arbiter.</p>
+            <p class="muted" style="font-size:0.8rem;">Send this signature <em>plus</em> the token address, allow/block, nonce, and deadline above to the second arbiter.</p>
           </div>
           <p class="gov-sub">Execute (needs 2 signatures)</p>
           <div class="gov-grid">
@@ -590,6 +602,7 @@
               <button type="button" class="choice" id="tokExAllowN" aria-pressed="false">Block</button>
             </div>
             <div><label class="field-label" for="tokExNonce">Nonce</label><input id="tokExNonce" inputmode="numeric" placeholder="same nonce both signed" /></div>
+            <div><label class="field-label" for="tokExDeadline">Expiry deadline</label><input id="tokExDeadline" type="datetime-local" /></div>
             <div><label class="field-label" for="tokExSig1">Signature 1</label><textarea id="tokExSig1" rows="2" placeholder="0x…"></textarea></div>
             <div><label class="field-label" for="tokExSig2">Signature 2</label><textarea id="tokExSig2" rows="2" placeholder="0x…"></textarea></div>
           </div>
@@ -668,6 +681,19 @@
   <form id="splitForm" style="margin-top:1rem;">
     <label class="field-label" for="smAmount">Amount to worker (MockUSDC)</label>
     <input id="smAmount" inputmode="decimal" class="tabular" placeholder="0.00">
+    <p class="muted" id="smMin" style="font-size:0.8rem; margin-top:0.5rem;"></p>
+    <div id="smWorkerSigWrap" style="display:none; margin-top:0.75rem;">
+      <label class="field-label" for="smWorkerSig">Worker's signature (0x…)</label>
+      <textarea id="smWorkerSig" rows="2" placeholder="Paste the signature the worker signed for this exact amount"></textarea>
+      <p class="muted" style="font-size:0.8rem;">V14: a split needs the worker's EIP-712 signature for this exact amount. Ask the worker to open this job and click "Sign split".</p>
+    </div>
+    <div id="smSigOutWrap" style="display:none; margin-top:0.75rem;">
+      <p class="gov-sub">Your signature — send it to the payer</p>
+      <div class="sig-row">
+        <textarea id="smSigOut" readonly></textarea>
+        <button type="button" class="btn" id="smSigCopy">Copy</button>
+      </div>
+    </div>
     <p class="err" id="smErr" role="alert" style="display:none;"></p>
     <button type="submit" class="btn-amber" id="smSubmit" style="width:100%; margin-top:1rem;">Send split</button>
   </form>
@@ -683,7 +709,7 @@ const CONFIG = {
   RPC_URL: 'https://rpc.bohr.life',
   EXPLORER: 'https://scan.bohr.life',
   NATIVE_SYMBOL: 'tBOT',
-  ESCROW_ADDRESS: '0xBF456d68EB58123d5BBFa262d06622C46Fb5Fb46',
+  ESCROW_ADDRESS: '0x3f3a6724046C4e30C2d4Ce94E083bfbAdAfB7835', // TODO (deployer): replace with the deployed AgentEscrowV14 address
   TOKEN_ADDRESS: '0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372',
   ZERO: '0x0000000000000000000000000000000000000000',
 };
@@ -692,12 +718,14 @@ const ESCROW_ABI = [
   'function createOpenJob(address token, uint256 amount, uint256 deadlineSeconds, uint256 reviewWindowSeconds, string metadataURI) returns (uint256)',
   'function acceptJob(uint256 jobId)',
   'function submitDelivery(uint256 jobId, bytes32 deliveryHash, string deliveryText)',
+  'function submitDeliveryAndDispute(uint256 jobId, bytes32 deliveryHash, string deliveryText, string disputeReason)',
   'function release(uint256 jobId)',
-  'function releasePartial(uint256 jobId, uint256 amountToWorker)',
+  'function releasePartial(uint256 jobId, uint256 amountToWorker, bytes workerSig)',
+  'function partialReleaseNonces(uint256 jobId) view returns (uint256)',
   'function refundAfterDeadline(uint256 jobId)',
   'function cancelUnaccepted(uint256 jobId)',
   'function jobCount() view returns (uint256)',
-  'function getJob(uint256 jobId) view returns (tuple(address payer, address agent, address token, uint256 amount, uint256 deadline, uint256 reviewWindow, uint8 state, bytes32 deliveryHash, string metadataURI, uint256 deliveredAt, uint256 deadlineSeconds, string deliveryText))',
+  'function getJob(uint256 jobId) view returns (tuple(address payer, address agent, address token, uint256 amount, uint256 deadline, uint256 reviewWindow, uint8 state, bytes32 deliveryHash, string metadataURI, uint256 deliveredAt, uint256 deadlineSeconds, string deliveryText, string disputeReason))',
   'function withdraw(address token)',
   'function withdrawTo(address token, address to)',
   'function pendingCredit(address token, address account) view returns (uint256)',
@@ -705,8 +733,8 @@ const ESCROW_ABI = [
   'function approveDisputeResolution(uint256 jobId, uint256 amountToWorker)',
   'function settleDisputeTimeout(uint256 jobId)',
   'function arbiters(uint256) view returns (address)',
-  'function executeRotation(address[3] newArbiters, uint256 nonce, bytes sig1, bytes sig2)',
-  'function executeTokenChange(address token, bool allowed, uint256 nonce, bytes sig1, bytes sig2)',
+  'function executeRotation(address[3] newArbiters, uint256 nonce, uint256 deadline, bytes sig1, bytes sig2)',
+  'function executeTokenChange(address token, bool allowed, uint256 nonce, uint256 deadline, bytes sig1, bytes sig2)',
   'function disputeVotes(uint256 jobId, uint256 version, address arbiter) view returns (uint256)',
   'function hasVotedDispute(uint256 jobId, uint256 version, address arbiter) view returns (bool)',
   
@@ -781,6 +809,10 @@ function friendlyError(e) {
     'amount zero': 'Payment amount must be greater than zero.',
     'nothing to withdraw': 'Nothing to withdraw.',
     'exceeds job amount': 'Split amount cannot exceed the job payment.',
+    'dust partial rejected': 'Split too small — partial releases below 1% of the job amount are rejected.',
+    'worker sig required': 'This split needs the worker\'s signature for the exact amount.',
+    'signature expired': 'The governance signatures have expired — sign again with a later deadline.',
+    'nonce used': 'That nonce was already used — pick a fresh one.',
     'deadline passed': 'The deadline has passed for this action.',
     'deadline not passed': 'The deadline has not passed yet.',
     'deadline zero': 'Deadline must be greater than zero.',
@@ -911,6 +943,7 @@ async function loadJobs() {
       deliveredAt: r.deliveredAt ?? r[9],
       deadlineSeconds: r.deadlineSeconds ?? r[10],
       deliveryText: r.deliveryText ?? r[11],
+      disputeReason: r.disputeReason ?? r[12],
     };
     if (!j.payer) continue;
     jobs.push({ id: i, ...j });
@@ -1004,6 +1037,8 @@ function disputeBannerHtml(j) {
   const arbLabel = 'Lamplight Pay rules';
   const note = disputeNotes[j.id]
     ? '<div>📝 <i>' + escapeHtml(disputeNotes[j.id]) + '</i> <span class="muted">(this browser only)</span></div>' : '';
+  const onChainReason = j.disputeReason
+    ? '<div>💬 <i>' + escapeHtml(j.disputeReason) + '</i> <span class="muted">(on-chain reason, from worker)</span></div>' : '';
   let status;
   if (tmo === null) status = '<div><span class="muted">Resolution deadline:</span> loading…</div>';
   else if (passed) status = '<div><b style="color:var(--rose)">Resolution deadline passed</b> — either party can settle now; funds default to the worker.</div>';
@@ -1013,7 +1048,7 @@ function disputeBannerHtml(j) {
              ' <span class="muted">(~' + hrs + 'h left of the 72-hour window)</span></div>';
   }
   return '<div class="dispute-box"><div><b>⚖️ Disputed</b> <span class="muted">by ' + raiser + '</span></div>' +
-    '<div class="muted">' + arbLabel + '</div>' + note + status +
+    '<div class="muted">' + arbLabel + '</div>' + note + onChainReason + status +
     '<div data-votes="' + j.id + '" class="muted" style="font-size:0.8rem; margin-top:0.5rem;">Loading votes…</div>' +
     '<div class="row" data-dactions="' + j.id + '"></div></div>';
 }
@@ -1144,10 +1179,21 @@ function wireJobActions() {
         const hash = ethers.keccak256(ethers.toUtf8Bytes('lamplight-pay:' + text));
         await sendTx('Submitting delivery', () => escrow.submitDelivery(id, hash, text));
       });
+    if (st === 1 && isAgent(j) && !expired)
+      addAction(act, 'Deliver & dispute', 'btn-rose', async () => {
+        const text = prompt('Describe what you delivered (stored on-chain for arbiters):');
+        if (!text) return;
+        const reason = prompt('Why are you disputing at delivery? (stored on-chain for arbiters):');
+        if (!reason) return;
+        const hash = ethers.keccak256(ethers.toUtf8Bytes('lamplight-pay:' + text));
+        await sendTx('Delivering & disputing', () => escrow.submitDeliveryAndDispute(id, hash, text, reason));
+      });
     if (st === 2 && isPayer(j)) {
       addAction(act, 'Release ' + fmtAmt(j.amount), 'btn-amber', () => sendTx('Releasing payment', () => escrow.release(id)));
       addAction(act, 'Split…', 'btn-ghost', () => openSplitModal(id, j.amount, 'release'));
     }
+    if (st === 2 && isAgent(j) && inReview)
+      addAction(act, 'Sign split…', 'btn-ghost', () => openSplitModal(id, j.amount, 'release'));
     if (st === 2 && isAgent(j) && !inReview) {
       addAction(act, 'Claim ' + fmtAmt(j.amount), 'btn-amber', () => sendTx('Claiming payment', () => escrow.release(id)));
     }
@@ -1328,17 +1374,21 @@ document.querySelectorAll('#filterRow .choice').forEach(b => {
 function updateActivity(jobs) {
   try {
     $('statJobs').textContent = jobs.length;
-    let vol = 0, active = 0, paid = 0, closed = 0;
+    let vol = 0, active = 0, paid = 0, closed = 0, refunded = 0;
     for (const j of jobs) {
       const st = Number(j.state);
       vol += Number(ethers.formatUnits(j.amount, tokenDecimals));
       if (st <= 3) active++;
+      // V14: success counts Released (4) ONLY. Refunded (5) is a full refund
+      // to the payer — never a win — and is counted separately below.
       if (st === 4) { paid++; closed++; }
-      else if (st === 5 || st === 6) closed++;
+      else if (st === 5) { refunded++; closed++; }
+      else if (st === 6) closed++;
     }
     $('statVolume').textContent = money(vol);
     $('statActive').textContent = active;
     $('statSuccess').textContent = closed ? Math.round(paid / closed * 100) + '%' : '–';
+    $('statRefunded').textContent = refunded;
     $('histRecent').innerHTML = jobs.slice(0, 5).map(j =>
       '<div class="row" style="justify-content:space-between; padding:0.375rem 0; border-top:1px solid var(--line);">' +
       '<span><b>#' + j.id + '</b> <span class="muted">' + escapeHtml((j.metadataURI || '').slice(0, 42)) + '</span></span>' +
@@ -1465,7 +1515,7 @@ function amIArbiter() {
 /* ---- atomic governance (EIP-712 off-chain signatures) ---- */
 function govDomain() {
   return {
-    name: 'AgentEscrowV13',
+    name: 'AgentEscrowV14',
     version: '1',
     chainId: CONFIG.CHAIN_ID,
     verifyingContract: CONFIG.ESCROW_ADDRESS,
@@ -1475,6 +1525,7 @@ const ROTATE_TYPES = {
   RotateArbiters: [
     { name: 'newArbiters', type: 'address[3]' },
     { name: 'nonce', type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
   ],
 };
 const SET_TOKEN_TYPES = {
@@ -1482,6 +1533,7 @@ const SET_TOKEN_TYPES = {
     { name: 'token', type: 'address' },
     { name: 'allowed', type: 'bool' },
     { name: 'nonce', type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
   ],
 };
 const isAddr = a => /^0x[0-9a-fA-F]{40}$/.test(a || '');
@@ -1490,6 +1542,24 @@ function hideGovErr(id) { $(id).style.display = 'none'; }
 function randomNonce() {
   const b = new Uint8Array(16); crypto.getRandomValues(b);
   return '0x' + [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+/* V14 governance deadlines: datetime-local inputs <-> unix seconds. */
+function fmtLocalInput(d) {
+  const p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function defaultDeadline(id) {
+  const el = $(id);
+  if (el && !el.value) el.value = fmtLocalInput(new Date(Date.now() + 3600 * 1000));
+}
+function deadlineSecs(id) {
+  const el = $(id);
+  const v = el && el.value ? el.value.trim() : '';
+  if (v) {
+    const t = Math.floor(new Date(v).getTime() / 1000);
+    if (t > 0) return BigInt(t);
+  }
+  return BigInt(Math.floor(Date.now() / 1000) + 3600); // fall back: now + 1h
 }
 function updateGovVisibility() {
   const show = amIArbiter() && CONFIG.ESCROW_ADDRESS !== CONFIG.ZERO;
@@ -1520,6 +1590,8 @@ const tokExAllowed = () => $('tokExAllowY').getAttribute('aria-pressed') === 'tr
 /* nonce generators */
 $('rotNonceGen').onclick = () => { $('rotNonce').value = randomNonce(); };
 $('tokNonceGen').onclick = () => { $('tokNonce').value = randomNonce(); };
+defaultDeadline('rotDeadline'); defaultDeadline('tokDeadline');
+defaultDeadline('rotExDeadline'); defaultDeadline('tokExDeadline');
 /* copy buttons */
 $('rotSigCopy').onclick = () => copyText($('rotSigOut').value, 'Signature');
 $('tokSigCopy').onclick = () => copyText($('tokSigOut').value, 'Signature');
@@ -1528,17 +1600,19 @@ $('rotSignBtn').onclick = async () => {
   hideGovErr('rotErr');
   const addrs = [$('rotA1').value.trim(), $('rotA2').value.trim(), $('rotA3').value.trim()];
   const nonce = $('rotNonce').value.trim();
+  const deadline = deadlineSecs('rotDeadline');
   if (!addrs.every(isAddr)) return showGovErr('rotErr', 'Enter three valid arbiter addresses (0x…).');
   if (!nonce) return showGovErr('rotErr', 'Enter a nonce — click Random for a fresh one.');
   try {
     toast('Sign the rotation in your wallet…');
     const sig = await signer.signTypedData(govDomain(), ROTATE_TYPES,
-      { newArbiters: addrs, nonce: BigInt(nonce) });
+      { newArbiters: addrs, nonce: BigInt(nonce), deadline });
     $('rotSigOut').value = sig;
     $('rotSigWrap').style.display = 'block';
     /* pre-fill execute fields */
     $('rotExA1').value = addrs[0]; $('rotExA2').value = addrs[1]; $('rotExA3').value = addrs[2];
     $('rotExNonce').value = nonce;
+    $('rotExDeadline').value = $('rotDeadline').value;
     $('rotExSig1').value = sig;
     toast('Signed. Share the signature + parameters with a second arbiter.');
   } catch (e) { showGovErr('rotErr', friendlyError(e)); }
@@ -1548,6 +1622,7 @@ $('rotExecBtn').onclick = async () => {
   hideGovErr('rotExErr');
   const addrs = [$('rotExA1').value.trim(), $('rotExA2').value.trim(), $('rotExA3').value.trim()];
   const nonce = $('rotExNonce').value.trim();
+  const deadline = deadlineSecs('rotExDeadline');
   const sig1 = $('rotExSig1').value.trim(), sig2 = $('rotExSig2').value.trim();
   if (!addrs.every(isAddr)) return showGovErr('rotExErr', 'Enter three valid arbiter addresses.');
   if (!nonce) return showGovErr('rotExErr', 'Enter the nonce both arbiters signed.');
@@ -1555,7 +1630,7 @@ $('rotExecBtn').onclick = async () => {
     return showGovErr('rotExErr', 'Enter two valid 65-byte signatures (0x + 130 hex chars).');
   try {
     await sendTx('Rotating arbiters', () =>
-      escrow.executeRotation(addrs, BigInt(nonce), sig1, sig2));
+      escrow.executeRotation(addrs, BigInt(nonce), deadline, sig1, sig2));
     await loadArbiters(); updateGovVisibility();
     toast('Arbiters rotated.');
   } catch (e) { showGovErr('rotExErr', friendlyError(e)); }
@@ -1565,17 +1640,19 @@ $('tokSignBtn').onclick = async () => {
   hideGovErr('tokErr');
   const token = $('tokAddr').value.trim();
   const nonce = $('tokNonce').value.trim();
+  const deadline = deadlineSecs('tokDeadline');
   if (!isAddr(token)) return showGovErr('tokErr', 'Enter a valid token address (0x…).');
   if (!nonce) return showGovErr('tokErr', 'Enter a nonce — click Random for a fresh one.');
   try {
     toast('Sign the token change in your wallet…');
     const sig = await signer.signTypedData(govDomain(), SET_TOKEN_TYPES,
-      { token, allowed: tokAllowed(), nonce: BigInt(nonce) });
+      { token, allowed: tokAllowed(), nonce: BigInt(nonce), deadline });
     $('tokSigOut').value = sig;
     $('tokSigWrap').style.display = 'block';
     /* pre-fill execute fields */
     $('tokExAddr').value = token;
     $('tokExNonce').value = nonce;
+    $('tokExDeadline').value = $('tokDeadline').value;
     $('tokExSig1').value = sig;
     $(tokAllowed() ? 'tokExAllowY' : 'tokExAllowN').click();
     toast('Signed. Share the signature + parameters with a second arbiter.');
@@ -1586,6 +1663,7 @@ $('tokExecBtn').onclick = async () => {
   hideGovErr('tokExErr');
   const token = $('tokExAddr').value.trim();
   const nonce = $('tokExNonce').value.trim();
+  const deadline = deadlineSecs('tokExDeadline');
   const sig1 = $('tokExSig1').value.trim(), sig2 = $('tokExSig2').value.trim();
   if (!isAddr(token)) return showGovErr('tokExErr', 'Enter a valid token address.');
   if (!nonce) return showGovErr('tokExErr', 'Enter the nonce both arbiters signed.');
@@ -1593,7 +1671,7 @@ $('tokExecBtn').onclick = async () => {
     return showGovErr('tokExErr', 'Enter two valid 65-byte signatures (0x + 130 hex chars).');
   try {
     await sendTx('Updating token whitelist', () =>
-      escrow.executeTokenChange(token, tokExAllowed(), BigInt(nonce), sig1, sig2));
+      escrow.executeTokenChange(token, tokExAllowed(), BigInt(nonce), deadline, sig1, sig2));
     toast('Token whitelist updated.');
   } catch (e) { showGovErr('tokExErr', friendlyError(e)); }
 };
@@ -1613,18 +1691,43 @@ async function doRule(id, releaseToAgent) {
     }
   } catch (e) { toast(friendlyError(e)); }
 }
-let splitJobId = null, splitKind = null, splitTotal = 0n;
+let splitJobId = null, splitKind = null, splitTotal = 0n, splitRole = null; // 'worker' | 'payer' | 'arbiter'
+const PARTIAL_RELEASE_TYPES = {
+  PartialRelease: [
+    { name: 'jobId', type: 'uint256' },
+    { name: 'amountToWorker', type: 'uint256' },
+    { name: 'nonce', type: 'uint256' },
+  ],
+};
+function splitMin() { return splitTotal / 100n; } // V14 dust floor: 1% of the job amount
 function openSplitModal(id, amount, kind) {
   splitJobId = id; splitKind = kind;
   splitTotal = BigInt(amount.toString());
-  $('smTitle').textContent = kind === 'release' ? 'Split the payment' : 'Split the dispute';
+  const job = cachedJobs.find(j => j.id === id);
+  splitRole = kind === 'release' && job && isAgent(job) ? 'worker' : kind === 'release' ? 'payer' : 'arbiter';
+  $('smTitle').textContent = kind === 'release'
+    ? (splitRole === 'worker' ? 'Sign a split' : 'Split the payment')
+    : 'Split the dispute';
   $('smDesc').textContent = kind === 'release'
-    ? 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to you.'
+    ? (splitRole === 'worker'
+      ? 'Sign the amount you agree to receive from ' + fmtAmt(amount) + ' MockUSDC. The rest returns to the payer. Send the signature to the payer — they submit it on-chain.'
+      : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to you. V14: you need the worker\'s signature for the exact amount.')
     : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to the payer.';
+  $('smMin').textContent = kind === 'release'
+    ? 'Minimum to worker: ' + fmtAmt(splitMin()) + ' MockUSDC (1% of the job — smaller splits revert as dust, unless it is the full amount).'
+    : '';
+  $('smWorkerSigWrap').style.display = (kind === 'release' && splitRole === 'payer') ? 'block' : 'none';
+  $('smWorkerSig').value = '';
+  $('smSigOutWrap').style.display = 'none';
+  $('smSigOut').value = '';
+  $('smSubmit').textContent = kind === 'release'
+    ? (splitRole === 'worker' ? 'Sign split' : 'Execute split')
+    : 'Vote split';
   $('smAmount').value = '';
   $('smErr').style.display = 'none';
   openModal('splitModal');
 }
+$('smSigCopy').onclick = () => copyText($('smSigOut').value, 'Signature');
 $('smClose').onclick = closeModals;
 $('splitForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -1635,17 +1738,38 @@ $('splitForm').addEventListener('submit', async (e) => {
   try { amt = ethers.parseUnits(raw, tokenDecimals); }
   catch { $('smErr').textContent = 'Enter a valid MockUSDC amount.'; $('smErr').style.display = ''; return; }
   if (amt < 0n || amt > splitTotal) { $('smErr').textContent = 'Must be between 0 and ' + fmtAmt(splitTotal) + '.'; $('smErr').style.display = ''; return; }
+  if (splitKind === 'release' && amt < splitTotal && amt < splitMin()) {
+    $('smErr').textContent = 'Too small — splits below ' + fmtAmt(splitMin()) + ' MockUSDC (1%) revert as dust.';
+    $('smErr').style.display = ''; return;
+  }
   btn.disabled = true;
   try {
-    if (splitKind === 'release') {
-      await sendTx('Splitting payment', () => escrow.releasePartial(splitJobId, amt));
+    if (splitKind === 'release' && splitRole === 'worker') {
+      // V14: the WORKER signs the split; the payer submits it. Nonce is the
+      // job's current partialReleaseNonces — a used signature can't replay.
+      const nonce = await escrow.partialReleaseNonces(splitJobId);
+      toast('Sign the split in your wallet…');
+      const sig = await signer.signTypedData(govDomain(), PARTIAL_RELEASE_TYPES,
+        { jobId: BigInt(splitJobId), amountToWorker: amt, nonce });
+      $('smSigOut').value = sig;
+      $('smSigOutWrap').style.display = 'block';
+      toast('Signed. Send this signature to the payer — they execute the split on-chain.');
+    } else if (splitKind === 'release') {
+      const workerSig = $('smWorkerSig').value.trim();
+      if (!/^0x[0-9a-fA-F]{130}$/.test(workerSig)) {
+        $('smErr').textContent = 'Paste the worker\'s 65-byte signature for this exact amount (0x + 130 hex chars).';
+        $('smErr').style.display = ''; return;
+      }
+      await sendTx('Splitting payment', () => escrow.releasePartial(splitJobId, amt, workerSig));
       toast('Payment split: worker gets ' + fmtAmt(amt) + ' MockUSDC.');
+      closeModals();
+      await refreshBalances(); await refreshJobs();
     } else {
       await sendTx('Voting dispute split', () => escrow.approveDisputeResolution(splitJobId, amt));
       toast('Vote recorded: worker gets ' + fmtAmt(amt) + ' MockUSDC if 2 arbiters agree.');
+      closeModals();
+      await refreshBalances(); await refreshJobs();
     }
-    closeModals();
-    await refreshBalances(); await refreshJobs();
   } catch (err) { $('smErr').textContent = friendlyError(err); $('smErr').style.display = ''; }
   finally { btn.disabled = false; }
 });
@@ -1732,6 +1856,8 @@ $('wWithdrawTo').onclick = async () => {
   const addr = (typeof CONFIG !== 'undefined' && CONFIG.ESCROW_ADDRESS) || '';
   if (!addr || /^0x0{40}$/i.test(addr)) {
     el.innerHTML = '<span style="color:var(--rose)">Contract not deployed — this UI is not connected.</span>';
+  } else if (/V14CONTRACTADDRESS/.test(addr)) {
+    el.innerHTML = '<span style="color:var(--rose)">V14 contract not deployed yet — escrow address is a placeholder for the deployer to swap in.</span>';
   } else {
     el.textContent = 'Escrow: ' + addr.slice(0, 10) + '…' + addr.slice(-6);
   }
@@ -1748,6 +1874,10 @@ $('tokLink').href = escLink(CONFIG.TOKEN_ADDRESS);
 /* read-only job list even before connecting */
 (async () => {
   try {
+    if (/V14CONTRACTADDRESS/.test(CONFIG.ESCROW_ADDRESS)) {
+      $('jobList').innerHTML = '<div class="empty">V14 contract not deployed yet — the escrow address is still a placeholder.</div>';
+      return;
+    }
     provider = new ethers.JsonRpcProvider(CONFIG.RPC_URL);
     roProvider = provider; /* keep a read-only handle that connect() never replaces */
     escrow = new ethers.Contract(CONFIG.ESCROW_ADDRESS, ESCROW_ABI, provider);
