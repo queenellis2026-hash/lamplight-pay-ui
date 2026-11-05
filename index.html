@@ -473,7 +473,7 @@
         <p class="trust-b">The contract blocks an arbiter from being the payer or worker on a job. An arbiter can't rule on their own job — it's enforced in code, not policy.</p></li>
       <li><span class="trust-icon">⏱️</span><p class="trust-t">72-hour window</p>
         <p class="trust-b">After delivery and the review window, disputes get 72 hours. If the arbiters can't agree on an exact amount in time, the timeout settles on their votes: no votes means a full refund to the payer, one vote pays that vote, two votes pay the lower, three votes pay the median — so funds can never lock forever.</p></li>
-      <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back (V16)</p>
+      <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back</p>
         <p class="trust-b">A split now needs the <em>worker's signature</em> for the exact amount — the payer can't take funds back unilaterally. Splits below 1% of the job amount revert as dust. The worker can also deliver and dispute atomically in one transaction, so the payer can't front-run the dispute. After the window, only the worker can claim, or a dispute decides.</p></li>
     </ul>
   </section>
@@ -494,7 +494,6 @@
         <p id="wErr" class="err" style="display:none;"></p>
       </section>
 
-      <!-- Atomic governance: EIP-712 off-chain signatures, one-tx execution -->
       <section class="card" aria-label="Governance" id="govSection" style="margin-top:1rem; display:none;">
         <h2>Governance</h2>
         <p class="muted" style="font-size:0.875rem;">Arbiter-only. Rotation and token changes are atomic: two current arbiters sign off-chain, anyone submits both signatures in one transaction. No front-running possible.</p>
@@ -613,20 +612,6 @@
     </div>
   </div>
 
-  <section class="trust">
-    <h2>How you're protected</h2>
-    <ul class="trust-grid">
-      <li><span class="trust-icon">🔒</span><p class="trust-t">Locked, not sent</p>
-        <p class="trust-b">Payment stays in the contract until the job settles. Nobody can take it mid-job.</p></li>
-      <li><span class="trust-icon">🔑</span><p class="trust-t">Four ways funds move</p>
-        <p class="trust-b">Payer releases · worker claims after the review window · 2-of-3 arbiter vote · 72h timeout settles on arbiter votes.</p></li>
-      <li><span class="trust-icon">⚖️</span><p class="trust-t">Disputes expire</p>
-        <p class="trust-b">Either side can dispute a delivery. Our team reviews and rules within 72 hours. If arbiters go silent, the timeout settles on whatever votes were cast — no votes at all means a full refund to the payer.</p></li>
-      <li><span class="trust-icon">📜</span><p class="trust-t">Public record</p>
-        <p class="trust-b">Every job, delivery, and ruling is a transaction you can open on the explorer.</p></li>
-    </ul>
-  </section>
-
   <footer class="contracts">
     <div style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:0.75rem;">
       <div>
@@ -682,7 +667,7 @@
     <label class="field-label" for="smAmount">Amount to worker (MockUSDC)</label>
     <input id="smAmount" inputmode="decimal" class="tabular" placeholder="0.00">
     <div id="smDeadlineWrap" style="margin-top:0.75rem;">
-      <label class="field-label" for="smDeadline">Signature expires (V15: your split signature has a deadline)</label>
+      <label class="field-label" for="smDeadline">Signature expires</label>
       <input id="smDeadline" type="datetime-local" />
       <p class="muted" style="font-size:0.8rem;">Default: 24 hours from now. After this time the signature is worthless — the payer cannot submit it.</p>
     </div>
@@ -690,7 +675,7 @@
     <div id="smWorkerSigWrap" style="display:none; margin-top:0.75rem;">
       <label class="field-label" for="smWorkerSig">Worker's signature (0x…)</label>
       <textarea id="smWorkerSig" rows="2" placeholder="Paste the signature the worker signed for this exact amount"></textarea>
-      <p class="muted" style="font-size:0.8rem;">V15: a split needs the worker's EIP-712 signature for this exact amount and deadline. Ask the worker to open this job and click "Sign split". <b>Set the "Signature expires" field above to the exact deadline the worker signed</b> (shown next to their signature) — a different deadline makes the signature invalid.</p>
+      <p class="muted" style="font-size:0.8rem;">A split needs the worker's signature for this exact amount and deadline. Ask the worker to open this job and click "Sign split".</p>
     </div>
     <div id="smSigOutWrap" style="display:none; margin-top:0.75rem;">
       <p class="gov-sub">Your signature — send it to the payer</p>
@@ -1729,7 +1714,7 @@ function openSplitModal(id, amount, kind) {
   $('smDesc').textContent = kind === 'release'
     ? (splitRole === 'worker'
       ? 'Sign the amount you agree to receive from ' + fmtAmt(amount) + ' MockUSDC. The rest returns to the payer. Send the signature to the payer — they submit it on-chain.'
-      : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to you. V15: you need the worker\'s signature for the exact amount and deadline.')
+      : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to you. You need the worker\'s signature for the exact amount and deadline.')
     : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to the payer.';
   $('smMin').textContent = kind === 'release'
     ? 'Minimum to worker: ' + fmtAmt(splitMin()) + ' MockUSDC (1% of the job — smaller splits revert as dust, unless it is the full amount).'
@@ -1953,4 +1938,3 @@ $('termsModal').onclick = (e) => { if (e.target === $('termsModal')) $('termsMod
 </script>
 </body>
 </html>
-<!-- rebuild Wed Nov  4 21:34:07 CST 2026 -->
