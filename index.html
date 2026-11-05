@@ -663,7 +663,7 @@
     <h3 class="modal-title" id="dmTitle">Raise a dispute</h3>
     <button type="button" class="icon-btn" id="dmClose" aria-label="Close">✕</button>
   </div>
-  <p class="modal-desc">The reason is written on-chain so the arbiters can read it. Our team rules within 72 hours, then silence pays the worker.</p>
+  <p class="modal-desc">The reason is written on-chain so the arbiters can read it. Our team rules within 72 hours. If the arbiters don't agree in time, the dispute settles on the median of votes cast — no votes at all means a full refund to the payer.</p>
   <form id="disputeForm" style="margin-top:1rem;">
     <label class="field-label" for="dmReason">Reason</label>
     <textarea id="dmReason" rows="3" maxlength="280" placeholder="Delivered code doesn't compile."></textarea>
@@ -1009,7 +1009,7 @@ function jobCaption(j) {
     if (j.disputeTimeoutAt == null) return 'Dispute raised. Loading deadline…';
     const rMs = (Number(j.disputeTimeoutAt) - now) * 1000;
     return rMs > 0 ? 'Arbiter has ' + fmtLeft(rMs)
-                   : 'Arbiter window closed. Either party can settle to the worker.';
+                   : 'Arbiter window closed. Either party can settle on the median of votes cast.';
   }
   if (st === 4) {
     return j.disputeBy ? 'Dispute resolved. See details above.' : 'Paid to the worker.';
@@ -1042,10 +1042,10 @@ function disputeBannerHtml(j) {
   const note = disputeNotes[j.id]
     ? '<div>📝 <i>' + escapeHtml(disputeNotes[j.id]) + '</i> <span class="muted">(this browser only)</span></div>' : '';
   const onChainReason = j.disputeReason
-    ? '<div>💬 <i>' + escapeHtml(j.disputeReason) + '</i> <span class="muted">(on-chain reason, from worker)</span></div>' : '';
+    ? '<div>💬 <i>' + escapeHtml(j.disputeReason) + '</i> <span class="muted">(on-chain reason)</span></div>' : '';
   let status;
   if (tmo === null) status = '<div><span class="muted">Resolution deadline:</span> loading…</div>';
-  else if (passed) status = '<div><b style="color:var(--rose)">Resolution deadline passed</b> — either party can settle now; funds default to the worker.</div>';
+  else if (passed) status = '<div><b style="color:var(--rose)">Resolution deadline passed</b> — either party can settle now on the median of votes cast; no votes means a full refund to the payer.</div>';
   else {
     const hrs = Math.max(0, Math.round((tmo - now) / 3600));
     status = '<div><span class="muted">Resolution deadline:</span> ' + fmtDate(tmo) +
@@ -1505,7 +1505,7 @@ $('disputeForm').addEventListener('submit', async (ev) => {
     // V15: the reason is stored ON-CHAIN (raiseDispute takes it as an
     // argument). The old browser-local-only note is gone.
     await sendTx('Raising dispute', () => escrow.raiseDispute(disputeJobId, reason));
-    toast('Dispute raised on job #' + disputeJobId + '. 2 of 3 arbiters must agree within 72 hours.');
+    toast('Dispute raised on job #' + disputeJobId + '. Arbiters vote on the payout. If they don\'t agree within 72 hours, the dispute settles on the median of votes cast.');
     closeModals();
     await refreshBalances(); await refreshJobs();
   } catch (e) { $('dmErr').textContent = friendlyError(e); $('dmErr').style.display = 'block'; }
