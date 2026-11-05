@@ -472,8 +472,8 @@
       <li><span class="trust-icon">🚫</span><p class="trust-t">Conflict rule</p>
         <p class="trust-b">The contract blocks an arbiter from being the payer or worker on a job. An arbiter can't rule on their own job — it's enforced in code, not policy.</p></li>
       <li><span class="trust-icon">⏱️</span><p class="trust-t">72-hour window</p>
-        <p class="trust-b">After delivery and the review window, disputes get 72 hours. If the arbiters can't agree on an exact amount in time, the worker is paid in full — so funds can never lock forever.</p></li>
-      <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back (V14)</p>
+        <p class="trust-b">After delivery and the review window, disputes get 72 hours. If the arbiters can't agree on an exact amount in time, the timeout settles on their votes: no votes means a full refund to the payer, one vote pays that vote, two votes pay the lower, three votes pay the median — so funds can never lock forever.</p></li>
+      <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back (V16)</p>
         <p class="trust-b">A split now needs the <em>worker's signature</em> for the exact amount — the payer can't take funds back unilaterally. Splits below 1% of the job amount revert as dust. The worker can also deliver and dispute atomically in one transaction, so the payer can't front-run the dispute. After the window, only the worker can claim, or a dispute decides.</p></li>
     </ul>
   </section>
@@ -619,9 +619,9 @@
       <li><span class="trust-icon">🔒</span><p class="trust-t">Locked, not sent</p>
         <p class="trust-b">Payment stays in the contract until the job settles. Nobody can take it mid-job.</p></li>
       <li><span class="trust-icon">🔑</span><p class="trust-t">Four ways funds move</p>
-        <p class="trust-b">Payer releases · worker claims after the review window · 2-of-3 arbiter vote · 72h timeout pays the worker.</p></li>
+        <p class="trust-b">Payer releases · worker claims after the review window · 2-of-3 arbiter vote · 72h timeout settles on arbiter votes.</p></li>
       <li><span class="trust-icon">⚖️</span><p class="trust-t">Disputes expire</p>
-        <p class="trust-b">Either side can dispute a delivery. Our team reviews and rules within 72 hours. Silence pays the worker.</p></li>
+        <p class="trust-b">Either side can dispute a delivery. Our team reviews and rules within 72 hours. If arbiters go silent, the timeout settles on whatever votes were cast — no votes at all means a full refund to the payer.</p></li>
       <li><span class="trust-icon">📜</span><p class="trust-t">Public record</p>
         <p class="trust-b">Every job, delivery, and ruling is a transaction you can open on the explorer.</p></li>
     </ul>
@@ -663,7 +663,7 @@
     <h3 class="modal-title" id="dmTitle">Raise a dispute</h3>
     <button type="button" class="icon-btn" id="dmClose" aria-label="Close">✕</button>
   </div>
-  <p class="modal-desc">The chain records that you raised it. The reason stays in this browser. Our team rules within 72 hours, then silence pays the worker.</p>
+  <p class="modal-desc">The reason is written on-chain so the arbiters can read it. Our team rules within 72 hours, then silence pays the worker.</p>
   <form id="disputeForm" style="margin-top:1rem;">
     <label class="field-label" for="dmReason">Reason</label>
     <textarea id="dmReason" rows="3" maxlength="280" placeholder="Delivered code doesn't compile."></textarea>
@@ -681,14 +681,20 @@
   <form id="splitForm" style="margin-top:1rem;">
     <label class="field-label" for="smAmount">Amount to worker (MockUSDC)</label>
     <input id="smAmount" inputmode="decimal" class="tabular" placeholder="0.00">
+    <div id="smDeadlineWrap" style="margin-top:0.75rem;">
+      <label class="field-label" for="smDeadline">Signature expires (V15: your split signature has a deadline)</label>
+      <input id="smDeadline" type="datetime-local" />
+      <p class="muted" style="font-size:0.8rem;">Default: 24 hours from now. After this time the signature is worthless — the payer cannot submit it.</p>
+    </div>
     <p class="muted" id="smMin" style="font-size:0.8rem; margin-top:0.5rem;"></p>
     <div id="smWorkerSigWrap" style="display:none; margin-top:0.75rem;">
       <label class="field-label" for="smWorkerSig">Worker's signature (0x…)</label>
       <textarea id="smWorkerSig" rows="2" placeholder="Paste the signature the worker signed for this exact amount"></textarea>
-      <p class="muted" style="font-size:0.8rem;">V14: a split needs the worker's EIP-712 signature for this exact amount. Ask the worker to open this job and click "Sign split".</p>
+      <p class="muted" style="font-size:0.8rem;">V15: a split needs the worker's EIP-712 signature for this exact amount and deadline. Ask the worker to open this job and click "Sign split". <b>Set the "Signature expires" field above to the exact deadline the worker signed</b> (shown next to their signature) — a different deadline makes the signature invalid.</p>
     </div>
     <div id="smSigOutWrap" style="display:none; margin-top:0.75rem;">
       <p class="gov-sub">Your signature — send it to the payer</p>
+      <p class="muted" id="smSigDeadlineNote" style="font-size:0.8rem;"></p>
       <div class="sig-row">
         <textarea id="smSigOut" readonly></textarea>
         <button type="button" class="btn" id="smSigCopy">Copy</button>
@@ -709,7 +715,7 @@ const CONFIG = {
   RPC_URL: 'https://rpc.bohr.life',
   EXPLORER: 'https://scan.bohr.life',
   NATIVE_SYMBOL: 'tBOT',
-  ESCROW_ADDRESS: '0x3f3a6724046C4e30C2d4Ce94E083bfbAdAfB7835', // TODO (deployer): replace with the deployed AgentEscrowV14 address
+  ESCROW_ADDRESS: '0xe715bed727391e8FBCA2CfeD58070881AAb126B0', // AgentEscrowV16, deployed Nov 5 2026
   TOKEN_ADDRESS: '0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372',
   ZERO: '0x0000000000000000000000000000000000000000',
 };
@@ -720,7 +726,7 @@ const ESCROW_ABI = [
   'function submitDelivery(uint256 jobId, bytes32 deliveryHash, string deliveryText)',
   'function submitDeliveryAndDispute(uint256 jobId, bytes32 deliveryHash, string deliveryText, string disputeReason)',
   'function release(uint256 jobId)',
-  'function releasePartial(uint256 jobId, uint256 amountToWorker, bytes workerSig)',
+  'function releasePartial(uint256 jobId, uint256 amountToWorker, uint256 deadline, bytes workerSig)',
   'function partialReleaseNonces(uint256 jobId) view returns (uint256)',
   'function refundAfterDeadline(uint256 jobId)',
   'function cancelUnaccepted(uint256 jobId)',
@@ -729,7 +735,7 @@ const ESCROW_ABI = [
   'function withdraw(address token)',
   'function withdrawTo(address token, address to)',
   'function pendingCredit(address token, address account) view returns (uint256)',
-  'function raiseDispute(uint256 jobId)',
+  'function raiseDispute(uint256 jobId, string reason)',
   'function approveDisputeResolution(uint256 jobId, uint256 amountToWorker)',
   'function settleDisputeTimeout(uint256 jobId)',
   'function arbiters(uint256) view returns (address)',
@@ -742,8 +748,6 @@ const ESCROW_ABI = [
   
   
   
-  'function hasVotedToken(uint256 version, address arbiter) view returns (bool)',
-  'function tokenChangeVotes(uint256 version, address arbiter) view returns (bool)',
   'function arbiterSetVersion() view returns (uint256)',
   'function allowedTokens(address token) view returns (bool)',
   'function DISPUTE_PERIOD() view returns (uint256)',
@@ -1079,10 +1083,22 @@ async function refreshDisputeVotes() {
           lines.push('○ ' + short(a) + you + ' has not voted');
         }
       }
-      // FIX 2: warn when arbiter votes differ (must match exactly to execute)
-      const voteAmts = [];
-      for (const l of lines) { const m = l.match(/voted: (.*)$/); if (m) voteAmts.push(m[1]); }
-      const differ = new Set(voteAmts).size > 1;
+      // V15: warn when arbiter votes differ — compare RAW WEI (BigInt), not
+      // the rendered labels. A 60% vote and a 60.01% vote can render as the
+      // same "600.00" string; the raw wei differ by 1 and the dispute can
+      // never execute, so the 72h timeout settles on the median vote
+      // (V16: no votes means a full refund to the payer).
+      const voteWei = [];
+      for (let i = 0; i < 3; i++) {
+        try {
+          const a = arbiterAddrs[i];
+          if (!a) continue;
+          const ver = await escrow.arbiterSetVersion().catch(() => 1n);
+          const voted = await escrow.hasVotedDispute(id, ver, a).catch(() => false);
+          if (voted) voteWei.push(BigInt((await escrow.disputeVotes(id, ver, a).catch(() => 0n)).toString()));
+        } catch {}
+      }
+      const differ = new Set(voteWei.map(v => v.toString())).size > 1;
       if (differ) {
         lines.push('<span style="color:var(--rose)">⚠️ Votes differ — they must match exactly to execute. Re-vote to correct.</span>');
       }
@@ -1220,7 +1236,7 @@ function wireJobActions() {
         dact.appendChild(r);
       }
       if (passed && (isPayer(j) || isAgent(j)))
-        addAction(dact, 'Settle to worker', 'btn-amber', () => sendTx('Settling timed-out dispute', () => escrow.settleDisputeTimeout(id)));
+        addAction(dact, 'Settle timed-out dispute', 'btn-amber', () => sendTx('Settling timed-out dispute', () => escrow.settleDisputeTimeout(id)));
     }
   });
 }
@@ -1379,7 +1395,7 @@ function updateActivity(jobs) {
       const st = Number(j.state);
       vol += Number(ethers.formatUnits(j.amount, tokenDecimals));
       if (st <= 3) active++;
-      // V14: success counts Released (4) ONLY. Refunded (5) is a full refund
+      // V15: success counts Released (4) ONLY. Refunded (5) is a full refund
       // to the payer — never a win — and is counted separately below.
       if (st === 4) { paid++; closed++; }
       else if (st === 5) { refunded++; closed++; }
@@ -1486,8 +1502,9 @@ $('disputeForm').addEventListener('submit', async (ev) => {
   const btn = $('dmSubmit');
   btn.disabled = true; btn.textContent = 'Working…';
   try {
-    disputeNotes[disputeJobId] = reason;
-    await sendTx('Raising dispute', () => escrow.raiseDispute(disputeJobId));
+    // V15: the reason is stored ON-CHAIN (raiseDispute takes it as an
+    // argument). The old browser-local-only note is gone.
+    await sendTx('Raising dispute', () => escrow.raiseDispute(disputeJobId, reason));
     toast('Dispute raised on job #' + disputeJobId + '. 2 of 3 arbiters must agree within 72 hours.');
     closeModals();
     await refreshBalances(); await refreshJobs();
@@ -1515,7 +1532,7 @@ function amIArbiter() {
 /* ---- atomic governance (EIP-712 off-chain signatures) ---- */
 function govDomain() {
   return {
-    name: 'AgentEscrowV14',
+    name: 'AgentEscrowV16',
     version: '1',
     chainId: CONFIG.CHAIN_ID,
     verifyingContract: CONFIG.ESCROW_ADDRESS,
@@ -1543,7 +1560,7 @@ function randomNonce() {
   const b = new Uint8Array(16); crypto.getRandomValues(b);
   return '0x' + [...b].map(x => x.toString(16).padStart(2, '0')).join('');
 }
-/* V14 governance deadlines: datetime-local inputs <-> unix seconds. */
+/* V14+ governance deadlines: datetime-local inputs <-> unix seconds. */
 function fmtLocalInput(d) {
   const p = n => String(n).padStart(2, '0');
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
@@ -1697,9 +1714,10 @@ const PARTIAL_RELEASE_TYPES = {
     { name: 'jobId', type: 'uint256' },
     { name: 'amountToWorker', type: 'uint256' },
     { name: 'nonce', type: 'uint256' },
+    { name: 'deadline', type: 'uint256' },
   ],
 };
-function splitMin() { return splitTotal / 100n; } // V14 dust floor: 1% of the job amount
+function splitMin() { return splitTotal / 100n; } // dust floor: 1% of the job amount
 function openSplitModal(id, amount, kind) {
   splitJobId = id; splitKind = kind;
   splitTotal = BigInt(amount.toString());
@@ -1711,7 +1729,7 @@ function openSplitModal(id, amount, kind) {
   $('smDesc').textContent = kind === 'release'
     ? (splitRole === 'worker'
       ? 'Sign the amount you agree to receive from ' + fmtAmt(amount) + ' MockUSDC. The rest returns to the payer. Send the signature to the payer — they submit it on-chain.'
-      : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to you. V14: you need the worker\'s signature for the exact amount.')
+      : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to you. V15: you need the worker\'s signature for the exact amount and deadline.')
     : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to the payer.';
   $('smMin').textContent = kind === 'release'
     ? 'Minimum to worker: ' + fmtAmt(splitMin()) + ' MockUSDC (1% of the job — smaller splits revert as dust, unless it is the full amount).'
@@ -1725,6 +1743,8 @@ function openSplitModal(id, amount, kind) {
     : 'Vote split';
   $('smAmount').value = '';
   $('smErr').style.display = 'none';
+  const dl = $('smDeadline');
+  if (dl) dl.value = fmtLocalInput(new Date(Date.now() + 24 * 3600 * 1000));
   openModal('splitModal');
 }
 $('smSigCopy').onclick = () => copyText($('smSigOut').value, 'Signature');
@@ -1745,22 +1765,26 @@ $('splitForm').addEventListener('submit', async (e) => {
   btn.disabled = true;
   try {
     if (splitKind === 'release' && splitRole === 'worker') {
-      // V14: the WORKER signs the split; the payer submits it. Nonce is the
+      // V15: the WORKER signs the split (with a deadline); the payer submits it. Nonce is the
       // job's current partialReleaseNonces — a used signature can't replay.
       const nonce = await escrow.partialReleaseNonces(splitJobId);
+      const splitDeadline = deadlineSecs('smDeadline');
       toast('Sign the split in your wallet…');
       const sig = await signer.signTypedData(govDomain(), PARTIAL_RELEASE_TYPES,
-        { jobId: BigInt(splitJobId), amountToWorker: amt, nonce });
+        { jobId: BigInt(splitJobId), amountToWorker: amt, nonce, deadline: splitDeadline });
       $('smSigOut').value = sig;
       $('smSigOutWrap').style.display = 'block';
-      toast('Signed. Send this signature to the payer — they execute the split on-chain.');
+      const dlNote = $('smSigDeadlineNote');
+      if (dlNote) dlNote.textContent = 'Signed deadline: ' + new Date(Number(splitDeadline) * 1000).toLocaleString() + ' (unix ' + splitDeadline.toString() + ') — send this with the signature.';
+      toast('Signed. Send this signature + deadline to the payer — they execute the split on-chain.');
     } else if (splitKind === 'release') {
       const workerSig = $('smWorkerSig').value.trim();
       if (!/^0x[0-9a-fA-F]{130}$/.test(workerSig)) {
         $('smErr').textContent = 'Paste the worker\'s 65-byte signature for this exact amount (0x + 130 hex chars).';
         $('smErr').style.display = ''; return;
       }
-      await sendTx('Splitting payment', () => escrow.releasePartial(splitJobId, amt, workerSig));
+      const execDeadline = deadlineSecs('smDeadline');
+      await sendTx('Splitting payment', () => escrow.releasePartial(splitJobId, amt, execDeadline, workerSig));
       toast('Payment split: worker gets ' + fmtAmt(amt) + ' MockUSDC.');
       closeModals();
       await refreshBalances(); await refreshJobs();
@@ -1856,8 +1880,8 @@ $('wWithdrawTo').onclick = async () => {
   const addr = (typeof CONFIG !== 'undefined' && CONFIG.ESCROW_ADDRESS) || '';
   if (!addr || /^0x0{40}$/i.test(addr)) {
     el.innerHTML = '<span style="color:var(--rose)">Contract not deployed — this UI is not connected.</span>';
-  } else if (/V14CONTRACTADDRESS/.test(addr)) {
-    el.innerHTML = '<span style="color:var(--rose)">V14 contract not deployed yet — escrow address is a placeholder for the deployer to swap in.</span>';
+  } else if (/V16CONTRACTADDRESS/.test(addr)) {
+    el.innerHTML = '<span style="color:var(--rose)">V16 contract not deployed yet — escrow address is a placeholder for the deployer to swap in.</span>';
   } else {
     el.textContent = 'Escrow: ' + addr.slice(0, 10) + '…' + addr.slice(-6);
   }
@@ -1874,8 +1898,8 @@ $('tokLink').href = escLink(CONFIG.TOKEN_ADDRESS);
 /* read-only job list even before connecting */
 (async () => {
   try {
-    if (/V14CONTRACTADDRESS/.test(CONFIG.ESCROW_ADDRESS)) {
-      $('jobList').innerHTML = '<div class="empty">V14 contract not deployed yet — the escrow address is still a placeholder.</div>';
+    if (/V16CONTRACTADDRESS/.test(CONFIG.ESCROW_ADDRESS)) {
+      $('jobList').innerHTML = '<div class="empty">V16 contract not deployed yet — the escrow address is still a placeholder.</div>';
       return;
     }
     provider = new ethers.JsonRpcProvider(CONFIG.RPC_URL);
@@ -1908,7 +1932,7 @@ $('tokLink').href = escLink(CONFIG.TOKEN_ADDRESS);
         <h3>What this is</h3>
         <p>Lamplight Pay is a decentralized escrow protocol. Payment is held by a smart contract, not by us. This is experimental software provided "as is."</p>
         <h3>Disputes</h3>
-        <p>Resolved by 2-of-3 vote of arbiter wallets. If no ruling within 72 hours after the review window closes, funds automatically go to the worker. Rulings are final within the protocol.</p>
+        <p>Resolved by 2-of-3 vote of arbiter wallets. If no ruling within 72 hours after the review window closes, the dispute settles on the arbiter votes cast: no votes means a full refund to the payer, one vote pays that vote, two votes pay the lower, three votes pay the median. Rulings are final within the protocol.</p>
         <h3>Risks</h3>
         <p>Smart contract has not been formally audited. If you lose your wallet keys, we cannot recover funds. You are responsible for compliance with your local laws.</p>
         <h3>Jurisdiction</h3>
