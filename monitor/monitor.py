@@ -429,6 +429,31 @@ def _job_details(escrow, job_id):
         return None
 
 
+def _bond_posted_for_job(escrow, job_id):
+    """Bond for a job, read from the BondPosted event — not from live
+    state. The contract zeroes job.bondAmount when a ruling, a mutual
+    settle, or the 72h valve pays the bond out (_payBond), so a dispute
+    alert raised after the ruling would read bond 0 from getJob and
+    wrongly report 'none (agent-raised dispute)'. The BondPosted event
+    is emitted in the same transaction as DisputeRaised and never
+    changes, so it is the source of truth. Returns 0 when no
+    BondPosted event exists (genuinely agent-raised) or on any error
+    (callers fall back to the live-state value)."""
+    try:
+        logs = escrow.events.BondPosted.get_logs(
+            from_block=0, to_block="latest",
+            argument_filters={"jobId": job_id})
+    except Exception:
+        return 0
+    bond = 0
+    for log in logs:
+        try:
+            bond = int(log["args"]["bondAmount"])
+        except Exception:
+            continue
+    return bond
+
+
 def handle_event(db, escrow, cfg, ev):
     """Handle one decoded contract event. Returns the block number if an
     alert for it was stored but NOT sent (so the scan does not advance
@@ -463,6 +488,10 @@ def handle_event(db, escrow, cfg, ev):
         else:
             amount = job[JOB_AMOUNT]
             bond = job[JOB_BOND]
+            if not bond:
+                # The ruling / settle / valve may already have executed
+                # and zeroed the live bond — read it from the event.
+                bond = _bond_posted_for_job(escrow, job_id)
             disputed_at = job[JOB_DISPUTED_AT]
             ruling_deadline = disputed_at + RULING_PERIOD_SECS if disputed_at else 0
             claim_deadline = job[JOB_DELIVERED_AT] + job[JOB_REVIEW_WINDOW]

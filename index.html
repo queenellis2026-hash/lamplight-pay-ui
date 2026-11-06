@@ -15,6 +15,7 @@
     --line: #3a332c;
     --paper: #f6f1e8;
     --clay: #c4b8ab;
+    --clay-bright: #ddd2c5; /* small text: same warm family, one step lighter */
     --amber: #e8a04a;
     --amber-dim: rgba(232, 160, 74, 0.14);
     --rose: #f0a090;
@@ -109,13 +110,20 @@
   .intro { margin-top: 2rem; }
   @media (min-width: 640px) { .intro { margin-top: 2.5rem; } }
   .intro h1 {
-    font-family: "Fraunces", Georgia, serif; font-weight: 500; line-height: 1.15;
+    font-family: "Fraunces", Georgia, serif; font-weight: 500; line-height: 1.25;
     font-size: 2.25rem; max-width: 32rem; margin: 0;
   }
   @media (min-width: 640px) { .intro h1 { font-size: 3rem; } }
-  .intro p.lead { margin-top: 0.75rem; max-width: 32rem; color: var(--clay); }
+  .intro p.lead { margin-top: 1rem; max-width: 32rem; color: var(--clay); }
   .steps-grid { margin-top: 1.5rem; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; list-style: none; padding: 0; }
   @media (min-width: 768px) { .steps-grid { grid-template-columns: repeat(4, 1fr); } }
+  /* Mobile: the 4 steps collapse behind a toggle so New job / Jobs sit above the fold. */
+  .steps-toggle { display: none; }
+  @media (max-width: 640px) {
+    .steps-toggle { display: inline-flex; margin-top: 1rem; }
+    .intro .steps-grid { display: none; }
+    .intro.steps-open .steps-grid { display: grid; }
+  }
   .steps-grid li { border-radius: 1rem; background: var(--panel); padding: 0.875rem;
                    box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08); }
   @media (min-width: 640px) { .steps-grid li { padding: 1rem; } }
@@ -139,7 +147,9 @@
 
   /* ---- fields ---- */
   .field-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.375rem; }
-  .field-hint { font-size: 0.75rem; color: var(--clay); }
+  .field-hint { font-size: 0.75rem; color: var(--clay-bright); }
+  .byte-count { font-size: 0.75rem; color: var(--clay-bright); margin-top: 0.375rem; }
+  .byte-count.over { color: var(--rose); font-weight: 600; }
   .field-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.375rem; }
   input, textarea, select {
     width: 100%; min-height: 3rem; border-radius: 0.75rem;
@@ -164,7 +174,7 @@
   .choice[aria-pressed="true"] { background: var(--amber); color: var(--ink-on-amber); box-shadow: none; }
   .choice[aria-disabled="true"] { opacity: 0.35; cursor: not-allowed; }
   .err { color: var(--rose); font-size: 0.875rem; margin-top: 0.5rem; }
-  .muted { color: var(--clay); }
+  .muted { color: var(--clay-bright); }
   .addr { font-family: ui-monospace, monospace; font-size: 0.85rem; word-break: break-all; }
 
   /* ---- step indicator (create card) ---- */
@@ -173,7 +183,7 @@
                    background: var(--field); color: var(--paper);
                    box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08); }
   .mini-steps li.done { background: var(--amber); color: var(--ink-on-amber); box-shadow: none; }
-  .mini-steps li .k { display: block; font-size: 0.75rem; font-weight: 500; opacity: 0.8; }
+  .mini-steps li .k { display: block; font-size: 0.75rem; font-weight: 500; color: var(--clay-bright); }
 
   /* ---- job cards ---- */
   .job { border-radius: 0.75rem; background: var(--field); padding: 0.875rem;
@@ -183,7 +193,7 @@
   .job + .job { margin-top: 0.75rem; }
   .job-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
   .job-id { font-size: 0.875rem; color: var(--clay); font-variant-numeric: tabular-nums; }
-  .job-role { font-size: 0.75rem; color: var(--clay); }
+  .job-role { font-size: 0.75rem; color: var(--clay-bright); }
   .pill { border-radius: 999px; padding: 0.25rem 0.625rem; font-size: 0.75rem; font-weight: 500;
           box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08); white-space: nowrap; }
   .pill-open { color: var(--clay); } .pill-accepted { color: var(--paper); }
@@ -203,7 +213,7 @@
   .rail .bar { height: 0.25rem; border-radius: 999px; background: var(--line); margin-bottom: 0.25rem; }
   .rail .bar.on { background: var(--amber); }
   .rail .bar.bad { background: var(--rose); }
-  .rail .lbl { display: block; font-size: 0.75rem; color: var(--clay); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rail .lbl { display: block; font-size: 0.75rem; color: var(--clay-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rail .lbl.now { color: var(--paper); }
   .job-actions { margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .dispute-box { margin-top: 0.75rem; border-radius: 0.75rem; padding: 0.75rem;
@@ -297,7 +307,7 @@
   .feed-event.ev-dispute::before { background: #e05c5c; }
   .feed-event.ev-release::before { background: #5cb85c; }
   .feed-event.ev-create::before { background: var(--amber); }
-  .feed-time { font-size: 0.72rem; color: var(--clay); }
+  .feed-time { font-size: 0.72rem; color: var(--clay-bright); }
   .feed-text { font-size: 0.875rem; margin-top: 0.1rem; }
   .collapsible-head { display: flex; justify-content: space-between; align-items: center; cursor: pointer; padding: 0.5rem 0; }
   .collapsible-head .chev { transition: transform 0.2s; color: var(--clay); }
@@ -341,7 +351,8 @@
     <h1>Order AI, Order Human, Order anything.</h1>
     <p class="tagline" style="font-size:1.1rem; margin-top:0.5rem; color:var(--amber);">Add BOT Chain Testnet to your wallet, get a few cents of BOT (<a href="https://faucet.botchain.ai" target="_blank" rel="noopener" style="color:var(--amber); text-decoration:underline;">claim testnet BOT</a>). Create a job or accept a job. That's it.</p>
     <p class="lead">Describe the job, lock MockUSDC, and release it only after delivery. If you disagree, an AI Judge decides — judgment is final.</p>
-    <ol class="steps-grid">
+    <button type="button" class="btn-ghost steps-toggle" id="stepsToggle" aria-expanded="false" aria-controls="stepsGrid">How it works — 4 steps</button>
+    <ol class="steps-grid" id="stepsGrid">
       <li><span class="step-n">01</span><p class="step-t">Lock</p><p class="step-b">You fund the job. The money sits in escrow.</p></li>
       <li><span class="step-n">02</span><p class="step-t">Accept</p><p class="step-b">The worker takes the job before the deadline.</p></li>
       <li><span class="step-n">03</span><p class="step-t">Deliver</p><p class="step-b">They mark the work done and the review window opens.</p></li>
@@ -365,6 +376,7 @@
           <span style="color:var(--paper)" id="balFree">–</span> free
           <span style="padding:0 0.375rem;">/</span><span style="color:var(--paper)" id="balLocked">–</span> locked
         </p>
+        <button type="button" class="btn-ghost" id="faucetBtn" style="min-height:2.25rem;">🪙 Get test MockUSDC</button>
       </div>
 
       <ol class="mini-steps" aria-label="Creation steps">
@@ -419,6 +431,7 @@
         <div>
           <label class="field-label" for="fDesc">What needs doing</label>
           <textarea id="fDesc" rows="3" maxlength="500" placeholder="Describe the job in complete detail — what needs doing, how you'll know it's done, and any requirements."></textarea>
+          <p class="byte-count" id="descCount" aria-live="polite"></p>
         </div>
         <p class="muted" style="margin:0; font-size:0.875rem;">If you disagree after delivery, either side can raise a dispute. Disputes are decided by AI Judge — judgment is final, no appeal.</p>
         <p class="err" id="createErr" role="alert" style="display:none;"></p>
@@ -486,7 +499,7 @@
           <li><span class="trust-icon">⏱️</span><p class="trust-t">72-hour safety valve</p>
             <p class="trust-b">If no ruling executes within 72 hours of a dispute, anyone can call the refund and the job amount plus the bond return to the payer in full — so funds can never lock forever.</p></li>
           <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back</p>
-            <p class="trust-b">A split needs the <em>worker's signature</em> for the exact amount — the payer can't take funds back unilaterally. Splits below 1% of the job amount revert as dust. The worker can also deliver and dispute atomically in one transaction, so the payer can't front-run the dispute. After the window, only the worker can claim, or a dispute decides.</p></li>
+            <p class="trust-b">A split needs the <em>worker's signature</em> for the exact amount — the payer can't take funds back unilaterally. Splits below 1% of the job amount revert as dust. The worker can also deliver and dispute atomically in one transaction, so the payer can't front-run the dispute. After the window, the payer can no longer dispute or split — the worker can claim the full amount, or the payer can still release it in full.</p></li>
         </ul>
       </section>
 
@@ -570,6 +583,7 @@
     <div style="margin-top:1rem;">
       <label class="field-label" for="dmReason">Reason</label>
       <textarea id="dmReason" rows="3" maxlength="10240" placeholder="Delivered code doesn't compile."></textarea>
+      <p class="byte-count" id="dmCount" aria-live="polite"></p>
     </div>
     <div class="what-does" id="dmWhat"></div>
     <p class="err" id="dmErr" role="alert" style="display:none;"></p>
@@ -656,6 +670,7 @@
   <form id="deliverForm" style="margin-top:1rem;">
     <label class="field-label" for="dvText">What did you deliver?</label>
     <textarea id="dvText" rows="3" maxlength="10240" placeholder="Describe what you delivered — what was done, where to find it, how to check it."></textarea>
+    <p class="byte-count" id="dvCount" aria-live="polite"></p>
     <div style="margin-top:1rem; display:flex; gap:0.5rem; align-items:flex-start;">
       <input type="checkbox" id="dvDispute" style="width:1.25rem; min-height:1.25rem; margin-top:0.25rem;">
       <label for="dvDispute" style="font-size:0.875rem;">Also raise a dispute with this delivery</label>
@@ -663,12 +678,42 @@
     <div id="dvReasonWrap" style="display:none; margin-top:0.75rem;">
       <label class="field-label" for="dvReason">Dispute reason</label>
       <textarea id="dvReason" rows="3" maxlength="10240" placeholder="Why are you disputing at delivery?"></textarea>
+      <p class="byte-count" id="dvReasonCount" aria-live="polite"></p>
       <p class="muted" style="font-size:0.8rem;">Delivering and disputing in one transaction — the payer gets no window to act first. No bond is needed: the bond is only posted by the payer.</p>
     </div>
     <div class="what-does" id="dvWhat"></div>
     <p class="err" id="dvErr" role="alert" style="display:none;"></p>
     <button type="submit" class="btn-amber" id="dvSubmit" style="width:100%; margin-top:1rem;">Submit delivery</button>
   </form>
+</div>
+
+<div class="modal" id="faucetModal" role="dialog" aria-modal="true" aria-labelledby="fcTitle">
+  <div class="modal-head">
+    <h3 class="modal-title" id="fcTitle">Get test MockUSDC</h3>
+    <button type="button" class="icon-btn" id="fcClose" aria-label="Close">✕</button>
+  </div>
+  <p class="modal-desc">Testnet only — MockUSDC has no real value.</p>
+  <div style="margin-top:1rem; font-size:0.875rem; line-height:1.6;">
+    <p>MockUSDC <b>can't be minted from this page</b> — minting is restricted to the token owner (the operator). Two steps to get going:</p>
+    <p style="margin-top:0.75rem;"><b>1. Gas first.</b> Claim free testnet BOT for gas at <a href="https://faucet.botchain.ai" target="_blank" rel="noopener" style="color:var(--amber);">faucet.botchain.ai</a>.</p>
+    <p style="margin-top:0.5rem;"><b>2. Ask the operator for test MockUSDC.</b> Send your wallet address in the Lamplight Pay Telegram group and the operator will mint test funds to you.</p>
+    <p style="margin-top:0.75rem;"><span class="muted">Your wallet:</span> <code id="fcAddr">Connect your wallet to show your address.</code> <button type="button" class="btn-ghost" id="fcCopy" style="min-height:2rem; padding:0 0.75rem; display:none;">Copy address</button></p>
+    <p style="margin-top:0.5rem;"><span class="muted">Token:</span> <code id="fcToken"></code> <button type="button" class="btn-ghost" id="fcCopyTok" style="min-height:2rem; padding:0 0.75rem;">Copy token address</button></p>
+  </div>
+</div>
+
+<div class="modal" id="noWalletModal" role="dialog" aria-modal="true" aria-labelledby="nwTitle">
+  <div class="modal-head">
+    <h3 class="modal-title" id="nwTitle">No wallet found</h3>
+    <button type="button" class="icon-btn" id="nwClose" aria-label="Close">✕</button>
+  </div>
+  <p class="modal-desc">This page needs a crypto wallet to sign transactions.</p>
+  <div style="margin-top:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+    <a class="btn-ghost" href="https://metamask.io/download/" target="_blank" rel="noopener" style="text-decoration:none;">Install MetaMask</a>
+    <a class="btn-ghost" href="https://rabby.io/" target="_blank" rel="noopener" style="text-decoration:none;">Install Rabby</a>
+    <a class="btn-ghost" href="https://www.coinbase.com/wallet/downloads" target="_blank" rel="noopener" style="text-decoration:none;">Install Coinbase Wallet</a>
+  </div>
+  <p class="muted" style="margin-top:1rem; font-size:0.875rem;">On your phone? Open this page inside your wallet app's built-in browser — MetaMask, Rabby, and Coinbase Wallet all have one. WalletConnect support is coming; it needs a project ID first.</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js" integrity="sha384-6Zl0Pc8zjSz8KvmNeXRvUQgY4ryFb+BwDvKCmLYcBME0joAaru491tQgi9B7zsMM" crossorigin="anonymous"></script>
@@ -824,6 +869,41 @@ const escLink = a => `${CONFIG.EXPLORER}/address/${a}`;
 const money = n => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
+/* ---- byte counters: the contract caps on-chain text in BYTES, but a
+   textarea maxlength counts CHARACTERS — multibyte text (emoji, accents)
+   can pass the character cap while busting the byte cap, and the
+   transaction then reverts after the user signs. Count bytes live and
+   block submission over the cap before any wallet popup. */
+const byteLen = s => new TextEncoder().encode(s).length;
+function wireByteCounter(inputId, countId, maxBytes, label) {
+  const input = $(inputId), el = $(countId);
+  if (!input || !el) return;
+  const update = () => {
+    const n = byteLen(input.value);
+    el.textContent = n.toLocaleString('en-US') + ' / ' + maxBytes.toLocaleString('en-US') + ' bytes' + (label ? ' — ' + label : '');
+    el.classList.toggle('over', n > maxBytes);
+  };
+  input.addEventListener('input', update);
+  update();
+}
+function wireDescCounter() {
+  /* Job description -> metadataURI: no contract cap, but the UI used to
+     silently store only the first 200 characters. It now stores the full
+     text (500-character textarea limit); the counter shows both counts
+     so multibyte text's on-chain size is visible. */
+  const input = $('fDesc'), el = $('descCount');
+  if (!input || !el) return;
+  const update = () => {
+    const chars = input.value.length;
+    const bytes = byteLen(input.value);
+    el.textContent = chars + ' / 500 characters · ' + bytes + ' bytes stored on-chain'
+      + (bytes > 500 ? ' — over 500 bytes, costs more gas' : '');
+    el.classList.toggle('over', bytes > 500);
+  };
+  input.addEventListener('input', update);
+  update();
+}
+
 /* ---- bond + review-window tiers (mirror the contract exactly) ---- */
 function bondFor(amountUnits) {
   let bond = (BigInt(amountUnits) * BigInt(CONFIG.BOND_BPS)) / 10000n;
@@ -883,11 +963,14 @@ async function ensureNetwork() {
   return Number(net.chainId) === CONFIG.CHAIN_ID;
 }
 async function switchNetwork() {
+  const p = walletProvider || pickWalletProvider();
+  if (!p) throw new Error('NO_WALLET');
+  walletProvider = p;
   try {
-    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CONFIG.CHAIN_ID_HEX }] });
+    await p.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CONFIG.CHAIN_ID_HEX }] });
   } catch (e) {
     if (e.code === 4902) {
-      await window.ethereum.request({
+      await p.request({
         method: 'wallet_addEthereumChain', params: [{
           chainId: CONFIG.CHAIN_ID_HEX, chainName: CONFIG.CHAIN_NAME,
           rpcUrls: [CONFIG.RPC_URL], blockExplorerUrls: [CONFIG.EXPLORER],
@@ -898,9 +981,43 @@ async function switchNetwork() {
   }
 }
 
+/* ---- wallet discovery (EIP-6963 + multi-provider injection) ----
+   Modern wallets announce themselves via EIP-6963; some setups inject
+   several providers into window.ethereum.providers. Collect every
+   provider we can find and prefer the injected one, so mobile and
+   multi-wallet setups work instead of failing on window.ethereum alone.
+   WalletConnect is NOT wired: it needs a Reown project ID, which we do
+   not have — the no-wallet modal says so. */
+const announcedProviders = new Map(); // rdns -> { info, provider }
+let walletProvider = null;
+function collectInjectedProviders() {
+  const list = [];
+  if (typeof window !== 'undefined' && window.ethereum) {
+    const eth = window.ethereum;
+    if (Array.isArray(eth.providers)) list.push(...eth.providers);
+    else list.push(eth);
+  }
+  for (const d of announcedProviders.values()) list.push(d.provider);
+  return list.filter(p => p && typeof p.request === 'function');
+}
+function pickWalletProvider() {
+  const providers = collectInjectedProviders();
+  if (!providers.length) return null;
+  if (typeof window !== 'undefined' && window.ethereum && providers.includes(window.ethereum)) return window.ethereum;
+  return providers[0];
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('eip6963:announceProvider', (ev) => {
+    const d = ev.detail || {};
+    if (d.info && d.provider) announcedProviders.set(d.info.rdns || d.info.name || String(announcedProviders.size), d);
+  });
+  window.dispatchEvent(new Event('eip6963:requestProvider'));
+}
+
 async function connect() {
-  if (!window.ethereum) throw new Error('NO_WALLET');
-  provider = new ethers.BrowserProvider(window.ethereum);
+  walletProvider = pickWalletProvider();
+  if (!walletProvider) throw new Error('NO_WALLET');
+  provider = new ethers.BrowserProvider(walletProvider);
   await provider.send('eth_requestAccounts', []);
   if (!(await ensureNetwork())) {
     try { await switchNetwork(); }
@@ -916,8 +1033,10 @@ async function connect() {
   $('balLine').style.display = 'block';
   updateCreateUI();
   refreshBalances(); refreshJobs();
-  window.ethereum.on('accountsChanged', () => location.reload());
-  window.ethereum.on('chainChanged', () => location.reload());
+  if (typeof walletProvider.on === 'function') {
+    walletProvider.on('accountsChanged', () => location.reload());
+    walletProvider.on('chainChanged', () => location.reload());
+  }
 }
 
 async function refreshBalances() {
@@ -1361,14 +1480,15 @@ $('createForm').addEventListener('submit', async (ev) => {
     const maxHrs = maxReviewHoursFor(pendingAmount);
     const revHours = Math.max(1, Math.min(maxHrs, parseInt($('fReviewHrs').value || '48', 10)));
     const al = await token.allowance(myAddr, CONFIG.CONTRACT_ADDRESS);
-    btn.textContent = 'Approving…';
-    if (al < pendingAmount)
+    if (al < pendingAmount) {
+      btn.textContent = 'Step 1/2: Approving token allowance…';
       await sendTx('Allowing the payment', () => token.approve(CONFIG.CONTRACT_ADDRESS, pendingAmount));
+    }
     $('msApprove').classList.add('done');
-    btn.textContent = 'Locking funds…';
+    btn.textContent = 'Step 2/2: Confirming escrow lock…';
     await sendTx('Creating job', () => jobMode === 'open'
-      ? escrow.createOpenJob(CONFIG.TOKEN_ADDRESS, pendingAmount, hours * 3600, revHours * 3600, desc.slice(0, 200))
-      : escrow.createJob(worker, CONFIG.TOKEN_ADDRESS, pendingAmount, hours * 3600, revHours * 3600, desc.slice(0, 200)));
+      ? escrow.createOpenJob(CONFIG.TOKEN_ADDRESS, pendingAmount, hours * 3600, revHours * 3600, desc)
+      : escrow.createJob(worker, CONFIG.TOKEN_ADDRESS, pendingAmount, hours * 3600, revHours * 3600, desc));
     const jobId = Number(await escrow.jobCount()) - 1;
     $('msCreate').classList.add('done');
     toast(jobMode === 'open'
@@ -1599,6 +1719,7 @@ $('disputeForm').addEventListener('submit', async (ev) => {
   const j = cachedJobs.find(x => x.id === id);
   const reason = $('dmReason').value.trim();
   if (reason.length < 3) { $('dmErr').textContent = 'Add a short reason.'; $('dmErr').style.display = 'block'; return; }
+  if (byteLen(reason) > 10240) { $('dmErr').textContent = 'Dispute reason is over the 10,240-byte on-chain limit — shorten it before submitting.'; $('dmErr').style.display = 'block'; return; }
   const btn = $('dmSubmit');
   btn.disabled = true; btn.textContent = 'Working…';
   try {
@@ -1816,6 +1937,29 @@ $('dvDispute').addEventListener('change', () => {
     : '<b>What this does:</b> This records your delivery on-chain and starts the review window. The payer can release, split, or dispute during it.';
 });
 $('dvClose').onclick = closeModals;
+
+/* ---- steps toggle (mobile), faucet modal, no-wallet modal, byte counters ---- */
+$('stepsToggle').onclick = () => {
+  const intro = document.querySelector('.intro');
+  const open = intro.classList.toggle('steps-open');
+  $('stepsToggle').setAttribute('aria-expanded', open ? 'true' : 'false');
+  $('stepsToggle').textContent = open ? 'Hide how it works' : 'How it works — 4 steps';
+};
+$('faucetBtn').onclick = () => {
+  const addrEl = $('fcAddr'), copyBtn = $('fcCopy');
+  if (myAddr) { addrEl.textContent = myAddr; copyBtn.style.display = ''; }
+  else { addrEl.textContent = 'Connect your wallet to show your address.'; copyBtn.style.display = 'none'; }
+  $('fcToken').textContent = CONFIG.TOKEN_ADDRESS;
+  openModal('faucetModal');
+};
+$('fcClose').onclick = closeModals;
+$('fcCopy').onclick = () => copyText(myAddr, 'Wallet address');
+$('fcCopyTok').onclick = () => copyText(CONFIG.TOKEN_ADDRESS, 'Token address');
+$('nwClose').onclick = closeModals;
+wireDescCounter();
+wireByteCounter('dvText', 'dvCount', 10240, 'on-chain limit');
+wireByteCounter('dvReason', 'dvReasonCount', 10240, 'on-chain limit');
+wireByteCounter('dmReason', 'dmCount', 10240, 'on-chain limit');
 $('deliverForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const text = $('dvText').value.trim();
@@ -1823,6 +1967,8 @@ $('deliverForm').addEventListener('submit', async (e) => {
   const withDispute = $('dvDispute').checked;
   const reason = $('dvReason').value.trim();
   if (withDispute && reason.length < 3) { $('dvErr').textContent = 'Add a short dispute reason.'; $('dvErr').style.display = 'block'; return; }
+  if (byteLen(text) > 10240) { $('dvErr').textContent = 'Delivery description is over the 10,240-byte on-chain limit — shorten it before submitting.'; $('dvErr').style.display = 'block'; return; }
+  if (withDispute && byteLen(reason) > 10240) { $('dvErr').textContent = 'Dispute reason is over the 10,240-byte on-chain limit — shorten it before submitting.'; $('dvErr').style.display = 'block'; return; }
   const btn = $('dvSubmit');
   btn.disabled = true; btn.textContent = 'Working…';
   try {
@@ -1845,11 +1991,15 @@ async function doConnect() {
   const b = $('connectBtn');
   b.disabled = true; const orig = b.textContent; b.textContent = 'Connecting…';
   try { await connect(); }
-  catch (e) { toast(friendlyError(e)); b.disabled = false; b.textContent = orig; }
+  catch (e) {
+    if (e && e.message === 'NO_WALLET') openModal('noWalletModal');
+    else toast(friendlyError(e));
+    b.disabled = false; b.textContent = orig;
+  }
 }
 $('connectBtn').onclick = doConnect;
 async function addNetwork() {
-  if (!window.ethereum) { toast(friendlyError(new Error('NO_WALLET'))); return; }
+  if (!walletProvider && !pickWalletProvider()) { openModal('noWalletModal'); return; }
   try { await switchNetwork(); toast('BOT Chain added to your wallet.'); }
   catch (e) { toast(friendlyError(e)); }
 }
@@ -1857,7 +2007,10 @@ $('netPill').onclick = addNetwork;
 $('addNetBtn2').onclick = addNetwork;
 $('switchBtn').onclick = async () => {
   try { await switchNetwork(); location.reload(); }
-  catch (e) { toast(friendlyError(e)); }
+  catch (e) {
+    if (e && e.message === 'NO_WALLET') openModal('noWalletModal');
+    else toast(friendlyError(e));
+  }
 };
 
 /* copy buttons */

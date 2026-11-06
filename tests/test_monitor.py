@@ -92,6 +92,29 @@ def test_dispute_alert_fires(env, tmp_path):
     db.close()
 
 
+def test_dispute_alert_bond_after_ruling(env, tmp_path):
+    """Regression: the deploy run's dispute alert read 'Bond posted:
+    none (agent-raised dispute)' for a payer dispute with a $50 bond.
+    The ruling had executed before the monitor's poll, and _payBond
+    zeroes job.bondAmount — so getJob returned bond 0. The alert must
+    read the bond from the BondPosted event instead."""
+    cfg = _cfg(env, tmp_path)
+    db = _db(cfg)
+    job_id, _ = _dispute_as_payer(env)
+    r = env.send_as(env.operator, lambda: env.escrow.functions.executeRuling(
+        job_id, 600_000_000))  # 60% to worker
+    assert r["status"] == 1, "executeRuling failed"
+    # getJob now shows the bond zeroed — the bug's precondition.
+    assert env.escrow.functions.getJob(job_id).call()[13] == 0
+    _scan(env, cfg, db)
+    rows = _alerts(db, "dispute")
+    assert len(rows) == 1, f"expected 1 dispute alert, got {len(rows)}"
+    msg = rows[0][2]
+    assert "Bond posted: $50.00" in msg
+    assert "none (agent-raised dispute)" not in msg
+    db.close()
+
+
 def test_dispute_alert_no_spam_on_rescan(env, tmp_path):
     """Scanning the same blocks twice records the dispute alert once."""
     cfg = _cfg(env, tmp_path)
