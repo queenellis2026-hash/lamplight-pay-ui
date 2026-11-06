@@ -75,6 +75,15 @@
   }
   .btn-rose:hover:not(:disabled) { box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.16); }
   .btn-rose:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn {
+    display: inline-flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.5rem;
+    border: none; border-radius: 999px; padding: 0 1.125rem;
+    background: var(--field); color: var(--paper);
+    font-size: 0.875rem; font-weight: 500; cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08);
+  }
+  .btn:hover:not(:disabled) { box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.16); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
   /* ---- network pill ---- */
   .net-pill {
@@ -87,6 +96,14 @@
               animation: lamp 2.6s ease-in-out infinite; }
   @keyframes lamp { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
   .tabular { font-variant-numeric: tabular-nums; }
+
+  /* ---- safety banner: always visible ---- */
+  .safety-banner {
+    margin-top: 1rem; border-radius: var(--radius); background: var(--panel);
+    padding: 0.875rem 1rem; font-size: 0.875rem;
+    box-shadow: 0 0 0 1px rgba(232, 160, 74, 0.4);
+  }
+  .safety-banner b { color: var(--amber); }
 
   /* ---- intro ---- */
   .intro { margin-top: 2rem; }
@@ -124,18 +141,17 @@
   .field-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.375rem; }
   .field-hint { font-size: 0.75rem; color: var(--clay); }
   .field-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.375rem; }
-  input, textarea {
+  input, textarea, select {
     width: 100%; min-height: 3rem; border-radius: 0.75rem;
     border: 1px solid var(--line); background: var(--field); color: var(--paper);
     padding: 0 0.75rem; font-size: 1rem; font-family: inherit; outline: none;
   }
   input::placeholder, textarea::placeholder { color: var(--clay); }
-  input:focus-visible, textarea:focus-visible { border-color: var(--amber); }
+  input:focus-visible, textarea:focus-visible, select:focus-visible { border-color: var(--amber); }
   textarea { padding: 0.75rem; min-height: 6rem; resize: vertical; }
   .form-stack > * + * { margin-top: 1rem; }
   .form-stack p.field-hint { margin: 0 0 0.375rem; }
   .choice-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
-  /* horizontally scrollable preset chips (deadline / review) — no wrapping on mobile */
   .chip-scroll { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 0.25rem; scrollbar-width: thin; }
   .chip-scroll .choice { flex-shrink: 0; }
   .choice {
@@ -146,6 +162,7 @@
     box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08);
   }
   .choice[aria-pressed="true"] { background: var(--amber); color: var(--ink-on-amber); box-shadow: none; }
+  .choice[aria-disabled="true"] { opacity: 0.35; cursor: not-allowed; }
   .err { color: var(--rose); font-size: 0.875rem; margin-top: 0.5rem; }
   .muted { color: var(--clay); }
   .addr { font-family: ui-monospace, monospace; font-size: 0.85rem; word-break: break-all; }
@@ -193,6 +210,10 @@
                  background: rgba(240, 160, 144, 0.07);
                  box-shadow: 0 0 0 1px rgba(240, 160, 144, 0.25); font-size: 0.875rem; }
   .dispute-box .row { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .ruling-box { margin-top: 0.75rem; border-radius: 0.75rem; padding: 0.75rem;
+                 background: var(--amber-dim);
+                 box-shadow: 0 0 0 1px rgba(232, 160, 74, 0.25); font-size: 0.875rem; }
+  .ruling-box .row { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
   /* ---- protections ---- */
   .trust { margin-top: 2rem; }
@@ -231,12 +252,27 @@
   .modal-overlay { position: fixed; inset: 0; z-index: 40; background: rgba(16, 14, 12, 0.8); display: none; }
   .modal-overlay.open { display: block; }
   .modal { position: fixed; z-index: 50; left: 1rem; right: 1rem; top: 50%; transform: translateY(-50%);
-           max-width: 28rem; margin: 0 auto; border-radius: 1rem; background: var(--panel);
-           padding: 1.25rem; box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.16); display: none; }
+           max-width: 30rem; margin: 0 auto; border-radius: 1rem; background: var(--panel);
+           padding: 1.25rem; box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.16); display: none;
+           max-height: calc(100svh - 2rem); overflow-y: auto; }
   .modal.open { display: block; }
   .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
   .modal-title { font-family: "Fraunces", Georgia, serif; font-size: 1.5rem; font-weight: 500; margin: 0; }
   .modal-desc { font-size: 0.875rem; color: var(--clay); margin-top: 0.5rem; }
+  .what-does { margin-top: 0.75rem; border-radius: 0.75rem; padding: 0.75rem;
+               background: var(--field); font-size: 0.875rem;
+               box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08); }
+  .what-does b { color: var(--amber); font-weight: 600; }
+  .bond-box { margin-top: 0.75rem; border-radius: 0.75rem; padding: 0.75rem;
+              background: rgba(240, 160, 144, 0.07);
+              box-shadow: 0 0 0 1px rgba(240, 160, 144, 0.25); font-size: 0.875rem; }
+  .bond-box .bond-amt { font-family: "Fraunces", Georgia, serif; font-size: 1.5rem; font-weight: 500; }
+  .sig-out { font-family: ui-monospace, monospace; font-size: 0.75rem; word-break: break-all;
+             background: var(--field); border-radius: 0.75rem; padding: 0.75rem;
+             box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08); margin-top: 0.5rem; }
+  .sig-row { display: flex; gap: 0.5rem; align-items: flex-start; margin-top: 0.5rem; }
+  .sig-row textarea { flex: 1; min-height: 4.5rem; font-family: ui-monospace, monospace; font-size: 0.75rem; }
+  .gov-sub { font-size: 1rem; font-weight: 600; margin: 1.25rem 0 0.25rem; }
 
   /* ---- net warn ---- */
   .netwarn { border-radius: var(--radius); background: var(--panel); padding: 1rem;
@@ -246,28 +282,6 @@
            text-align: center; font-size: 0.875rem; color: var(--clay);
            box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08); }
   .count { font-size: 0.875rem; color: var(--clay); font-variant-numeric: tabular-nums; }
-  details.arbiter { border-radius: 0.75rem; background: var(--field); padding: 0.5rem 0.75rem;
-                    box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08); }
-  details.arbiter summary { display: flex; min-height: 2.75rem; align-items: center; justify-content: space-between;
-                            gap: 0.75rem; font-size: 0.875rem; cursor: pointer; list-style: none; }
-  details.arbiter summary::-webkit-details-marker { display: none; }
-
-  /* ---- governance (atomic EIP-712 signing) ---- */
-  .gov-tabs { display: flex; gap: 0.5rem; margin: 0.75rem 0 1rem; }
-  .gov-panel { display: none; }
-  .gov-panel.active { display: block; }
-  .gov-steps { font-size: 0.875rem; color: var(--clay); margin: 0 0 1rem; padding-left: 1.25rem; }
-  .gov-steps li { margin-bottom: 0.25rem; }
-  .sig-out { font-family: ui-monospace, monospace; font-size: 0.75rem; word-break: break-all;
-             background: var(--field); border-radius: 0.75rem; padding: 0.75rem;
-             box-shadow: 0 0 0 1px rgba(246, 241, 232, 0.08); margin-top: 0.5rem; }
-  .sig-row { display: flex; gap: 0.5rem; align-items: flex-start; margin-top: 0.5rem; }
-  .sig-row textarea { flex: 1; min-height: 4.5rem; font-family: ui-monospace, monospace; font-size: 0.75rem; }
-  .gov-grid { display: grid; gap: 0.75rem; margin-top: 0.75rem; }
-  .gov-sub { font-size: 1rem; font-weight: 600; margin: 1.25rem 0 0.25rem; }
-  .arb-list { font-family: ui-monospace, monospace; font-size: 0.8rem; color: var(--clay); margin: 0.5rem 0 0; }
-  .nonce-hint { font-size: 0.8rem; color: var(--clay); margin-top: 0.25rem; }
-
 
   /* ---- Activity / History section ---- */
   .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin: 1rem 0; }
@@ -275,22 +289,10 @@
   .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--amber); font-variant-numeric: tabular-nums; }
   .stat-label { font-size: 0.75rem; color: var(--clay); margin-top: 0.25rem; text-transform: uppercase; letter-spacing: 0.05em; }
   .hist-tabs { display: flex; gap: 0.5rem; margin: 1rem 0 0.75rem; }
-  .hist-item { display: flex; gap: 0.75rem; padding: 0.75rem 0; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 0.15s; border-radius: 0.5rem; }
-  .hist-item:hover { background: rgba(232, 160, 74, 0.06); }
-  .hist-item:last-child { border-bottom: none; }
-  .hist-dot { width: 2.5rem; height: 2.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; background: var(--field); border: 1px solid var(--line); }
-  .hist-body { flex: 1; min-width: 0; }
-  .hist-title { font-weight: 600; font-size: 0.925rem; }
-  .hist-sub { font-size: 0.8rem; color: var(--clay); margin-top: 0.15rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .hist-meta { font-size: 0.75rem; color: var(--clay); margin-top: 0.25rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
-  .hist-detail { display: none; margin-top: 0.5rem; padding: 0.75rem; background: var(--field); border-radius: 0.625rem; font-size: 0.825rem; }
-  .hist-item.expanded .hist-detail { display: block; }
-  .hist-detail .drow { display: flex; justify-content: space-between; gap: 1rem; padding: 0.2rem 0; }
-  .hist-detail .dlabel { color: var(--clay); }
   .feed-timeline { position: relative; padding-left: 1.75rem; }
   .feed-timeline::before { content: ''; position: absolute; left: 0.55rem; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--line); border-radius: 1px; }
   .feed-event { position: relative; padding: 0.5rem 0; animation: feedIn 0.4s ease-out; }
-  @keyframes feedIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes feedIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
   .feed-event::before { content: ''; position: absolute; left: -1.45rem; top: 0.85rem; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--amber); border: 2px solid var(--panel); }
   .feed-event.ev-dispute::before { background: #e05c5c; }
   .feed-event.ev-release::before { background: #5cb85c; }
@@ -331,10 +333,14 @@
     </div>
   </header>
 
+  <div class="safety-banner" role="note">
+    <b>🔒 Stay safe:</b> Always verify the URL. We will never ask for your seed phrase.
+  </div>
+
   <section class="intro">
     <h1>Order AI, Order Human, Order anything.</h1>
     <p class="tagline" style="font-size:1.1rem; margin-top:0.5rem; color:var(--amber);">Add BOT Chain Testnet to your wallet, get a few cents of BOT (<a href="https://faucet.botchain.ai" target="_blank" rel="noopener" style="color:var(--amber); text-decoration:underline;">claim testnet BOT</a>). Create a job or accept a job. That's it.</p>
-    <p class="lead">Describe the job, lock MockUSDC, and release it only after delivery. If the deadline passes with nothing delivered, the funds come back.</p>
+    <p class="lead">Describe the job, lock MockUSDC, and release it only after delivery. If you disagree, an AI Judge decides — judgment is final.</p>
     <ol class="steps-grid">
       <li><span class="step-n">01</span><p class="step-t">Lock</p><p class="step-b">You fund the job. The money sits in escrow.</p></li>
       <li><span class="step-n">02</span><p class="step-t">Accept</p><p class="step-b">The worker takes the job before the deadline.</p></li>
@@ -380,7 +386,7 @@
         </div>
         <div>
           <label class="field-label" for="fAmount">Payment</label>
-          <p class="field-hint">MockUSDC</p>
+          <p class="field-hint">MockUSDC — the only token on this testnet.</p>
           <input id="fAmount" inputmode="decimal" class="tabular" value="25.00">
           <div class="choice-row" id="amtChoices" aria-label="Payment presets">
             <button type="button" class="choice" data-v="25" aria-pressed="false">25</button>
@@ -401,7 +407,7 @@
         </div>
         <div>
           <label class="field-label" for="fReviewHrs">Review window</label>
-          <p class="field-hint">Hours to dispute after delivery.</p>
+          <p class="field-hint" id="revHint">Hours to dispute after delivery. Max for this amount: 72h.</p>
           <input id="fReviewHrs" inputmode="numeric" class="tabular" value="48">
           <div class="choice-row chip-scroll" id="revChoices" aria-label="Review window presets">
             <button type="button" class="choice" data-v="24" aria-pressed="false">24h</button>
@@ -414,7 +420,7 @@
           <label class="field-label" for="fDesc">What needs doing</label>
           <textarea id="fDesc" rows="3" maxlength="500" placeholder="Describe the job in complete detail — what needs doing, how you'll know it's done, and any requirements."></textarea>
         </div>
-        <p class="muted" style="margin:0; font-size:0.875rem;">Disputes are resolved by 2-of-3 vote of the Lamplight arbiter team within 72 hours.</p>
+        <p class="muted" style="margin:0; font-size:0.875rem;">If you disagree after delivery, either side can raise a dispute. Disputes are decided by AI Judge — judgment is final, no appeal.</p>
         <p class="err" id="createErr" role="alert" style="display:none;"></p>
         <button type="submit" class="btn-amber" id="createSubmit" style="width:100%;">Connect wallet</button>
       </form>
@@ -422,9 +428,12 @@
 
     <div class="jobs-col">
       <section class="card" aria-label="Jobs" style="margin-top:0;">
-        <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:0.75rem;">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:0.75rem; flex-wrap:wrap;">
           <h2>Jobs</h2>
-          <p class="count" id="jobCount">–</p>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <p class="count" id="jobCount">–</p>
+            <button type="button" class="btn-rose" id="fileDisputeBtn" style="min-height:2.25rem; padding:0 0.875rem;">File a dispute</button>
+          </div>
         </div>
         <div class="choice-row" id="filterRow" role="group" aria-label="Which jobs" style="margin-top:0.75rem;">
           <button type="button" class="choice" data-f="all" aria-pressed="true">All <span class="tabular" data-c="all"></span></button>
@@ -432,9 +441,11 @@
           <button type="button" class="choice" data-f="paying" aria-pressed="false">Paying <span class="tabular" data-c="paying"></span></button>
           <button type="button" class="choice" data-f="working" aria-pressed="false">Working <span class="tabular" data-c="working"></span></button>
           <button type="button" class="choice" data-f="open" aria-pressed="false">Open <span class="tabular" data-c="open"></span></button>
+          <button type="button" class="choice" data-f="disputed" aria-pressed="false">Disputed <span class="tabular" data-c="disputed"></span></button>
         </div>
         <div id="jobList" style="margin-top:1rem;"><p class="muted">Loading…</p></div>
       </section>
+
       <section class="card" aria-label="Activity history" style="margin-top:1rem;">
         <div class="collapsible open" id="activityCollapsible">
           <div class="collapsible-head" onclick="document.getElementById('activityCollapsible').classList.toggle('open')">
@@ -461,153 +472,33 @@
           </div>
         </div>
       </section>
-  <section class="trust" aria-label="How disputes work">
-    <h2>How disputes work</h2>
-    <p class="sub">Plain language, no fine print. The full rules live in the contract itself.</p>
-    <ul class="trust-grid">
-      <li><span class="trust-icon">🗝️</span><p class="trust-t">The arbiter team</p>
-        <p class="trust-b">Three wallets hold dispute keys. A ruling needs 2 of 3 to agree on the exact amount — one arbiter alone can't move anything.</p></li>
-      <li><span class="trust-icon">🔄</span><p class="trust-t">Atomic rotation</p>
-        <p class="trust-b">Arbiters change only when 2 of the current 3 sign off-chain and both signatures land in a single transaction. No proposal window, so nobody can front-run a change.</p></li>
-      <li><span class="trust-icon">🚫</span><p class="trust-t">Conflict rule</p>
-        <p class="trust-b">The contract blocks an arbiter from being the payer or worker on a job. An arbiter can't rule on their own job — it's enforced in code, not policy.</p></li>
-      <li><span class="trust-icon">⏱️</span><p class="trust-t">72-hour window</p>
-        <p class="trust-b">After delivery and the review window, disputes get 72 hours. If the arbiters can't agree on an exact amount in time, the timeout settles on their votes: no votes means a full refund to the payer, one vote pays that vote, two votes pay the lower, three votes pay the median — so funds can never lock forever.</p></li>
-      <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back</p>
-        <p class="trust-b">A split now needs the <em>worker's signature</em> for the exact amount — the payer can't take funds back unilaterally. Splits below 1% of the job amount revert as dust. The worker can also deliver and dispute atomically in one transaction, so the payer can't front-run the dispute. After the window, only the worker can claim, or a dispute decides.</p></li>
-    </ul>
-  </section>
+
+      <section class="trust" aria-label="How disputes work">
+        <h2>How disputes work</h2>
+        <p class="sub">Plain language, no fine print. The full rules live in the contract itself.</p>
+        <ul class="trust-grid">
+          <li><span class="trust-icon">⚖️</span><p class="trust-t">Decided by AI Judge</p>
+            <p class="trust-b">Any dispute goes to an AI Judge, shown the evidence only. Judgment is final — there is no appeal.</p></li>
+          <li><span class="trust-icon">💰</span><p class="trust-t">Disputing costs a bond</p>
+            <p class="trust-b">The payer posts a bond of 20% of the job (min $1, max $50) with the dispute. The bond follows the ruling: if the judge awards the worker half or more, the bond goes to the worker; otherwise it returns to the payer.</p></li>
+          <li><span class="trust-icon">🤝</span><p class="trust-t">Settle it yourselves</p>
+            <p class="trust-b">While a job is disputed, the payer and worker can settle at any amount they both agree to — one party signs, the other submits. The bond returns to the payer and no judge is needed.</p></li>
+          <li><span class="trust-icon">⏱️</span><p class="trust-t">72-hour safety valve</p>
+            <p class="trust-b">If no ruling executes within 72 hours of a dispute, anyone can call the refund and the job amount plus the bond return to the payer in full — so funds can never lock forever.</p></li>
+          <li><span class="trust-icon">🛡️</span><p class="trust-t">Payer can't claw back</p>
+            <p class="trust-b">A split needs the <em>worker's signature</em> for the exact amount — the payer can't take funds back unilaterally. Splits below 1% of the job amount revert as dust. The worker can also deliver and dispute atomically in one transaction, so the payer can't front-run the dispute. After the window, only the worker can claim, or a dispute decides.</p></li>
+        </ul>
+      </section>
 
       <section class="card" aria-label="Withdraw credits" style="margin-top:1rem;">
         <h2>Withdraw credits</h2>
-        <p class="muted" style="font-size:0.875rem;">If a payout failed, your funds are held as withdrawable credit. Enter the token address to check and withdraw.</p>
-        <div style="display:flex; gap:0.5rem; margin-top:0.75rem; flex-wrap:wrap;">
-          <input id="wToken" placeholder="Token address (0x…)" style="flex:1; min-width:200px;" />
-          <button type="button" id="wCheck" class="btn">Check</button>
-        </div>
-        <p id="wBalance" class="muted" style="margin-top:0.5rem; display:none;"></p>
+        <p class="muted" style="font-size:0.875rem;">If a payout failed, your funds are held as withdrawable MockUSDC credit. Withdrawals always go to your own wallet.</p>
+        <p id="wBalance" class="muted" style="margin-top:0.5rem;">Connect your wallet to check your credit.</p>
         <div style="display:flex; gap:0.5rem; margin-top:0.5rem; flex-wrap:wrap;">
-          <button type="button" id="wWithdraw" class="btn" style="display:none;">Withdraw to my wallet</button>
-          <input id="wTo" placeholder="Withdraw to address (optional)" style="flex:1; min-width:200px; display:none;" />
-          <button type="button" id="wWithdrawTo" class="btn" style="display:none;">Withdraw to address</button>
+          <button type="button" id="wCheck" class="btn">Check my credit</button>
+          <button type="button" id="wWithdraw" class="btn-amber" style="display:none;">Withdraw to my wallet</button>
         </div>
         <p id="wErr" class="err" style="display:none;"></p>
-      </section>
-
-      <section class="card" aria-label="Governance" id="govSection" style="margin-top:1rem; display:none;">
-        <h2>Governance</h2>
-        <p class="muted" style="font-size:0.875rem;">Arbiter-only. Rotation and token changes are atomic: two current arbiters sign off-chain, anyone submits both signatures in one transaction. No front-running possible.</p>
-        <p class="arb-list" id="govArbList">Current arbiters: –</p>
-        <div class="gov-tabs choice-row" role="group" aria-label="Governance action">
-          <button type="button" class="choice" data-gov="rotate" aria-pressed="true">Rotate arbiters</button>
-          <button type="button" class="choice" data-gov="token" aria-pressed="false">Token whitelist</button>
-        </div>
-
-        <!-- ROTATE -->
-        <div class="gov-panel active" id="govRotate">
-          <ol class="gov-steps">
-            <li>Enter the new 3-address arbiter set, a fresh nonce, and an expiry deadline (default: 1 hour from now).</li>
-            <li>Click <b>Sign rotation</b> — your wallet signs an EIP-712 message (no gas).</li>
-            <li>Share the signature <em>and</em> the exact parameters with a second arbiter.</li>
-            <li>Once you have both signatures, paste them below and <b>Execute</b>.</li>
-            <li class="warn">⚠️ Signatures expire at the deadline above. Treat a complete pair as a live transaction — do not leave in chat.</li>
-          </ol>
-          <div class="gov-grid">
-            <div><label class="field-label" for="rotA1">New arbiter 1</label><input id="rotA1" placeholder="0x…" /></div>
-            <div><label class="field-label" for="rotA2">New arbiter 2</label><input id="rotA2" placeholder="0x…" /></div>
-            <div><label class="field-label" for="rotA3">New arbiter 3</label><input id="rotA3" placeholder="0x…" /></div>
-            <div>
-              <label class="field-label" for="rotNonce">Nonce</label>
-              <div style="display:flex; gap:0.5rem;">
-                <input id="rotNonce" inputmode="numeric" placeholder="unique number" style="flex:1;" />
-                <button type="button" class="btn" id="rotNonceGen">Random</button>
-              </div>
-              <p class="nonce-hint">Each nonce works once. Never reuse a nonce.</p>
-            </div>
-            <div>
-              <label class="field-label" for="rotDeadline">Expiry deadline</label>
-              <input id="rotDeadline" type="datetime-local" />
-              <p class="nonce-hint">Signatures expire at this time (default: 1 hour from now).</p>
-            </div>
-          </div>
-          <button type="button" class="btn-amber" id="rotSignBtn" style="width:100%; margin-top:0.75rem;">Sign rotation</button>
-          <p class="err" id="rotErr" style="display:none;"></p>
-          <div id="rotSigWrap" style="display:none;">
-            <p class="gov-sub">Your signature</p>
-            <div class="sig-row">
-              <textarea id="rotSigOut" readonly></textarea>
-              <button type="button" class="btn" id="rotSigCopy">Copy</button>
-            </div>
-            <p class="muted" style="font-size:0.8rem;">Send this signature <em>plus</em> the three addresses, nonce, and deadline above to the second arbiter.</p>
-          </div>
-          <p class="gov-sub">Execute (needs 2 signatures)</p>
-          <div class="gov-grid">
-            <div><label class="field-label" for="rotExA1">Arbiter 1</label><input id="rotExA1" placeholder="0x…" /></div>
-            <div><label class="field-label" for="rotExA2">Arbiter 2</label><input id="rotExA2" placeholder="0x…" /></div>
-            <div><label class="field-label" for="rotExA3">Arbiter 3</label><input id="rotExA3" placeholder="0x…" /></div>
-            <div><label class="field-label" for="rotExNonce">Nonce</label><input id="rotExNonce" inputmode="numeric" placeholder="same nonce both signed" /></div>
-            <div><label class="field-label" for="rotExDeadline">Expiry deadline</label><input id="rotExDeadline" type="datetime-local" /></div>
-            <div><label class="field-label" for="rotExSig1">Signature 1</label><textarea id="rotExSig1" rows="2" placeholder="0x…"></textarea></div>
-            <div><label class="field-label" for="rotExSig2">Signature 2</label><textarea id="rotExSig2" rows="2" placeholder="0x…"></textarea></div>
-          </div>
-          <button type="button" class="btn-rose" id="rotExecBtn" style="width:100%; margin-top:0.75rem;">Execute rotation</button>
-          <p class="err" id="rotExErr" style="display:none;"></p>
-        </div>
-
-        <!-- TOKEN -->
-        <div class="gov-panel" id="govToken">
-          <ol class="gov-steps">
-            <li>Enter the token address, allow/block, a fresh nonce, and an expiry deadline (default: 1 hour from now).</li>
-            <li>Click <b>Sign token change</b> — your wallet signs an EIP-712 message (no gas).</li>
-            <li>Share the signature <em>and</em> the exact parameters with a second arbiter.</li>
-            <li>Once you have both signatures, paste them below and <b>Execute</b>.</li>
-            <li class="warn">⚠️ Signatures expire at the deadline above. Treat a complete pair as a live transaction — do not leave in chat.</li>
-          </ol>
-          <div class="gov-grid">
-            <div><label class="field-label" for="tokAddr">Token address</label><input id="tokAddr" placeholder="0x…" /></div>
-            <div class="choice-row" role="group" aria-label="Allow or block">
-              <button type="button" class="choice" id="tokAllowY" aria-pressed="true">Allow</button>
-              <button type="button" class="choice" id="tokAllowN" aria-pressed="false">Block</button>
-            </div>
-            <div>
-              <label class="field-label" for="tokNonce">Nonce</label>
-              <div style="display:flex; gap:0.5rem;">
-                <input id="tokNonce" inputmode="numeric" placeholder="unique number" style="flex:1;" />
-                <button type="button" class="btn" id="tokNonceGen">Random</button>
-              </div>
-              <p class="nonce-hint">Each nonce works once. Never reuse a nonce.</p>
-            </div>
-            <div>
-              <label class="field-label" for="tokDeadline">Expiry deadline</label>
-              <input id="tokDeadline" type="datetime-local" />
-              <p class="nonce-hint">Signatures expire at this time (default: 1 hour from now).</p>
-            </div>
-          </div>
-          <button type="button" class="btn-amber" id="tokSignBtn" style="width:100%; margin-top:0.75rem;">Sign token change</button>
-          <p class="err" id="tokErr" style="display:none;"></p>
-          <div id="tokSigWrap" style="display:none;">
-            <p class="gov-sub">Your signature</p>
-            <div class="sig-row">
-              <textarea id="tokSigOut" readonly></textarea>
-              <button type="button" class="btn" id="tokSigCopy">Copy</button>
-            </div>
-            <p class="muted" style="font-size:0.8rem;">Send this signature <em>plus</em> the token address, allow/block, nonce, and deadline above to the second arbiter.</p>
-          </div>
-          <p class="gov-sub">Execute (needs 2 signatures)</p>
-          <div class="gov-grid">
-            <div><label class="field-label" for="tokExAddr">Token address</label><input id="tokExAddr" placeholder="0x…" /></div>
-            <div class="choice-row" role="group" aria-label="Allow or block">
-              <button type="button" class="choice" id="tokExAllowY" aria-pressed="true">Allow</button>
-              <button type="button" class="choice" id="tokExAllowN" aria-pressed="false">Block</button>
-            </div>
-            <div><label class="field-label" for="tokExNonce">Nonce</label><input id="tokExNonce" inputmode="numeric" placeholder="same nonce both signed" /></div>
-            <div><label class="field-label" for="tokExDeadline">Expiry deadline</label><input id="tokExDeadline" type="datetime-local" /></div>
-            <div><label class="field-label" for="tokExSig1">Signature 1</label><textarea id="tokExSig1" rows="2" placeholder="0x…"></textarea></div>
-            <div><label class="field-label" for="tokExSig2">Signature 2</label><textarea id="tokExSig2" rows="2" placeholder="0x…"></textarea></div>
-          </div>
-          <button type="button" class="btn-rose" id="tokExecBtn" style="width:100%; margin-top:0.75rem;">Execute token change</button>
-          <p class="err" id="tokExErr" style="display:none;"></p>
-        </div>
       </section>
     </div>
   </div>
@@ -617,7 +508,7 @@
       <div>
         <h2>Contracts</h2>
         <p class="muted" style="margin:0.25rem 0 0; font-size:0.875rem;" id="contractsNote">BOT Chain testnet · chain 968.</p>
-      <p class="muted" style="margin:0.25rem 0 0; font-size:0.8rem;" id="deployStatus"></p>
+        <p class="muted" style="margin:0.25rem 0 0; font-size:0.8rem;" id="deployStatus"></p>
       </div>
       <button type="button" class="btn-ghost" id="addNetBtn2">Add network</button>
     </div>
@@ -637,21 +528,50 @@
       Built on <a href="https://www.botchain.ai/" target="_blank" rel="noopener">BOT Chain</a>
       · <a id="explorerLink" href="https://scan.bohr.life" target="_blank" rel="noopener">Explorer</a>
     </p>
+    <p class="muted" style="font-size:0.8rem; margin-top:1.5rem; max-width:600px;">
+      <strong>Dispute disclosure:</strong> Disputes are decided by AI Judge. Judgment is final — no appeal.
+      If no ruling executes within 72 hours of a dispute, the job amount and the bond refund to the payer in full.
+      Experimental software — use at your own risk.
+    </p>
   </footer>
 </div>
 
 <div id="toast" role="status"></div>
 
 <div class="modal-overlay" id="modalOverlay"></div>
+
+<div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+  <div class="modal-head">
+    <h3 class="modal-title" id="cmTitle">Confirm</h3>
+    <button type="button" class="icon-btn" id="cmClose" aria-label="Close">✕</button>
+  </div>
+  <div class="what-does" id="cmWhat" style="margin-top:1rem;"></div>
+  <p class="err" id="cmErr" role="alert" style="display:none;"></p>
+  <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+    <button type="button" class="btn-ghost" id="cmCancel" style="flex:1;">Back</button>
+    <button type="button" class="btn-amber" id="cmConfirm" style="flex:1;">Confirm</button>
+  </div>
+</div>
+
 <div class="modal" id="disputeModal" role="dialog" aria-modal="true" aria-labelledby="dmTitle">
   <div class="modal-head">
-    <h3 class="modal-title" id="dmTitle">Raise a dispute</h3>
+    <h3 class="modal-title" id="dmTitle">File a dispute</h3>
     <button type="button" class="icon-btn" id="dmClose" aria-label="Close">✕</button>
   </div>
-  <p class="modal-desc">The reason is written on-chain so the arbiters can read it. Our team rules within 72 hours. If the arbiters don't agree in time, the dispute settles on the median of votes cast — no votes at all means a full refund to the payer.</p>
+  <p class="modal-desc">Disputes are decided by AI Judge. Judgment is final — no appeal. The reason is written on-chain so the judge can read it.</p>
   <form id="disputeForm" style="margin-top:1rem;">
-    <label class="field-label" for="dmReason">Reason</label>
-    <textarea id="dmReason" rows="3" maxlength="280" placeholder="Delivered code doesn't compile."></textarea>
+    <label class="field-label" for="dmJob">Job</label>
+    <select id="dmJob"></select>
+    <div class="bond-box" id="dmBondBox" style="display:none;">
+      <div><span class="muted">Dispute bond — pulled from your wallet with the dispute</span></div>
+      <div class="bond-amt" id="dmBondAmt">–</div>
+      <div id="dmBondExplain"></div>
+    </div>
+    <div style="margin-top:1rem;">
+      <label class="field-label" for="dmReason">Reason</label>
+      <textarea id="dmReason" rows="3" maxlength="10240" placeholder="Delivered code doesn't compile."></textarea>
+    </div>
+    <div class="what-does" id="dmWhat"></div>
     <p class="err" id="dmErr" role="alert" style="display:none;"></p>
     <button type="submit" class="btn-rose" id="dmSubmit" style="width:100%; margin-top:1rem;">Raise dispute</button>
   </form>
@@ -685,12 +605,73 @@
         <button type="button" class="btn" id="smSigCopy">Copy</button>
       </div>
     </div>
+    <div class="what-does" id="smWhat"></div>
     <p class="err" id="smErr" role="alert" style="display:none;"></p>
     <button type="submit" class="btn-amber" id="smSubmit" style="width:100%; margin-top:1rem;">Send split</button>
   </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+<div class="modal" id="settleModal" role="dialog" aria-modal="true" aria-labelledby="stTitle">
+  <div class="modal-head">
+    <h3 class="modal-title" id="stTitle">Settle by agreement</h3>
+    <button type="button" class="icon-btn" id="stClose" aria-label="Close">✕</button>
+  </div>
+  <p class="modal-desc">While a job is disputed, the payer and worker can settle it themselves at any amount they both agree to — no judge needed. The bond returns to the payer in full.</p>
+  <form id="settleForm" style="margin-top:1rem;">
+    <label class="field-label" for="stAmount">Amount to worker (MockUSDC)</label>
+    <input id="stAmount" inputmode="decimal" class="tabular" placeholder="0.00">
+    <p class="muted" id="stRange" style="font-size:0.8rem; margin-top:0.25rem;"></p>
+    <div style="margin-top:0.75rem;">
+      <label class="field-label" for="stDeadline">Your approval expires</label>
+      <input id="stDeadline" type="datetime-local" />
+      <p class="muted" style="font-size:0.8rem;">Default: 24 hours from now.</p>
+    </div>
+    <div class="what-does" id="stWhat"></div>
+    <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+      <button type="button" class="btn-ghost" id="stSignBtn" style="flex:1;">Sign my approval</button>
+      <button type="submit" class="btn-amber" id="stSubmit" style="flex:1;">Submit settlement</button>
+    </div>
+    <div id="stSigOutWrap" style="display:none; margin-top:0.75rem;">
+      <p class="gov-sub">Your signature — send it to the other party</p>
+      <p class="muted" id="stSigDeadlineNote" style="font-size:0.8rem;"></p>
+      <div class="sig-row">
+        <textarea id="stSigOut" readonly></textarea>
+        <button type="button" class="btn" id="stSigCopy">Copy</button>
+      </div>
+    </div>
+    <div style="margin-top:1rem;">
+      <label class="field-label" for="stCounterSig">Other party's signature (0x…)</label>
+      <textarea id="stCounterSig" rows="2" placeholder="Paste the signature the other party signed for this exact amount and deadline"></textarea>
+    </div>
+    <p class="err" id="stErr" role="alert" style="display:none;"></p>
+  </form>
+</div>
+
+<div class="modal" id="deliverModal" role="dialog" aria-modal="true" aria-labelledby="dvTitle">
+  <div class="modal-head">
+    <h3 class="modal-title" id="dvTitle">Mark delivered</h3>
+    <button type="button" class="icon-btn" id="dvClose" aria-label="Close">✕</button>
+  </div>
+  <p class="modal-desc">Your delivery description is stored on-chain so the judge can read it if there's ever a dispute.</p>
+  <form id="deliverForm" style="margin-top:1rem;">
+    <label class="field-label" for="dvText">What did you deliver?</label>
+    <textarea id="dvText" rows="3" maxlength="10240" placeholder="Describe what you delivered — what was done, where to find it, how to check it."></textarea>
+    <div style="margin-top:1rem; display:flex; gap:0.5rem; align-items:flex-start;">
+      <input type="checkbox" id="dvDispute" style="width:1.25rem; min-height:1.25rem; margin-top:0.25rem;">
+      <label for="dvDispute" style="font-size:0.875rem;">Also raise a dispute with this delivery</label>
+    </div>
+    <div id="dvReasonWrap" style="display:none; margin-top:0.75rem;">
+      <label class="field-label" for="dvReason">Dispute reason</label>
+      <textarea id="dvReason" rows="3" maxlength="10240" placeholder="Why are you disputing at delivery?"></textarea>
+      <p class="muted" style="font-size:0.8rem;">Delivering and disputing in one transaction — the payer gets no window to act first. No bond is needed: the bond is only posted by the payer.</p>
+    </div>
+    <div class="what-does" id="dvWhat"></div>
+    <p class="err" id="dvErr" role="alert" style="display:none;"></p>
+    <button type="submit" class="btn-amber" id="dvSubmit" style="width:100%; margin-top:1rem;">Submit delivery</button>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js" integrity="sha384-6Zl0Pc8zjSz8KvmNeXRvUQgY4ryFb+BwDvKCmLYcBME0joAaru491tQgi9B7zsMM" crossorigin="anonymous"></script>
 <script>
 /* ============ NETWORK CONFIG — testnet ACTIVE ============ */
 const CONFIG = {
@@ -700,10 +681,25 @@ const CONFIG = {
   RPC_URL: 'https://rpc.bohr.life',
   EXPLORER: 'https://scan.bohr.life',
   NATIVE_SYMBOL: 'tBOT',
-  ESCROW_ADDRESS: '0xe715bed727391e8FBCA2CfeD58070881AAb126B0', // AgentEscrowV16, deployed Nov 5 2026
-  TOKEN_ADDRESS: '0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372',
+  // AgentEscrowV3 deployed to BOT Chain Testnet (chain 968).
+  CONTRACT_ADDRESS: '0x5f1078cD6Dd394478664cc86A3F45e5C7d50cF3c',
+  TOKEN_ADDRESS: '0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372', // MockUSDC, 6 decimals
+  TOKEN_SYMBOL: 'MockUSDC',
+  TOKEN_DECIMALS: 6,
   ZERO: '0x0000000000000000000000000000000000000000',
+  RULING_PERIOD_SECS: 72 * 3600, // 72h from dispute to refund valve
+  BOND_BPS: 2000, // 20%
+  BOND_MIN: 1000000n, // $1, 6-decimal units
+  BOND_MAX: 50000000n, // $50, 6-decimal units
+  TIER1_MAX_AMOUNT: 10000000n, // $10
+  TIER2_MAX_AMOUNT: 100000000n, // $100
+  TIER1_MAX_WINDOW_HRS: 24,
+  TIER2_MAX_WINDOW_HRS: 72,
+  TIER3_MAX_WINDOW_HRS: 168, // 7 days
+  MIN_REVIEW_WINDOW_HRS: 1,
 };
+const DEPLOYED = !/^0x0{40}$/i.test(CONFIG.CONTRACT_ADDRESS);
+
 const ESCROW_ABI = [
   'function createJob(address agent, address token, uint256 amount, uint256 deadlineSeconds, uint256 reviewWindowSeconds, string metadataURI) returns (uint256)',
   'function createOpenJob(address token, uint256 amount, uint256 deadlineSeconds, uint256 reviewWindowSeconds, string metadataURI) returns (uint256)',
@@ -712,52 +708,42 @@ const ESCROW_ABI = [
   'function submitDeliveryAndDispute(uint256 jobId, bytes32 deliveryHash, string deliveryText, string disputeReason)',
   'function release(uint256 jobId)',
   'function releasePartial(uint256 jobId, uint256 amountToWorker, uint256 deadline, bytes workerSig)',
-  'function partialReleaseNonces(uint256 jobId) view returns (uint256)',
-  'function refundAfterDeadline(uint256 jobId)',
-  'function cancelUnaccepted(uint256 jobId)',
-  'function jobCount() view returns (uint256)',
-  'function getJob(uint256 jobId) view returns (tuple(address payer, address agent, address token, uint256 amount, uint256 deadline, uint256 reviewWindow, uint8 state, bytes32 deliveryHash, string metadataURI, uint256 deliveredAt, uint256 deadlineSeconds, string deliveryText, string disputeReason))',
-  'function withdraw(address token)',
-  'function withdrawTo(address token, address to)',
-  'function pendingCredit(address token, address account) view returns (uint256)',
+  'function cancel(uint256 jobId)',
   'function raiseDispute(uint256 jobId, string reason)',
-  'function approveDisputeResolution(uint256 jobId, uint256 amountToWorker)',
-  'function settleDisputeTimeout(uint256 jobId)',
-  'function arbiters(uint256) view returns (address)',
-  'function executeRotation(address[3] newArbiters, uint256 nonce, uint256 deadline, bytes sig1, bytes sig2)',
-  'function executeTokenChange(address token, bool allowed, uint256 nonce, uint256 deadline, bytes sig1, bytes sig2)',
-  'function disputeVotes(uint256 jobId, uint256 version, address arbiter) view returns (uint256)',
-  'function hasVotedDispute(uint256 jobId, uint256 version, address arbiter) view returns (bool)',
-  
-  
-  
-  
-  
-  'function arbiterSetVersion() view returns (uint256)',
+  'function settleByAgreement(uint256 jobId, uint256 amountToWorker, uint256 deadline, bytes counterpartySig)',
+  'function refundDisputeTimeout(uint256 jobId)',
+  'function withdraw(address token)',
+  'function jobCount() view returns (uint256)',
+  'function getJob(uint256 jobId) view returns (tuple(address payer, address agent, address token, uint256 amount, uint256 deadline, uint256 reviewWindow, uint8 state, bytes32 deliveryHash, string metadataURI, uint256 deliveredAt, uint256 deadlineSeconds, string deliveryText, string disputeReason, uint256 bondAmount, uint256 disputedAt))',
+  'function pendingCredit(address token, address account) view returns (uint256)',
   'function allowedTokens(address token) view returns (bool)',
-  'function DISPUTE_PERIOD() view returns (uint256)',
-  'function jobWindows(uint256 jobId) view returns (uint256 deliveredAt, uint256 agentClaimAt, uint256 disputeTimeoutAt, uint256 credit)',
+  'function operator() view returns (address)',
+  'function settlementInvariant(address token) view returns (uint256 balance, uint256 unsettledSum, uint256 bondedSum, uint256 pendingCreditsSum, bool holds)',
+  'function BOND_BPS() view returns (uint256)',
+  'function BOND_MIN() view returns (uint256)',
+  'function BOND_MAX() view returns (uint256)',
+  'function RULING_PERIOD() view returns (uint256)',
+  'function TIER1_MAX_AMOUNT() view returns (uint256)',
+  'function TIER2_MAX_AMOUNT() view returns (uint256)',
+  'function TIER1_MAX_WINDOW() view returns (uint256)',
+  'function TIER2_MAX_WINDOW() view returns (uint256)',
+  'function TIER3_MAX_WINDOW() view returns (uint256)',
+  'function MIN_REVIEW_WINDOW() view returns (uint256)',
   'event JobCreated(uint256 indexed jobId, address indexed payer, address indexed agent, address token, uint256 amount, uint256 deadline, string metadataURI)',
   'event JobAccepted(uint256 indexed jobId, address indexed agent)',
   'event DeliverySubmitted(uint256 indexed jobId, bytes32 deliveryHash, string deliveryText)',
   'event JobReleased(uint256 indexed jobId, address indexed agent, uint256 amount)',
   'event JobRefunded(uint256 indexed jobId, address indexed payer, uint256 amount)',
   'event JobCancelled(uint256 indexed jobId)',
-  'event JobCancelledUnaccepted(uint256 indexed jobId)',
   'event DisputeRaised(uint256 indexed jobId, address indexed by)',
-  'event DisputeResolved(uint256 indexed jobId, uint256 amountToWorker, uint256 amountToPayer)',
-  'event DisputeTimedOut(uint256 indexed jobId, address indexed agent, uint256 amount)',
+  'event BondPosted(uint256 indexed jobId, address indexed payer, uint256 bondAmount)',
+  'event RulingExecuted(uint256 indexed jobId, uint256 amountToWorker, uint256 amountToPayer, address bondTo)',
+  'event SettledByAgreement(uint256 indexed jobId, uint256 amountToWorker, uint256 amountToPayer)',
+  'event DisputeTimeoutRefunded(uint256 indexed jobId, address indexed payer, uint256 amount, uint256 bond)',
   'event JobPartiallyReleased(uint256 indexed jobId, address indexed agent, uint256 amountToAgent, uint256 amountToPayer)',
-  'event DisputeRaised(uint256 indexed jobId, address indexed by)',
-  'event DisputeResolved(uint256 indexed jobId, uint256 amountToWorker, uint256 amountToPayer)',
-  'event DisputeVote(uint256 indexed jobId, address indexed arbiter, uint256 amountToWorker)',
-  'event JobCreated(uint256 indexed jobId, address indexed payer, address indexed agent, address token, uint256 amount, uint256 deadline, string metadataURI)',
-  'event JobAccepted(uint256 indexed jobId, address indexed agent)',
-  'event DeliverySubmitted(uint256 indexed jobId, bytes32 deliveryHash, string deliveryText)',
-  'event JobReleased(uint256 indexed jobId, address indexed agent, uint256 amount)',
-  'event JobRefunded(uint256 indexed jobId, address indexed payer, uint256 amount)',
-  'event JobCancelled(uint256 indexed jobId)',
-  'event DisputeTimedOut(uint256 indexed jobId, address indexed agent, uint256 amount)',
+  'event Credited(address indexed token, address indexed account, uint256 amount)',
+  'event Withdrawn(address indexed token, address indexed account, address to, uint256 amount)',
+  'event TokenWhitelisted(address indexed token, bool allowed)',
 ];
 const TOKEN_ABI = [
   'function approve(address spender, uint256 amount) returns (bool)',
@@ -766,25 +752,103 @@ const TOKEN_ABI = [
   'function decimals() view returns (uint8)',
   'function symbol() view returns (string)',
 ];
-const STATES = ['Open','Accepted','Delivered','Under Review','Paid','Refunded','Cancelled'];
-const PILL = ['pill-open','pill-accepted','pill-delivered','pill-disputed','pill-paid','pill-refunded','pill-cancelled'];
-const PILL_LABEL = {0:'Open',1:'In progress',2:'Delivered',3:'Under Review',4:'Released',5:'Refunded',6:'Cancelled'};
+const STATES = ['Open', 'Accepted', 'Delivered', 'Disputed', 'Released', 'Refunded', 'Cancelled'];
+const PILL = ['pill-open', 'pill-accepted', 'pill-delivered', 'pill-disputed', 'pill-paid', 'pill-refunded', 'pill-cancelled'];
+const PILL_LABEL = { 0: 'Open', 1: 'In progress', 2: 'Delivered', 3: 'Disputed', 4: 'Released', 5: 'Refunded', 6: 'Cancelled' };
+
+/* ---- Plain-language error messages (from tests/error_taxonomy.json) ----
+   Every on-chain revert string maps to exactly one message shown to users.
+   Never show a raw revert string or a hex error. */
+const ERROR_TAXONOMY = {
+  "amount zero": "The job amount has to be more than zero.",
+  "bad sig": "The signature couldn't be verified. Please sign again.",
+  "bad sig length": "The signature is malformed. Please sign again.",
+  "bad v": "The signature is malformed. Please sign again.",
+  "bond shortfall": "The dispute bond didn't arrive in full. Check your balance and approval, then try again.",
+  "cannot cancel in this state": "This job can't be cancelled anymore \u2014 it's already past the point where cancelling is possible.",
+  "cannot release zero to worker": "A split has to pay the worker something \u2014 zero isn't a split.",
+  "counterparty sig required": "The other party hasn't approved this settlement. Their signature is required.",
+  "deadline not passed": "The work deadline hasn't passed yet, so the job can't be refunded this way.",
+  "deadline passed": "The work deadline has already passed.",
+  "deadline zero": "The work deadline has to be more than zero.",
+  "delivery text too long": "The delivery description is too long \u2014 keep it under 10 KB.",
+  "dispute reason too long": "The dispute reason is too long \u2014 keep it under 10 KB.",
+  "dust partial rejected": "That split is too small \u2014 partial payments must be at least 1% of the job, or the full amount.",
+  "empty delivery hash": "The delivery is missing its proof. Attach the delivery and try again.",
+  "exceeds job amount": "That amount is more than the job is worth.",
+  "funding failed": "The token transfer failed, so the job wasn't funded. Check the token and your approval, then try again.",
+  "job does not exist": "That job doesn't exist. Check the job number and try again.",
+  "malleable sig": "The signature isn't in the required format. Please sign again.",
+  "no agent assigned": "This job doesn't have a worker yet, so there's nothing to deliver.",
+  "no funds received": "No funds arrived with this job. Check the token and your approval, then try again.",
+  "not a party": "Only the payer or the worker on this job can do that.",
+  "not accepted": "The worker hasn't accepted this job yet.",
+  "not agent": "Only the worker assigned to this job can do that.",
+  "not created": "This job isn't waiting to be accepted anymore.",
+  "not delivered": "There's no delivery to act on yet \u2014 the worker hasn't delivered.",
+  "not disputed": "This job isn't in dispute, so that action doesn't apply.",
+  "not operator": "Only the escrow operator can do that.",
+  "not payer": "Only the person who posted this job can do that.",
+  "nothing to withdraw": "There's nothing to withdraw for this token.",
+  "only after delivery": "Disputes can only be raised after the worker delivers.",
+  "payer cannot be agent": "You can't hire yourself for your own job.",
+  "reentrant": "The transaction was blocked while another escrow action was in progress. Try again.",
+  "review window ended": "The review window has closed \u2014 it's too late to raise a dispute.",
+  "review window not ended": "The review window is still open. The worker can claim payment once it ends.",
+  "review window passed": "The review window has closed \u2014 splits are no longer possible. The worker can claim, or a dispute can settle it.",
+  "review window too long": "The review window is too long for a job this size. Shorten it and try again.",
+  "review window too short": "The review window is too short \u2014 it must be at least 1 hour.",
+  "ruling period not ended": "The 72-hour ruling period is still running. The refund opens once it ends.",
+  "settlement signature expired": "The other party's approval for this settlement has expired. Ask them to sign again.",
+  "split signature expired": "The worker's approval for this split has expired. Ask the worker to sign again.",
+  "token not allowed": "That token isn't accepted. Only approved USD stablecoins can fund jobs.",
+  "withdrawal failed": "The withdrawal didn't go through. Your funds are still safe as a credit \u2014 try again later.",
+  "worker sig required": "The worker hasn't approved this split. Their signature is required.",
+  "zero address": "A zero address was supplied where a real address is required.",
+  "zero address agent": "You need to name a worker for this job \u2014 the worker address can't be empty.",
+  "zero address operator": "The escrow was deployed without an operator address. This is a setup problem \u2014 contact support."
+};
 
 let provider, signer, escrow, token, myAddr = null, tokenDecimals = 6, filter = 'all', jobMode = 'open';
 let cachedJobs = [];
 let roProvider = null; /* read-only RPC provider, survives wallet connect */
+let rulingOutcomes = {}; /* jobId -> {kind:'ruling'|'settle'|'valve', toWorker, toPayer, bond} */
 
 const $ = id => document.getElementById(id);
-function toast(msg, ms=4500) {
+function toast(msg, ms = 4500) {
   const t = $('toast'); t.textContent = msg; t.style.display = 'block';
   clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', ms);
 }
-const short = a => a ? a.slice(0,6) + '…' + a.slice(-4) : '';
+const short = a => a ? a.slice(0, 6) + '…' + a.slice(-4) : '';
 const escLink = a => `${CONFIG.EXPLORER}/address/${a}`;
-const money = n => Number(n).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const money = n => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
-/* User-friendly errors: never show raw revert reasons or stack traces. */
+/* ---- bond + review-window tiers (mirror the contract exactly) ---- */
+function bondFor(amountUnits) {
+  let bond = (BigInt(amountUnits) * BigInt(CONFIG.BOND_BPS)) / 10000n;
+  if (bond < CONFIG.BOND_MIN) bond = CONFIG.BOND_MIN;
+  if (bond > CONFIG.BOND_MAX) bond = CONFIG.BOND_MAX;
+  return bond;
+}
+function maxReviewHoursFor(amountUnits) {
+  const amt = BigInt(amountUnits);
+  if (amt < CONFIG.TIER1_MAX_AMOUNT) return CONFIG.TIER1_MAX_WINDOW_HRS;
+  if (amt <= CONFIG.TIER2_MAX_AMOUNT) return CONFIG.TIER2_MAX_WINDOW_HRS;
+  return CONFIG.TIER3_MAX_WINDOW_HRS;
+}
+
+/* ---- user-friendly errors: never show raw revert reasons or hex ---- */
+function extractRevert(e) {
+  if (!e) return null;
+  if (e.reason && typeof e.reason === 'string' && e.reason) return e.reason;
+  const m = String(e.shortMessage || e.message || '');
+  let mm = m.match(/reverted with reason string "([^"]+)"/);
+  if (mm) return mm[1];
+  mm = m.match(/execution reverted: ([^"\n]+)/);
+  if (mm) return mm[1].trim();
+  return m;
+}
 function friendlyError(e) {
   if (!e) return 'Something went wrong. Please try again.';
   if (e.message === 'NO_WALLET') return 'No wallet found. Install MetaMask to continue.';
@@ -793,47 +857,13 @@ function friendlyError(e) {
   if (code === 4001 || code === 'ACTION_REJECTED' || /user (denied|rejected)|cancelled/i.test(msg))
     return 'Transaction cancelled in your wallet.';
   if (/insufficient funds/i.test(msg)) return 'Not enough gas to complete this transaction.';
-  // Contract revert reasons -> user-friendly messages
-  const REVERTS = {
-    'amount zero': 'Payment amount must be greater than zero.',
-    'nothing to withdraw': 'Nothing to withdraw.',
-    'exceeds job amount': 'Split amount cannot exceed the job payment.',
-    'dust partial rejected': 'Split too small — partial releases below 1% of the job amount are rejected.',
-    'worker sig required': 'This split needs the worker\'s signature for the exact amount.',
-    'signature expired': 'The governance signatures have expired — sign again with a later deadline.',
-    'nonce used': 'That nonce was already used — pick a fresh one.',
-    'deadline passed': 'The deadline has passed for this action.',
-    'deadline not passed': 'The deadline has not passed yet.',
-    'deadline zero': 'Deadline must be greater than zero.',
-    'empty delivery hash': 'Delivery cannot be empty.',
-    'not agent': 'Only the assigned worker can do this.',
-    'not created': 'This job is no longer open.',
-    'only before accept': 'This job has already been accepted.',
-    'not accepted': 'The worker has not accepted this job yet.',
-    'not delivered': 'The worker has not delivered yet.',
-    'only after delivery': 'This action is only available after delivery.',
-    'not disputed': 'This job is not under dispute.',
-    'not payer': 'Only the payer can do this.',
-    'not arbiter': 'Only a Lamplight arbiter can do this (2 of 3 must agree).',
-    'token not allowed': 'This token is not approved for Lamplight Pay.',
-    'job does not exist': 'This job does not exist.',
-    'no agent assigned': 'No worker has accepted this job yet.',
-    'already voted': 'You have already voted on this proposal.',
-    'no proposal': 'No arbiter change proposal is active.',
-    'duplicate arbiter': 'Arbiter addresses must be distinct.',
-    'not a party': 'Only the payer or worker can do this.',
-    'no funds received': 'No funds were received. Check your token balance.',
-    'review window too long': 'Review window is too long.',
-    'funding failed': 'Funding failed. Check token approval.',
-    'withdrawal failed': 'Withdrawal failed. Please try again.',
-    'zero address': 'Invalid address.',
-    'zero address agent': 'Worker address cannot be empty.',
-    'payer cannot be agent': 'You cannot hire yourself.',
-    'arbiter cannot be agent': 'An arbiter cannot be the worker on a job.',
-    'reentrant': 'Transaction blocked for safety. Please try again.',
-  };
-  for (const [key, friendly] of Object.entries(REVERTS)) {
-    if (msg.toLowerCase().includes(key.toLowerCase())) return friendly;
+  const rev = extractRevert(e);
+  if (rev) {
+    if (ERROR_TAXONOMY[rev]) return ERROR_TAXONOMY[rev];
+    const lower = rev.toLowerCase();
+    for (const [key, friendly] of Object.entries(ERROR_TAXONOMY)) {
+      if (lower.includes(key.toLowerCase())) return friendly;
+    }
   }
   if (/execution reverted|revert/i.test(msg)) return 'The contract rejected this action — it may no longer be valid for this job.';
   if (/network|timeout|fetch failed|rpc|server error/i.test(msg)) return 'Network hiccup — please try again.';
@@ -857,11 +887,13 @@ async function switchNetwork() {
     await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CONFIG.CHAIN_ID_HEX }] });
   } catch (e) {
     if (e.code === 4902) {
-      await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{
-        chainId: CONFIG.CHAIN_ID_HEX, chainName: CONFIG.CHAIN_NAME,
-        rpcUrls: [CONFIG.RPC_URL], blockExplorerUrls: [CONFIG.EXPLORER],
-        nativeCurrency: { name: 'BOT', symbol: CONFIG.NATIVE_SYMBOL, decimals: 18 },
-      }]});
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain', params: [{
+          chainId: CONFIG.CHAIN_ID_HEX, chainName: CONFIG.CHAIN_NAME,
+          rpcUrls: [CONFIG.RPC_URL], blockExplorerUrls: [CONFIG.EXPLORER],
+          nativeCurrency: { name: 'BOT', symbol: CONFIG.NATIVE_SYMBOL, decimals: 18 },
+        }]
+      });
     } else throw e;
   }
 }
@@ -877,8 +909,7 @@ async function connect() {
   $('netWarn').style.display = 'none';
   signer = await provider.getSigner();
   myAddr = await signer.getAddress();
-  escrow = new ethers.Contract(CONFIG.ESCROW_ADDRESS, ESCROW_ABI, signer);
-  await loadArbiters(); updateGovVisibility();
+  if (DEPLOYED) escrow = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, ESCROW_ABI, signer);
   token = new ethers.Contract(CONFIG.TOKEN_ADDRESS, TOKEN_ABI, signer);
   tokenDecimals = Number(await token.decimals());
   $('connectBtn').innerHTML = '<span>' + short(myAddr) + '</span> <span class="tabular muted" id="hdrBal"></span>';
@@ -897,13 +928,21 @@ async function refreshBalances() {
     const tok = Number(ethers.formatUnits(t, tokenDecimals));
     $('balFree').textContent = tok.toFixed(2) + ' ' + sym;
     const hb = $('hdrBal'); if (hb) hb.textContent = tok.toFixed(2);
-    /* locked = sum of my open/accepted/delivered jobs as payer */
+    /* locked = sum of my open/accepted/delivered/disputed jobs as payer */
     let locked = 0;
     for (const j of cachedJobs) {
-      if (j.payer.toLowerCase() === myAddr.toLowerCase() && [0,1,2,3].includes(Number(j.state)))
+      if (j.payer.toLowerCase() === myAddr.toLowerCase() && [0, 1, 2, 3].includes(Number(j.state)))
         locked += Number(ethers.formatUnits(j.amount, tokenDecimals));
     }
     $('balLocked').textContent = locked.toFixed(2) + ' ' + sym;
+    /* pending credit */
+    if (DEPLOYED) {
+      const credit = await escrow.pendingCredit(CONFIG.TOKEN_ADDRESS, myAddr);
+      $('wBalance').textContent = credit > 0n
+        ? 'Pending credit: ' + fmtAmt(credit) + ' MockUSDC'
+        : 'No pending credit for MockUSDC.';
+      $('wWithdraw').style.display = credit > 0n ? 'inline-flex' : 'none';
+    }
   } catch (e) { /* rpc hiccup */ }
 }
 
@@ -912,12 +951,15 @@ function fmtDate(ts) { return new Date(Number(ts) * 1000).toLocaleString(); }
 function fmtLeft(ms) {
   if (ms <= 0) return 'expired';
   const h = Math.floor(ms / 3600000), m = Math.floor(ms % 3600000 / 60000);
-  if (h >= 48) return Math.floor(h/24) + 'd ' + (h%24) + 'h';
+  if (h >= 48) return Math.floor(h / 24) + 'd ' + (h % 24) + 'h';
   if (h > 0) return h + 'h ' + m + 'm';
   return m + 'm';
 }
 
-/* ---- job loading ---- */
+/* ---- job loading ----
+   The claim deadline (deliveredAt + reviewWindow) is read from getJob —
+   it is NOT in any event (Phase 4). The ruling deadline is
+   disputedAt + 72h, also from getJob. */
 async function loadJobs() {
   const count = Number(await escrow.jobCount());
   const jobs = [];
@@ -933,43 +975,54 @@ async function loadJobs() {
       deadlineSeconds: r.deadlineSeconds ?? r[10],
       deliveryText: r.deliveryText ?? r[11],
       disputeReason: r.disputeReason ?? r[12],
+      bondAmount: r.bondAmount ?? r[13],
+      disputedAt: r.disputedAt ?? r[14],
     };
     if (!j.payer) continue;
     jobs.push({ id: i, ...j });
   }
-  /* enrich disputed jobs */
+  /* enrich disputed jobs with the raiser (from the DisputeRaised event) */
   for (const j of jobs) {
     if (Number(j.state) !== 3) continue;
-    try {
-      const w = await escrow.jobWindows(j.id);
-      j.disputeTimeoutAt = w.disputeTimeoutAt ?? w[2];
-    } catch (e) {}
     try {
       const evts = await escrow.queryFilter(escrow.filters.DisputeRaised(j.id));
       if (evts.length) j.disputeBy = evts[evts.length - 1].args.by;
     } catch (e) {}
   }
+  /* enrich resolved disputes with the ruling outcome (one range query per
+     event type, mapped by job id — not one query per job) */
+  rulingOutcomes = {};
+  try {
+    const latest = await roProvider.getBlockNumber();
+    const from = Math.max(0, latest - 100000);
+    for (const [name, kind] of [['RulingExecuted', 'ruling'], ['SettledByAgreement', 'settle'], ['DisputeTimeoutRefunded', 'valve']]) {
+      const evts = await escrow.queryFilter(escrow.filters[name](), from, latest);
+      for (const e of evts) {
+        const a = e.args;
+        rulingOutcomes[Number(a.jobId)] = {
+          kind,
+          toWorker: a.amountToWorker != null ? a.amountToWorker : 0n,
+          toPayer: a.amountToPayer != null ? a.amountToPayer : 0n,
+          bond: a.bond != null ? a.bond : 0n,
+        };
+      }
+    }
+  } catch (e) { /* ruling details are best-effort; state still shows */ }
   cachedJobs = jobs;
   return jobs;
 }
 
-const disputeNotes = {}; // jobId -> reason, session-local only
 const nowMs = () => Date.now();
-
 function sameAddr(a, b) { return a && b && a.toLowerCase() === b.toLowerCase(); }
 function isPayer(j) { return myAddr && sameAddr(j.payer, myAddr); }
 function isAgent(j) { return myAddr && sameAddr(j.agent, myAddr); }
 function isOpenJob(j) { return Number(j.state) === 0 && (!j.agent || /^0x0{40}$/i.test(j.agent.trim())); }
-function isArbiter(j) {
-  // Accepts a job object or an address string; returns whether the current user is an arbiter
-  if (typeof j === 'string') return isArbiterAddr(j);
-  if (!myAddr) return false;
-  return isArbiterAddr(myAddr);
-}
 function involved(j) {
   if (!myAddr) return false;
-  return sameAddr(j.payer, myAddr) || sameAddr(j.agent, myAddr) || isArbiter(myAddr);
+  return sameAddr(j.payer, myAddr) || sameAddr(j.agent, myAddr);
 }
+function claimDeadline(j) { return Number(j.deliveredAt) + Number(j.reviewWindow); }
+function rulingDeadline(j) { return Number(j.disputedAt) + CONFIG.RULING_PERIOD_SECS; }
 
 function jobCaption(j) {
   const now = Math.floor(nowMs() / 1000);
@@ -981,142 +1034,85 @@ function jobCaption(j) {
   const dlMs = (Number(j.deadline) - now) * 1000;
   if (st === 1)
     return dlMs <= 0 ? 'Deadline passed. The payer can take the funds back.'
-                     : 'Deadline ' + fmtLeft(dlMs);
+      : 'Deadline ' + fmtLeft(dlMs);
   if (st === 2) {
-    const rwMs = (Number(j.deliveredAt) + Number(j.reviewWindow) - now) * 1000;
+    const rwMs = (claimDeadline(j) - now) * 1000;
     if (rwMs > 0) return 'Review window ' + fmtLeft(rwMs);
     const who = isAgent(j) ? 'You can claim the payment now.'
-              : isPayer(j) ? 'You can still release the payment.'
-              : 'Review window closed. The worker can now claim.';
+      : isPayer(j) ? 'You can still release the payment.'
+        : 'Review window closed. The worker can now claim.';
     return 'Review window closed. ' + who;
   }
   if (st === 3) {
-    if (j.disputeTimeoutAt == null) return 'Dispute raised. Loading deadline…';
-    const rMs = (Number(j.disputeTimeoutAt) - now) * 1000;
-    return rMs > 0 ? 'Arbiter has ' + fmtLeft(rMs)
-                   : 'Arbiter window closed. Either party can settle on the median of votes cast.';
+    const rMs = (rulingDeadline(j) - now) * 1000;
+    return rMs > 0 ? 'Disputed — ruling due by ' + fmtDate(rulingDeadline(j)) + ' (' + fmtLeft(rMs) + ' left)'
+      : 'Ruling period ended — anyone can claim the refund now.';
   }
-  if (st === 4) {
-    return j.disputeBy ? 'Dispute resolved. See details above.' : 'Paid to the worker.';
-  }
-  return 'Returned to the payer.';
+  if (st === 4) return 'Paid to the worker.';
+  if (st === 5) return 'Returned to the payer.';
+  return 'Cancelled.';
 }
 
 function railHtml(st) {
   const idx = st === 0 ? 0 : st === 1 ? 1 : (st === 2 || st === 3) ? 2 : 3;
-  const labels = ['Funded','Accepted','Delivered', st === 5 ? 'Refunded' : st === 3 ? 'Dispute' : 'Settled'];
+  const labels = ['Funded', 'Accepted', 'Delivered', st === 5 ? 'Refunded' : st === 3 ? 'Disputed' : 'Settled'];
   return '<ol class="rail" aria-label="Job progress">' + labels.map((l, i) => {
     const on = i <= idx && !(st === 3 && i === 3);
     const bad = (st === 3 && i === 2) || (st === 5 && i === 3);
     return '<li><div class="bar' + (on ? (bad ? ' bad' : ' on') : '') + '"></div>' +
-           '<span class="lbl' + (i === idx ? ' now' : '') + '">' + l + '</span></li>';
+      '<span class="lbl' + (i === idx ? ' now' : '') + '">' + l + '</span></li>';
   }).join('') + '</ol>';
 }
 
 function disputeBannerHtml(j) {
   if (Number(j.state) !== 3) return '';
   const now = Math.floor(nowMs() / 1000);
-  const tmo = j.disputeTimeoutAt != null ? Number(j.disputeTimeoutAt) : null;
-  const passed = tmo !== null && now > tmo;
+  const tmo = rulingDeadline(j);
+  const passed = now > tmo;
   let raiser = 'unknown';
   if (j.disputeBy) {
     const a = j.disputeBy.toLowerCase();
     raiser = short(j.disputeBy) + (a === j.payer.toLowerCase() ? ' (payer)' : a === j.agent.toLowerCase() ? ' (worker)' : '');
   }
-  const arbLabel = 'Lamplight Pay rules';
-  const note = disputeNotes[j.id]
-    ? '<div>📝 <i>' + escapeHtml(disputeNotes[j.id]) + '</i> <span class="muted">(this browser only)</span></div>' : '';
   const onChainReason = j.disputeReason
     ? '<div>💬 <i>' + escapeHtml(j.disputeReason) + '</i> <span class="muted">(on-chain reason)</span></div>' : '';
+  const bondLine = Number(j.bondAmount) > 0
+    ? '<div><span class="muted">Bond posted:</span> ' + fmtAmt(j.bondAmount) + ' MockUSDC — follows the ruling (worker gets it if the ruling gives them half or more, otherwise it returns to the payer).</div>' : '';
   let status;
-  if (tmo === null) status = '<div><span class="muted">Resolution deadline:</span> loading…</div>';
-  else if (passed) status = '<div><b style="color:var(--rose)">Resolution deadline passed</b> — either party can settle now on the median of votes cast; no votes means a full refund to the payer.</div>';
+  if (passed) status = '<div><b style="color:var(--rose)">Ruling period ended</b> — no ruling executed in 72 hours. Anyone can claim the refund now: the job amount plus the bond return to the payer in full.</div>';
   else {
-    const hrs = Math.max(0, Math.round((tmo - now) / 3600));
-    status = '<div><span class="muted">Resolution deadline:</span> ' + fmtDate(tmo) +
-             ' <span class="muted">(~' + hrs + 'h left of the 72-hour window)</span></div>';
+    status = '<div><span class="muted">Ruling due by:</span> ' + fmtDate(tmo) +
+      ' <span class="muted">(~' + Math.max(0, Math.round((tmo - now) / 3600)) + 'h left of the 72-hour window)</span></div>';
   }
   return '<div class="dispute-box"><div><b>⚖️ Disputed</b> <span class="muted">by ' + raiser + '</span></div>' +
-    '<div class="muted">' + arbLabel + '</div>' + note + onChainReason + status +
-    '<div data-votes="' + j.id + '" class="muted" style="font-size:0.8rem; margin-top:0.5rem;">Loading votes…</div>' +
+    '<div class="muted">Decided by AI Judge. Judgment is final — no appeal.</div>' + onChainReason + bondLine + status +
     '<div class="row" data-dactions="' + j.id + '"></div></div>';
 }
 
-async function refreshDisputeVotes() {
-  if (!escrow) return;
-  document.querySelectorAll('[data-votes]').forEach(async (div) => {
-    const id = Number(div.dataset.votes);
-    const j = cachedJobs.find(x => x.id === id);
-    if (!j || Number(j.state) !== 3) { div.style.display = 'none'; return; }
-    try {
-      const lines = [];
-      let myVoted = false, myVote = null;
-      for (let i = 0; i < 3; i++) {
-        let a;
-        try { a = await escrow.arbiters(i); } catch { break; }
-        const ver = await escrow.arbiterSetVersion().catch(() => 1n);
-        const voted = await escrow.hasVotedDispute(id, ver, a).catch(() => false);
-        if (voted) {
-          const amt = await escrow.disputeVotes(id, ver, a).catch(() => 0n);
-          const amtStr = fmtAmt(amt);
-          const label = amt === 0n ? 'refund payer' : (BigInt(amt.toString()) >= BigInt(j.amount.toString()) ? 'pay worker full' : 'pay worker ' + amtStr);
-          const you = myAddr && sameAddr(a, myAddr) ? ' (you)' : '';
-          lines.push('✓ ' + short(a) + you + ' voted: ' + label);
-          if (myAddr && sameAddr(a, myAddr)) { myVoted = true; myVote = amt; }
-        } else {
-          const you = myAddr && sameAddr(a, myAddr) ? ' (you)' : '';
-          lines.push('○ ' + short(a) + you + ' has not voted');
-        }
-      }
-      // V15: warn when arbiter votes differ — compare RAW WEI (BigInt), not
-      // the rendered labels. A 60% vote and a 60.01% vote can render as the
-      // same "600.00" string; the raw wei differ by 1 and the dispute can
-      // never execute, so the 72h timeout settles on the median vote
-      // (V16: no votes means a full refund to the payer).
-      const voteWei = [];
-      for (let i = 0; i < 3; i++) {
-        try {
-          const a = arbiterAddrs[i];
-          if (!a) continue;
-          const ver = await escrow.arbiterSetVersion().catch(() => 1n);
-          const voted = await escrow.hasVotedDispute(id, ver, a).catch(() => false);
-          if (voted) voteWei.push(BigInt((await escrow.disputeVotes(id, ver, a).catch(() => 0n)).toString()));
-        } catch {}
-      }
-      const differ = new Set(voteWei.map(v => v.toString())).size > 1;
-      if (differ) {
-        lines.push('<span style="color:var(--rose)">⚠️ Votes differ — they must match exactly to execute. Re-vote to correct.</span>');
-      }
-      div.innerHTML = '<b>Arbiter votes:</b><br>' + lines.join('<br>');
-      div.style.display = 'block';
-      // FIX 1: never disable vote buttons — the contract allows re-voting.
-      // Show the user's current vote so they can change it if needed.
-      if (myVoted) {
-        const dact = document.querySelector('[data-dactions="' + id + '"]');
-        if (dact && !dact.querySelector('.my-vote-note')) {
-          const note = document.createElement('p');
-          note.className = 'my-vote-note muted';
-          note.style.cssText = 'font-size:0.8rem; margin:0.25rem 0 0;';
-          note.textContent = 'You voted: ' + (myVote === 0n ? 'refund payer' : 'pay worker ' + fmtAmt(myVote)) + ' — you can vote again to change it.';
-          dact.appendChild(note);
-        }
-      }
-    } catch (e) {
-      div.innerHTML = '<span class="muted">Could not load votes.</span>';
-    }
-  });
+function rulingBoxHtml(j) {
+  const out = rulingOutcomes[j.id];
+  if (!out) return '';
+  const st = Number(j.state);
+  if (st !== 4 && st !== 5) return '';
+  let line;
+  if (out.kind === 'ruling')
+    line = '<b>⚖️ Ruling executed</b> — worker received ' + fmtAmt(out.toWorker) + ' MockUSDC, payer received ' + fmtAmt(out.toPayer) + ' MockUSDC.';
+  else if (out.kind === 'settle')
+    line = '<b>🤝 Settled by agreement</b> — worker received ' + fmtAmt(out.toWorker) + ' MockUSDC, payer received ' + fmtAmt(out.toPayer) + ' MockUSDC. The bond returned to the payer.';
+  else
+    line = '<b>⏱️ Refunded after 72 hours</b> — no ruling executed, so the job amount plus the bond returned to the payer in full.';
+  return '<div class="ruling-box"><div>' + line + '</div></div>';
 }
 
 function jobCardHtml(j) {
   const st = Number(j.state);
-  const role = isPayer(j) ? 'Paying' : isAgent(j) ? 'Working' : (myAddr && isArbiter(myAddr)) ? 'Arbiter' : '';
+  const role = isPayer(j) ? 'Paying' : isAgent(j) ? 'Working' : '';
 
-  const expired = Number(j.deadline) > 0 && Math.floor(nowMs()/1000) > Number(j.deadline);
-  const dlNote = expired && st < 4 ? ' <b style="color:var(--rose)">(passed)</b>' : '';
+  const expired = Number(j.deadline) > 0 && Math.floor(nowMs() / 1000) > Number(j.deadline);
   const hasDelivery = j.deliveryHash !== '0x' + '00'.repeat(32);
   const delivery = hasDelivery
     ? '<div class="muted" style="font-size:0.875rem; margin-top:0.25rem;">📦 Delivery: ' +
-      (j.deliveryText ? escapeHtml(j.deliveryText) : '<span class="addr">' + j.deliveryHash.slice(0,18) + '…</span>') + '</div>' : '';
+    (j.deliveryText ? escapeHtml(j.deliveryText) : '<span class="addr">' + j.deliveryHash.slice(0, 18) + '…</span>') + '</div>' : '';
   return '<div class="job" data-job="' + j.id + '">' +
     '<div class="job-top"><span class="job-id">#' + j.id + '</span>' +
     '<div style="display:flex; align-items:center; gap:0.5rem;">' +
@@ -1127,7 +1123,7 @@ function jobCardHtml(j) {
     '<p class="job-parties"><span class="who">' + short(j.payer) + '</span> pays ' +
     '<span class="who">' + (isOpenJob(j) ? 'Open — anyone can accept' : short(j.agent)) + '</span>' + '</p>' +
     '<p class="job-caption">' + jobCaption(j) + '</p>' +
-    delivery + disputeBannerHtml(j) + railHtml(st) +
+    delivery + disputeBannerHtml(j) + rulingBoxHtml(j) + railHtml(st) +
     '<div class="job-actions"></div></div>';
 }
 
@@ -1137,11 +1133,45 @@ function addAction(container, label, cls, fn) {
   b.onclick = async () => {
     const orig = b.textContent; b.disabled = true; b.textContent = 'Working…';
     try { await fn(); await refreshBalances(); await refreshJobs(); }
-    catch (e) { toast(friendlyError(e)); }
+    catch (e) { if (e && e.message !== 'cancelled') toast(friendlyError(e)); }
     finally { b.disabled = false; b.textContent = orig; }
   };
   container.appendChild(b);
 }
+
+/* ---- generic confirm modal: every money-moving action shows, in plain
+   words, what the transaction does before the user confirms.
+   openConfirm returns a promise: it resolves when the transaction
+   completes, rejects with Error('cancelled') if the user backs out
+   (X / Back / overlay / Escape all go through closeModals). ---- */
+let confirmPending = null; // { resolve, reject, fn } while a confirm is open
+function openConfirm(title, whatHtml, confirmLabel, fn) {
+  $('cmTitle').textContent = title;
+  $('cmWhat').innerHTML = '<b>What this does:</b> ' + whatHtml;
+  $('cmConfirm').textContent = confirmLabel;
+  $('cmErr').style.display = 'none';
+  openModal('confirmModal');
+  return new Promise((resolve, reject) => { confirmPending = { resolve, reject, fn }; });
+}
+$('cmClose').onclick = closeModals;
+$('cmCancel').onclick = closeModals;
+$('cmConfirm').onclick = async () => {
+  const pending = confirmPending;
+  if (!pending) return;
+  const btn = $('cmConfirm');
+  btn.disabled = true; const orig = btn.textContent; btn.textContent = 'Working…';
+  try {
+    await pending.fn();
+    confirmPending = null;
+    closeModals();
+    await refreshBalances(); await refreshJobs();
+    pending.resolve();
+  } catch (e) {
+    $('cmErr').textContent = friendlyError(e); $('cmErr').style.display = 'block';
+    btn.disabled = false; btn.textContent = orig;
+    /* modal stays open so the user sees the error; promise stays pending */
+  }
+};
 
 function wireJobActions() {
   document.querySelectorAll('.job').forEach(div => {
@@ -1150,8 +1180,8 @@ function wireJobActions() {
     if (!j) return;
     const st = Number(j.state);
     const act = div.querySelector('.job-actions');
-    const now = Math.floor(nowMs()/1000);
-    const inReview = now <= Number(j.deliveredAt) + Number(j.reviewWindow);
+    const now = Math.floor(nowMs() / 1000);
+    const inReview = now <= claimDeadline(j);
     const deadlineSet = Number(j.deadline) > 0;
     const expired = deadlineSet && now > Number(j.deadline);
     if (!myAddr) {
@@ -1165,77 +1195,69 @@ function wireJobActions() {
       return;
     }
     if (st === 0 && isAgent(j) && !expired)
-      addAction(act, 'Accept job', 'btn-amber', () => sendTx('Accepting job', () => escrow.acceptJob(id)));
+      addAction(act, 'Accept job', 'btn-amber', () => openConfirm('Accept job #' + id,
+        'You accept this job and the work clock starts — you have ' + Math.round(Number(j.deadlineSeconds) / 3600) + ' hours to deliver. The ' + fmtAmt(j.amount) + ' MockUSDC stays locked in escrow until you deliver and it is released.',
+        'Accept job', async () => { await sendTx('Accepting job', () => escrow.acceptJob(id)); }));
     if (st === 0 && isOpenJob(j) && !expired && myAddr && !isPayer(j))
-      addAction(act, 'Accept job', 'btn-amber', () => sendTx('Accepting open job', () => escrow.acceptJob(id)));
+      addAction(act, 'Accept job', 'btn-amber', () => openConfirm('Accept job #' + id,
+        'You accept this open job and the work clock starts — you have ' + Math.round(Number(j.deadlineSeconds) / 3600) + ' hours to deliver. The ' + fmtAmt(j.amount) + ' MockUSDC stays locked in escrow until you deliver and it is released.',
+        'Accept job', async () => { await sendTx('Accepting open job', () => escrow.acceptJob(id)); }));
     if (st === 0 && isPayer(j))
-      addAction(act, 'Cancel', 'btn-rose', () => sendTx('Cancelling job', () => escrow.cancelUnaccepted(id)));
+      addAction(act, 'Cancel', 'btn-rose', () => openConfirm('Cancel job #' + id,
+        'This job has not been accepted yet. Cancelling refunds the full ' + fmtAmt(j.amount) + ' MockUSDC to you right now.',
+        'Cancel job', async () => { await sendTx('Cancelling job', () => escrow.cancel(id)); }));
     if (st === 1 && isAgent(j) && !expired)
-      addAction(act, 'Mark delivered', 'btn-amber', async () => {
-        const text = prompt('Describe what you delivered (stored on-chain for arbiters):');
-        if (!text) return;
-        // NOTE: the contract stores deliveryText on-chain and does NOT verify
-        // that deliveryHash matches it. The hash is a tamper-evident seal for
-        // off-chain verification; arbiters read the text directly.
-        const hash = ethers.keccak256(ethers.toUtf8Bytes('lamplight-pay:' + text));
-        await sendTx('Submitting delivery', () => escrow.submitDelivery(id, hash, text));
-      });
-    if (st === 1 && isAgent(j) && !expired)
-      addAction(act, 'Deliver & dispute', 'btn-rose', async () => {
-        const text = prompt('Describe what you delivered (stored on-chain for arbiters):');
-        if (!text) return;
-        const reason = prompt('Why are you disputing at delivery? (stored on-chain for arbiters):');
-        if (!reason) return;
-        const hash = ethers.keccak256(ethers.toUtf8Bytes('lamplight-pay:' + text));
-        await sendTx('Delivering & disputing', () => escrow.submitDeliveryAndDispute(id, hash, text, reason));
-      });
+      addAction(act, 'Mark delivered', 'btn-amber', () => openDeliverModal(id));
     if (st === 2 && isPayer(j)) {
-      addAction(act, 'Release ' + fmtAmt(j.amount), 'btn-amber', () => sendTx('Releasing payment', () => escrow.release(id)));
+      addAction(act, 'Release ' + fmtAmt(j.amount), 'btn-amber', () => openConfirm('Release payment — job #' + id,
+        'You release the full ' + fmtAmt(j.amount) + ' MockUSDC to the worker. This cannot be undone.',
+        'Release payment', async () => { await sendTx('Releasing payment', () => escrow.release(id)); }));
       addAction(act, 'Split…', 'btn-ghost', () => openSplitModal(id, j.amount, 'release'));
     }
     if (st === 2 && isAgent(j) && inReview)
       addAction(act, 'Sign split…', 'btn-ghost', () => openSplitModal(id, j.amount, 'release'));
     if (st === 2 && isAgent(j) && !inReview) {
-      addAction(act, 'Claim ' + fmtAmt(j.amount), 'btn-amber', () => sendTx('Claiming payment', () => escrow.release(id)));
+      addAction(act, 'Claim ' + fmtAmt(j.amount), 'btn-amber', () => openConfirm('Claim payment — job #' + id,
+        'The review window has closed with no dispute. Claiming pays the full ' + fmtAmt(j.amount) + ' MockUSDC to you.',
+        'Claim payment', async () => { await sendTx('Claiming payment', () => escrow.release(id)); }));
     }
     if (st === 2 && (isPayer(j) || isAgent(j)) && inReview)
       addAction(act, 'Dispute', 'btn-rose', () => openDisputeModal(id));
-    if (expired && isPayer(j) && (st === 0 || st === 1))
-      addAction(act, 'Reclaim ' + fmtAmt(j.amount), 'btn-ghost', () => sendTx('Reclaiming', () => escrow.refundAfterDeadline(id)));
+    if (st === 1 && isPayer(j) && expired)
+      addAction(act, 'Reclaim ' + fmtAmt(j.amount), 'btn-ghost', () => openConfirm('Reclaim funds — job #' + id,
+        'The deadline has passed and the worker never delivered. Cancelling refunds the full ' + fmtAmt(j.amount) + ' MockUSDC to you right now.',
+        'Reclaim funds', async () => { await sendTx('Reclaiming', () => escrow.cancel(id)); }));
     if (st === 3) {
       const dact = div.querySelector('[data-dactions]');
-      const tmo = j.disputeTimeoutAt != null ? Number(j.disputeTimeoutAt) : null;
-      const passed = tmo !== null && now > tmo;
-      if (isArbiter(j) && !passed) {
-        const b = document.createElement('button');
-        b.type = 'button'; b.textContent = 'Pay worker'; b.className = 'btn-amber';
-        b.onclick = () => doRule(id, true);
-        dact.appendChild(b);
-        const s = document.createElement('button');
-        s.type = 'button'; s.textContent = 'Split…'; s.className = 'btn-ghost';
-        s.onclick = () => openSplitModal(id, j.amount, 'dispute');
-        dact.appendChild(s);
-        const r = document.createElement('button');
-        r.type = 'button'; r.textContent = 'Refund payer'; r.className = 'btn-rose';
-        r.onclick = () => doRule(id, false);
-        dact.appendChild(r);
-      }
-      if (passed && (isPayer(j) || isAgent(j)))
-        addAction(dact, 'Settle timed-out dispute', 'btn-amber', () => sendTx('Settling timed-out dispute', () => escrow.settleDisputeTimeout(id)));
+      const passed = now > rulingDeadline(j);
+      if ((isPayer(j) || isAgent(j)) && !passed)
+        addAction(dact, 'Settle by agreement…', 'btn-ghost', () => openSettleModal(id));
+      if (passed)
+        addAction(dact, 'Claim 72h refund', 'btn-amber', () => openConfirm('Claim 72-hour refund — job #' + id,
+          'No ruling executed within 72 hours of the dispute. This refunds the job amount' +
+          (Number(j.bondAmount) > 0 ? ' plus the ' + fmtAmt(j.bondAmount) + ' MockUSDC bond' : '') +
+          ' to the payer in full.',
+          'Claim refund', async () => { await sendTx('Claiming 72h refund', () => escrow.refundDisputeTimeout(id)); }));
     }
   });
 }
 
 async function refreshJobs() {
   const list = $('jobList');
+  if (!DEPLOYED) {
+    list.innerHTML = '<div class="empty">Contract not deployed yet — the escrow address is still a placeholder. Jobs will appear here once the contract is deployed.</div>';
+    $('jobCount').textContent = '0 jobs';
+    return;
+  }
   try {
     const jobs = await loadJobs();
-    const counts = { all: jobs.length, mine: 0, paying: 0, working: 0, open: 0 };
+    const counts = { all: jobs.length, mine: 0, paying: 0, working: 0, open: 0, disputed: 0 };
     for (const j of jobs) {
       if (involved(j)) counts.mine++;
       if (myAddr && sameAddr(j.payer, myAddr)) counts.paying++;
       if (myAddr && sameAddr(j.agent, myAddr)) counts.working++;
       if (isOpenJob(j)) counts.open++;
+      if (Number(j.state) === 3) counts.disputed++;
     }
     document.querySelectorAll('#filterRow .choice').forEach(b => {
       const f = b.dataset.f;
@@ -1247,16 +1269,16 @@ async function refreshJobs() {
       if (filter === 'paying') return myAddr && sameAddr(j.payer, myAddr);
       if (filter === 'working') return myAddr && sameAddr(j.agent, myAddr);
       if (filter === 'open') return isOpenJob(j);
+      if (filter === 'disputed') return Number(j.state) === 3;
       return true;
     }).sort((a, b) => {
-      const settled = x => [4,5,6].includes(Number(x.state)) ? 1 : 0;
+      const settled = x => [4, 5, 6].includes(Number(x.state)) ? 1 : 0;
       return settled(a) - settled(b) || b.id - a.id;
     });
     $('jobCount').textContent = visible.length + (visible.length === 1 ? ' job' : ' jobs');
     if (!visible.length) { list.innerHTML = '<div class="empty">Nothing in this view.</div>'; return; }
     list.innerHTML = visible.map(jobCardHtml).join('');
     wireJobActions();
-    refreshDisputeVotes();
     updateActivity(jobs);
   } catch (e) {
     list.innerHTML = '<div class="empty">Could not load jobs — please check your connection and refresh.</div>';
@@ -1269,9 +1291,34 @@ function parseAmt() {
   const v = parseFloat($('fAmount').value);
   return (v > 0) ? v : null;
 }
+/* Review-window tier cap, live as the amount changes. */
+function updateReviewCap() {
+  let amtUnits = 0n;
+  try { amtUnits = ethers.parseUnits((parseFloat($('fAmount').value) || 0).toFixed(6), tokenDecimals); } catch (e) {}
+  const maxHrs = maxReviewHoursFor(amtUnits);
+  $('revHint').textContent = 'Hours to dispute after delivery. Max for this amount: ' + (maxHrs >= 168 ? '7 days' : maxHrs + 'h') + '.';
+  const cur = parseInt($('fReviewHrs').value || '0', 10);
+  if (cur > maxHrs) {
+    $('fReviewHrs').value = String(maxHrs);
+    document.querySelectorAll('#revChoices .choice').forEach(x => x.setAttribute('aria-pressed', Number(x.dataset.v) === maxHrs ? 'true' : 'false'));
+  }
+  document.querySelectorAll('#revChoices .choice').forEach(x => {
+    const over = Number(x.dataset.v) > maxHrs;
+    x.setAttribute('aria-disabled', over ? 'true' : 'false');
+  });
+  return maxHrs;
+}
+$('fAmount').addEventListener('input', updateReviewCap);
+$('fReviewHrs').addEventListener('input', () => {
+  const maxHrs = updateReviewCap();
+  const cur = parseInt($('fReviewHrs').value || '0', 10);
+  if (cur > maxHrs) $('fReviewHrs').value = String(maxHrs);
+});
+
 function updateCreateUI() {
-  const connected = !!myAddr;
   const btn = $('createSubmit');
+  if (!DEPLOYED) { btn.textContent = 'Contract not deployed yet'; btn.disabled = true; return; }
+  const connected = !!myAddr;
   if (!connected) { btn.textContent = 'Connect wallet'; btn.disabled = false; return; }
   btn.textContent = 'Approve & create job';
   btn.disabled = false;
@@ -1285,6 +1332,7 @@ function showCreateErr(msg) {
 $('createForm').addEventListener('submit', async (ev) => {
   ev.preventDefault();
   if (!myAddr) { await doConnect(); return; }
+  if (!DEPLOYED) { showCreateErr('The escrow contract is not deployed yet.'); return; }
   const btn = $('createSubmit');
   const orig = btn.textContent;
   btn.disabled = true;
@@ -1303,20 +1351,21 @@ $('createForm').addEventListener('submit', async (ev) => {
     // Check token is whitelisted
     try {
       const allowed = await escrow.allowedTokens(CONFIG.TOKEN_ADDRESS);
-      if (!allowed) return showCreateErr('This token is not approved for Lamplight Pay. Contact the team.');
+      if (!allowed) return showCreateErr('This token is not approved. Only approved USD stablecoins can fund jobs.');
     } catch (e) {
       return showCreateErr('Could not verify token approval: ' + friendlyError(e));
     }
     const bal = await token.balanceOf(myAddr);
     pendingAmount = ethers.parseUnits(amt.toFixed(6), tokenDecimals);
-    if (bal < pendingAmount) return showCreateErr("That is more than your balance.");
-    const al = await token.allowance(myAddr, CONFIG.ESCROW_ADDRESS);
+    if (bal < pendingAmount) return showCreateErr('That is more than your balance.');
+    const maxHrs = maxReviewHoursFor(pendingAmount);
+    const revHours = Math.max(1, Math.min(maxHrs, parseInt($('fReviewHrs').value || '48', 10)));
+    const al = await token.allowance(myAddr, CONFIG.CONTRACT_ADDRESS);
     btn.textContent = 'Approving…';
     if (al < pendingAmount)
-      await sendTx('Allowing the payment', () => token.approve(CONFIG.ESCROW_ADDRESS, pendingAmount));
+      await sendTx('Allowing the payment', () => token.approve(CONFIG.CONTRACT_ADDRESS, pendingAmount));
     $('msApprove').classList.add('done');
     btn.textContent = 'Locking funds…';
-    const revHours = Math.max(1, Math.min(720, parseInt($('fReviewHrs').value || '48', 10)));
     await sendTx('Creating job', () => jobMode === 'open'
       ? escrow.createOpenJob(CONFIG.TOKEN_ADDRESS, pendingAmount, hours * 3600, revHours * 3600, desc.slice(0, 200))
       : escrow.createJob(worker, CONFIG.TOKEN_ADDRESS, pendingAmount, hours * 3600, revHours * 3600, desc.slice(0, 200)));
@@ -1326,17 +1375,19 @@ $('createForm').addEventListener('submit', async (ev) => {
       ? 'Job #' + jobId + ' posted. Anyone can accept it.'
       : 'Job #' + jobId + ' created. The worker can now accept it.');
     $('fWorker').value = ''; $('fAmount').value = '25.00'; $('fDesc').value = '';
+    updateReviewCap();
     setTimeout(() => { $('msApprove').classList.remove('done'); $('msCreate').classList.remove('done'); }, 4000);
     await refreshBalances(); await refreshJobs();
   } catch (e) { showCreateErr(friendlyError(e)); }
   finally { btn.disabled = false; updateCreateUI(); }
 });
 
-/* amount / deadline preset chips */
+/* amount / deadline / review preset chips */
 document.querySelectorAll('#amtChoices .choice').forEach(b => {
   b.onclick = () => {
     $('fAmount').value = b.dataset.v + '.00';
     document.querySelectorAll('#amtChoices .choice').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    updateReviewCap();
   };
 });
 document.querySelectorAll('#hrsChoices .choice').forEach(b => {
@@ -1347,6 +1398,7 @@ document.querySelectorAll('#hrsChoices .choice').forEach(b => {
 });
 document.querySelectorAll('#revChoices .choice').forEach(b => {
   b.onclick = () => {
+    if (b.getAttribute('aria-disabled') === 'true') return;
     $('fReviewHrs').value = b.dataset.v;
     document.querySelectorAll('#revChoices .choice').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
   };
@@ -1360,7 +1412,7 @@ document.querySelectorAll('#jobModeRow .choice').forEach(b => {
 });
 // Default to open
 $('workerFieldWrap').style.display = 'none';
-
+updateReviewCap();
 
 /* filters */
 document.querySelectorAll('#filterRow .choice').forEach(b => {
@@ -1380,8 +1432,6 @@ function updateActivity(jobs) {
       const st = Number(j.state);
       vol += Number(ethers.formatUnits(j.amount, tokenDecimals));
       if (st <= 3) active++;
-      // V15: success counts Released (4) ONLY. Refunded (5) is a full refund
-      // to the payer — never a win — and is counted separately below.
       if (st === 4) { paid++; closed++; }
       else if (st === 5) { refunded++; closed++; }
       else if (st === 6) closed++;
@@ -1419,11 +1469,15 @@ function feedLine(e) {
     case 'DeliverySubmitted': return ['ev-create', '📦 <b>Job #' + id + '</b> delivered'];
     case 'JobReleased': return ['ev-release', '💰 <b>Job #' + id + '</b> released — ' + amt(a.amount) + ' to worker'];
     case 'JobRefunded': return ['', '↩️ <b>Job #' + id + '</b> refunded — ' + amt(a.amount)];
-    case 'JobCancelled': case 'JobCancelledUnaccepted': return ['', '🚫 <b>Job #' + id + '</b> cancelled'];
+    case 'JobCancelled': return ['', '🚫 <b>Job #' + id + '</b> cancelled'];
     case 'DisputeRaised': return ['ev-dispute', '⚖️ Dispute raised on <b>job #' + id + '</b>'];
-    case 'DisputeResolved': return ['ev-dispute', '✅ Dispute on <b>job #' + id + '</b> resolved'];
-    case 'DisputeTimedOut': return ['ev-dispute', '⏱️ Dispute on <b>job #' + id + '</b> timed out — worker paid'];
+    case 'BondPosted': return ['ev-dispute', '💰 Bond posted on <b>job #' + id + '</b> — ' + amt(a.bondAmount) + ' MockUSDC'];
+    case 'RulingExecuted': return ['ev-dispute', '✅ Ruling on <b>job #' + id + '</b> — worker ' + amt(a.amountToWorker) + ', payer ' + amt(a.amountToPayer)];
+    case 'SettledByAgreement': return ['ev-dispute', '🤝 <b>Job #' + id + '</b> settled by agreement — worker ' + amt(a.amountToWorker) + ', payer ' + amt(a.amountToPayer)];
+    case 'DisputeTimeoutRefunded': return ['ev-dispute', '⏱️ <b>Job #' + id + '</b> refunded after 72 hours — ' + amt(a.amount) + ' plus bond ' + amt(a.bond)];
     case 'JobPartiallyReleased': return ['ev-release', '🔀 <b>Job #' + id + '</b> split — ' + amt(a.amountToAgent) + ' to worker'];
+    case 'Credited': return ['', '💳 Credit issued to ' + short(a.account) + ' — ' + amt(a.amount) + ' MockUSDC'];
+    case 'Withdrawn': return ['ev-release', '🏦 ' + short(a.account) + ' withdrew ' + amt(a.amount) + ' MockUSDC'];
     default: return ['', e.fragment.name + ' on <b>job #' + id + '</b>'];
   }
 }
@@ -1431,12 +1485,13 @@ function feedLine(e) {
 async function loadFeed() {
   const tl = $('feedTimeline');
   try {
-    if (!roProvider) { tl.innerHTML = '<p class="muted">Connecting…</p>'; return; }
+    if (!roProvider || !DEPLOYED) { tl.innerHTML = '<p class="muted">Contract not deployed yet.</p>'; return; }
     tl.innerHTML = '<p class="muted">Loading events…</p>';
     const latest = await roProvider.getBlockNumber();
     const from = Math.max(0, latest - 50000);
-    const names = ['JobCreated','JobAccepted','DeliverySubmitted','JobReleased','JobRefunded',
-      'JobCancelled','JobCancelledUnaccepted','DisputeRaised','DisputeResolved','DisputeTimedOut','JobPartiallyReleased'];
+    const names = ['JobCreated', 'JobAccepted', 'DeliverySubmitted', 'JobReleased', 'JobRefunded',
+      'JobCancelled', 'DisputeRaised', 'BondPosted', 'RulingExecuted', 'SettledByAgreement',
+      'DisputeTimeoutRefunded', 'JobPartiallyReleased', 'Credited', 'Withdrawn'];
     const all = [];
     for (const n of names) {
       try {
@@ -1463,96 +1518,133 @@ async function loadFeed() {
 }
 setInterval(() => { if (histTab === 'feed' && roProvider) loadFeed(); }, 30000);
 
-/* ---- dispute modal ---- */
-let disputeJobId = null;
+/* ---- modals ---- */
 function openModal(id) { $(id).classList.add('open'); $('modalOverlay').classList.add('open'); }
 function closeModals() {
+  if (confirmPending) {
+    const p = confirmPending; confirmPending = null;
+    p.reject(new Error('cancelled'));
+  }
   document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
   $('modalOverlay').classList.remove('open');
 }
-function openDisputeModal(id) {
-  disputeJobId = id;
-  $('dmReason').value = ''; $('dmErr').style.display = 'none';
-  openModal('disputeModal');
-  setTimeout(() => $('dmReason').focus(), 50);
-}
-$('dmClose').onclick = closeModals;
 $('modalOverlay').onclick = closeModals;
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModals(); });
 
+/* ---- dispute modal ----
+   Standalone entry point: the Jobs card "File a dispute" button opens this
+   with a job picker. Per-job Dispute buttons open it preselected. */
+let disputeJobId = null;
+function disputableJobs() {
+  const now = Math.floor(nowMs() / 1000);
+  return cachedJobs.filter(j =>
+    Number(j.state) === 2 &&
+    (isPayer(j) || isAgent(j)) &&
+    now <= claimDeadline(j));
+}
+function updateDisputeBondBox() {
+  const sel = $('dmJob');
+  const id = sel.value === '' ? null : Number(sel.value);
+  const j = id == null ? null : cachedJobs.find(x => x.id === id);
+  const box = $('dmBondBox');
+  if (!j) { box.style.display = 'none'; $('dmWhat').innerHTML = ''; return; }
+  if (isPayer(j)) {
+    const bond = bondFor(j.amount);
+    box.style.display = 'block';
+    $('dmBondAmt').textContent = fmtAmt(bond) + ' MockUSDC';
+    $('dmBondExplain').innerHTML =
+      '20% of the ' + fmtAmt(j.amount) + ' MockUSDC job (min $1, max $50). ' +
+      'The bond follows the ruling: if the judge awards the worker half or more, the bond goes to the worker — otherwise it returns to you. ' +
+      'If no ruling executes within 72 hours, the job amount and your bond refund to you in full.';
+    $('dmWhat').innerHTML = '<b>What this does:</b> This raises a dispute on job #' + j.id + ' and pulls the ' +
+      fmtAmt(bond) + ' MockUSDC bond from your wallet in the same transaction. The reason below is written on-chain for the judge. Judgment is final — no appeal.';
+  } else {
+    box.style.display = 'none';
+    $('dmWhat').innerHTML = '<b>What this does:</b> This raises a dispute on job #' + j.id + '. ' +
+      'No bond is needed — the bond is only posted by the payer. The reason below is written on-chain for the judge. Judgment is final — no appeal.';
+  }
+}
+function openDisputeModal(preselectId) {
+  if (!myAddr) { doConnect(); return; }
+  const opts = disputableJobs();
+  const sel = $('dmJob');
+  sel.innerHTML = '';
+  if (!opts.length) {
+    const o = document.createElement('option');
+    o.value = ''; o.textContent = 'No jobs you can dispute right now';
+    sel.appendChild(o);
+  } else {
+    for (const j of opts) {
+      const o = document.createElement('option');
+      o.value = String(j.id);
+      o.textContent = 'Job #' + j.id + ' — ' + fmtAmt(j.amount) + ' MockUSDC — ' + (j.metadataURI || '').slice(0, 40);
+      sel.appendChild(o);
+    }
+  }
+  if (preselectId != null && opts.some(j => j.id === preselectId)) sel.value = String(preselectId);
+  disputeJobId = sel.value === '' ? null : Number(sel.value);
+  $('dmReason').value = ''; $('dmErr').style.display = 'none';
+  updateDisputeBondBox();
+  openModal('disputeModal');
+  setTimeout(() => $('dmReason').focus(), 50);
+}
+$('dmJob').addEventListener('change', () => { disputeJobId = $('dmJob').value === '' ? null : Number($('dmJob').value); updateDisputeBondBox(); });
+$('dmClose').onclick = closeModals;
+$('fileDisputeBtn').onclick = () => openDisputeModal(null);
+
 $('disputeForm').addEventListener('submit', async (ev) => {
   ev.preventDefault();
+  const id = disputeJobId;
+  if (id == null) { $('dmErr').textContent = 'Pick a job to dispute first.'; $('dmErr').style.display = 'block'; return; }
+  const j = cachedJobs.find(x => x.id === id);
   const reason = $('dmReason').value.trim();
   if (reason.length < 3) { $('dmErr').textContent = 'Add a short reason.'; $('dmErr').style.display = 'block'; return; }
   const btn = $('dmSubmit');
   btn.disabled = true; btn.textContent = 'Working…';
   try {
-    // V15: the reason is stored ON-CHAIN (raiseDispute takes it as an
-    // argument). The old browser-local-only note is gone.
-    await sendTx('Raising dispute', () => escrow.raiseDispute(disputeJobId, reason));
-    toast('Dispute raised on job #' + disputeJobId + '. Arbiters vote on the payout. If they don\'t agree within 72 hours, the dispute settles on the median of votes cast.');
+    if (j && isPayer(j)) {
+      /* Payer posts the bond in the same transaction — make sure the
+         escrow is approved to pull it first. */
+      const bond = bondFor(j.amount);
+      const al = await token.allowance(myAddr, CONFIG.CONTRACT_ADDRESS);
+      if (al < bond) {
+        await sendTx('Approving the bond', () => token.approve(CONFIG.CONTRACT_ADDRESS, bond));
+      }
+    }
+    await sendTx('Raising dispute', () => escrow.raiseDispute(id, reason));
+    toast('Dispute raised on job #' + id + '. Decided by AI Judge — judgment is final. If no ruling executes within 72 hours, the job amount and bond refund to the payer in full.');
     closeModals();
     await refreshBalances(); await refreshJobs();
   } catch (e) { $('dmErr').textContent = friendlyError(e); $('dmErr').style.display = 'block'; }
   finally { btn.disabled = false; btn.textContent = 'Raise dispute'; }
 });
 
-/* ---- dispute voting (2-of-3 multi-sig) + split modal ---- */
-let arbiterAddrs = [];
-async function loadArbiters() {
-  arbiterAddrs = [];
-  try {
-    for (let i = 0; i < 3; i++) {
-      arbiterAddrs.push((await escrow.arbiters(i)).toLowerCase());
-    }
-  } catch {}
-}
-function isArbiterAddr(addr) {
-  return addr && arbiterAddrs.includes(addr.toLowerCase());
-}
-function amIArbiter() {
-  return myAddr && isArbiterAddr(myAddr);
-}
-
-/* ---- atomic governance (EIP-712 off-chain signatures) ---- */
-function govDomain() {
+/* ---- EIP-712 (AgentEscrowV3 domain; structs have NO nonce) ---- */
+function eipDomain() {
   return {
-    name: 'AgentEscrowV16',
+    name: 'AgentEscrowV3',
     version: '1',
     chainId: CONFIG.CHAIN_ID,
-    verifyingContract: CONFIG.ESCROW_ADDRESS,
+    verifyingContract: CONFIG.CONTRACT_ADDRESS,
   };
 }
-const ROTATE_TYPES = {
-  RotateArbiters: [
-    { name: 'newArbiters', type: 'address[3]' },
-    { name: 'nonce', type: 'uint256' },
+const PARTIAL_RELEASE_TYPES = {
+  PartialRelease: [
+    { name: 'jobId', type: 'uint256' },
+    { name: 'amountToWorker', type: 'uint256' },
     { name: 'deadline', type: 'uint256' },
   ],
 };
-const SET_TOKEN_TYPES = {
-  SetToken: [
-    { name: 'token', type: 'address' },
-    { name: 'allowed', type: 'bool' },
-    { name: 'nonce', type: 'uint256' },
+const SETTLE_TYPES = {
+  SettleDispute: [
+    { name: 'jobId', type: 'uint256' },
+    { name: 'amountToWorker', type: 'uint256' },
     { name: 'deadline', type: 'uint256' },
   ],
 };
-const isAddr = a => /^0x[0-9a-fA-F]{40}$/.test(a || '');
-function showGovErr(id, msg) { const e = $(id); e.textContent = msg; e.style.display = 'block'; }
-function hideGovErr(id) { $(id).style.display = 'none'; }
-function randomNonce() {
-  const b = new Uint8Array(16); crypto.getRandomValues(b);
-  return '0x' + [...b].map(x => x.toString(16).padStart(2, '0')).join('');
-}
-/* V14+ governance deadlines: datetime-local inputs <-> unix seconds. */
 function fmtLocalInput(d) {
   const p = n => String(n).padStart(2, '0');
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
-}
-function defaultDeadline(id) {
-  const el = $(id);
-  if (el && !el.value) el.value = fmtLocalInput(new Date(Date.now() + 3600 * 1000));
 }
 function deadlineSecs(id) {
   const el = $(id);
@@ -1563,171 +1655,30 @@ function deadlineSecs(id) {
   }
   return BigInt(Math.floor(Date.now() / 1000) + 3600); // fall back: now + 1h
 }
-function updateGovVisibility() {
-  const show = amIArbiter() && CONFIG.ESCROW_ADDRESS !== CONFIG.ZERO;
-  $('govSection').style.display = show ? 'block' : 'none';
-  if (show) {
-    $('govArbList').textContent = 'Current arbiters: ' +
-      arbiterAddrs.map(a => short(a)).join(' · ');
-  }
-}
-/* tab switching */
-document.querySelectorAll('[data-gov]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-gov]').forEach(b => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
-    $('govRotate').classList.toggle('active', btn.dataset.gov === 'rotate');
-    $('govToken').classList.toggle('active', btn.dataset.gov === 'token');
-  });
-});
-/* allow/block toggles */
-function wireToggle(yId, nId, get) {
-  const y = $(yId), n = $(nId);
-  y.addEventListener('click', () => { y.setAttribute('aria-pressed', 'true'); n.setAttribute('aria-pressed', 'false'); });
-  n.addEventListener('click', () => { n.setAttribute('aria-pressed', 'true'); y.setAttribute('aria-pressed', 'false'); });
-}
-wireToggle('tokAllowY', 'tokAllowN');
-wireToggle('tokExAllowY', 'tokExAllowN');
-const tokAllowed = () => $('tokAllowY').getAttribute('aria-pressed') === 'true';
-const tokExAllowed = () => $('tokExAllowY').getAttribute('aria-pressed') === 'true';
-/* nonce generators */
-$('rotNonceGen').onclick = () => { $('rotNonce').value = randomNonce(); };
-$('tokNonceGen').onclick = () => { $('tokNonce').value = randomNonce(); };
-defaultDeadline('rotDeadline'); defaultDeadline('tokDeadline');
-defaultDeadline('rotExDeadline'); defaultDeadline('tokExDeadline');
-/* copy buttons */
-$('rotSigCopy').onclick = () => copyText($('rotSigOut').value, 'Signature');
-$('tokSigCopy').onclick = () => copyText($('tokSigOut').value, 'Signature');
-/* sign rotation */
-$('rotSignBtn').onclick = async () => {
-  hideGovErr('rotErr');
-  const addrs = [$('rotA1').value.trim(), $('rotA2').value.trim(), $('rotA3').value.trim()];
-  const nonce = $('rotNonce').value.trim();
-  const deadline = deadlineSecs('rotDeadline');
-  if (!addrs.every(isAddr)) return showGovErr('rotErr', 'Enter three valid arbiter addresses (0x…).');
-  if (!nonce) return showGovErr('rotErr', 'Enter a nonce — click Random for a fresh one.');
-  try {
-    toast('Sign the rotation in your wallet…');
-    const sig = await signer.signTypedData(govDomain(), ROTATE_TYPES,
-      { newArbiters: addrs, nonce: BigInt(nonce), deadline });
-    $('rotSigOut').value = sig;
-    $('rotSigWrap').style.display = 'block';
-    /* pre-fill execute fields */
-    $('rotExA1').value = addrs[0]; $('rotExA2').value = addrs[1]; $('rotExA3').value = addrs[2];
-    $('rotExNonce').value = nonce;
-    $('rotExDeadline').value = $('rotDeadline').value;
-    $('rotExSig1').value = sig;
-    toast('Signed. Share the signature + parameters with a second arbiter.');
-  } catch (e) { showGovErr('rotErr', friendlyError(e)); }
-};
-/* execute rotation */
-$('rotExecBtn').onclick = async () => {
-  hideGovErr('rotExErr');
-  const addrs = [$('rotExA1').value.trim(), $('rotExA2').value.trim(), $('rotExA3').value.trim()];
-  const nonce = $('rotExNonce').value.trim();
-  const deadline = deadlineSecs('rotExDeadline');
-  const sig1 = $('rotExSig1').value.trim(), sig2 = $('rotExSig2').value.trim();
-  if (!addrs.every(isAddr)) return showGovErr('rotExErr', 'Enter three valid arbiter addresses.');
-  if (!nonce) return showGovErr('rotExErr', 'Enter the nonce both arbiters signed.');
-  if (!/^0x[0-9a-fA-F]{130}$/.test(sig1) || !/^0x[0-9a-fA-F]{130}$/.test(sig2))
-    return showGovErr('rotExErr', 'Enter two valid 65-byte signatures (0x + 130 hex chars).');
-  try {
-    await sendTx('Rotating arbiters', () =>
-      escrow.executeRotation(addrs, BigInt(nonce), deadline, sig1, sig2));
-    await loadArbiters(); updateGovVisibility();
-    toast('Arbiters rotated.');
-  } catch (e) { showGovErr('rotExErr', friendlyError(e)); }
-};
-/* sign token change */
-$('tokSignBtn').onclick = async () => {
-  hideGovErr('tokErr');
-  const token = $('tokAddr').value.trim();
-  const nonce = $('tokNonce').value.trim();
-  const deadline = deadlineSecs('tokDeadline');
-  if (!isAddr(token)) return showGovErr('tokErr', 'Enter a valid token address (0x…).');
-  if (!nonce) return showGovErr('tokErr', 'Enter a nonce — click Random for a fresh one.');
-  try {
-    toast('Sign the token change in your wallet…');
-    const sig = await signer.signTypedData(govDomain(), SET_TOKEN_TYPES,
-      { token, allowed: tokAllowed(), nonce: BigInt(nonce), deadline });
-    $('tokSigOut').value = sig;
-    $('tokSigWrap').style.display = 'block';
-    /* pre-fill execute fields */
-    $('tokExAddr').value = token;
-    $('tokExNonce').value = nonce;
-    $('tokExDeadline').value = $('tokDeadline').value;
-    $('tokExSig1').value = sig;
-    $(tokAllowed() ? 'tokExAllowY' : 'tokExAllowN').click();
-    toast('Signed. Share the signature + parameters with a second arbiter.');
-  } catch (e) { showGovErr('tokErr', friendlyError(e)); }
-};
-/* execute token change */
-$('tokExecBtn').onclick = async () => {
-  hideGovErr('tokExErr');
-  const token = $('tokExAddr').value.trim();
-  const nonce = $('tokExNonce').value.trim();
-  const deadline = deadlineSecs('tokExDeadline');
-  const sig1 = $('tokExSig1').value.trim(), sig2 = $('tokExSig2').value.trim();
-  if (!isAddr(token)) return showGovErr('tokExErr', 'Enter a valid token address.');
-  if (!nonce) return showGovErr('tokExErr', 'Enter the nonce both arbiters signed.');
-  if (!/^0x[0-9a-fA-F]{130}$/.test(sig1) || !/^0x[0-9a-fA-F]{130}$/.test(sig2))
-    return showGovErr('tokExErr', 'Enter two valid 65-byte signatures (0x + 130 hex chars).');
-  try {
-    await sendTx('Updating token whitelist', () =>
-      escrow.executeTokenChange(token, tokExAllowed(), BigInt(nonce), deadline, sig1, sig2));
-    toast('Token whitelist updated.');
-  } catch (e) { showGovErr('tokExErr', friendlyError(e)); }
-};
-async function doRule(id, releaseToAgent) {
-  try {
-    const job = cachedJobs.find(j => j.id === id);
-    const amount = releaseToAgent ? BigInt(job.amount.toString()) : 0n;
-    await sendTx(releaseToAgent ? 'Voting: pay worker' : 'Voting: refund payer',
-      () => escrow.approveDisputeResolution(id, amount));
-    await refreshBalances(); await refreshJobs();
-    // Check if the vote executed (job no longer disputed)
-    const updated = cachedJobs.find(j => j.id === id);
-    if (updated && Number(updated.state) !== 3) {
-      toast(releaseToAgent ? 'Dispute resolved: worker paid.' : 'Dispute resolved: payer refunded.');
-    } else {
-      toast('Vote recorded. Waiting for 2 of 3 arbiter votes.');
-    }
-  } catch (e) { toast(friendlyError(e)); }
-}
-let splitJobId = null, splitKind = null, splitTotal = 0n, splitRole = null; // 'worker' | 'payer' | 'arbiter'
-const PARTIAL_RELEASE_TYPES = {
-  PartialRelease: [
-    { name: 'jobId', type: 'uint256' },
-    { name: 'amountToWorker', type: 'uint256' },
-    { name: 'nonce', type: 'uint256' },
-    { name: 'deadline', type: 'uint256' },
-  ],
-};
+
+/* ---- split modal: worker signs, payer submits ---- */
+let splitJobId = null, splitTotal = 0n, splitRole = null; // 'worker' | 'payer'
 function splitMin() { return splitTotal / 100n; } // dust floor: 1% of the job amount
-function openSplitModal(id, amount, kind) {
-  splitJobId = id; splitKind = kind;
+function openSplitModal(id, amount) {
+  splitJobId = id;
   splitTotal = BigInt(amount.toString());
   const job = cachedJobs.find(j => j.id === id);
-  splitRole = kind === 'release' && job && isAgent(job) ? 'worker' : kind === 'release' ? 'payer' : 'arbiter';
-  $('smTitle').textContent = kind === 'release'
-    ? (splitRole === 'worker' ? 'Sign a split' : 'Split the payment')
-    : 'Split the dispute';
-  $('smDesc').textContent = kind === 'release'
-    ? (splitRole === 'worker'
-      ? 'Sign the amount you agree to receive from ' + fmtAmt(amount) + ' MockUSDC. The rest returns to the payer. Send the signature to the payer — they submit it on-chain.'
-      : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to you. You need the worker\'s signature for the exact amount and deadline.')
-    : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to the payer.';
-  $('smMin').textContent = kind === 'release'
-    ? 'Minimum to worker: ' + fmtAmt(splitMin()) + ' MockUSDC (1% of the job — smaller splits revert as dust, unless it is the full amount).'
-    : '';
-  $('smWorkerSigWrap').style.display = (kind === 'release' && splitRole === 'payer') ? 'block' : 'none';
+  splitRole = job && isAgent(job) ? 'worker' : 'payer';
+  $('smTitle').textContent = splitRole === 'worker' ? 'Sign a split' : 'Split the payment';
+  $('smDesc').textContent = splitRole === 'worker'
+    ? 'Sign the amount you agree to receive from ' + fmtAmt(amount) + ' MockUSDC. The rest returns to the payer. Send the signature to the payer — they submit it on-chain.'
+    : 'How much of ' + fmtAmt(amount) + ' MockUSDC goes to the worker? The rest returns to you. You need the worker\'s signature for the exact amount and deadline.';
+  $('smMin').textContent = 'Minimum to worker: ' + fmtAmt(splitMin()) + ' MockUSDC (1% of the job — smaller splits revert as dust, unless it is the full amount).';
+  $('smWorkerSigWrap').style.display = splitRole === 'payer' ? 'block' : 'none';
   $('smWorkerSig').value = '';
   $('smSigOutWrap').style.display = 'none';
   $('smSigOut').value = '';
-  $('smSubmit').textContent = kind === 'release'
-    ? (splitRole === 'worker' ? 'Sign split' : 'Execute split')
-    : 'Vote split';
+  $('smSubmit').textContent = splitRole === 'worker' ? 'Sign split' : 'Execute split';
   $('smAmount').value = '';
   $('smErr').style.display = 'none';
+  $('smWhat').innerHTML = splitRole === 'worker'
+    ? '<b>What this does:</b> This signs (no gas) your agreement to a split. It moves nothing — the payer submits your signature on-chain.'
+    : '<b>What this does:</b> This pays the worker the amount below and returns the rest to you, using the worker\'s signature as their agreement. This cannot be undone.';
   const dl = $('smDeadline');
   if (dl) dl.value = fmtLocalInput(new Date(Date.now() + 24 * 3600 * 1000));
   openModal('splitModal');
@@ -1743,26 +1694,24 @@ $('splitForm').addEventListener('submit', async (e) => {
   try { amt = ethers.parseUnits(raw, tokenDecimals); }
   catch { $('smErr').textContent = 'Enter a valid MockUSDC amount.'; $('smErr').style.display = ''; return; }
   if (amt < 0n || amt > splitTotal) { $('smErr').textContent = 'Must be between 0 and ' + fmtAmt(splitTotal) + '.'; $('smErr').style.display = ''; return; }
-  if (splitKind === 'release' && amt < splitTotal && amt < splitMin()) {
-    $('smErr').textContent = 'Too small — splits below ' + fmtAmt(splitMin()) + ' MockUSDC (1%) revert as dust.';
+  if (amt === 0n) { $('smErr').textContent = 'A split has to pay the worker something — zero isn\'t a split.'; $('smErr').style.display = ''; return; }
+  if (amt < splitTotal && amt < splitMin()) {
+    $('smErr').textContent = 'Too small — splits below ' + fmtAmt(splitMin()) + ' MockUSDC (1%) revert as dust. Pick the full amount or at least the minimum.';
     $('smErr').style.display = ''; return;
   }
   btn.disabled = true;
   try {
-    if (splitKind === 'release' && splitRole === 'worker') {
-      // V15: the WORKER signs the split (with a deadline); the payer submits it. Nonce is the
-      // job's current partialReleaseNonces — a used signature can't replay.
-      const nonce = await escrow.partialReleaseNonces(splitJobId);
+    if (splitRole === 'worker') {
       const splitDeadline = deadlineSecs('smDeadline');
       toast('Sign the split in your wallet…');
-      const sig = await signer.signTypedData(govDomain(), PARTIAL_RELEASE_TYPES,
-        { jobId: BigInt(splitJobId), amountToWorker: amt, nonce, deadline: splitDeadline });
+      const sig = await signer.signTypedData(eipDomain(), PARTIAL_RELEASE_TYPES,
+        { jobId: BigInt(splitJobId), amountToWorker: amt, deadline: splitDeadline });
       $('smSigOut').value = sig;
       $('smSigOutWrap').style.display = 'block';
       const dlNote = $('smSigDeadlineNote');
       if (dlNote) dlNote.textContent = 'Signed deadline: ' + new Date(Number(splitDeadline) * 1000).toLocaleString() + ' (unix ' + splitDeadline.toString() + ') — send this with the signature.';
       toast('Signed. Send this signature + deadline to the payer — they execute the split on-chain.');
-    } else if (splitKind === 'release') {
+    } else {
       const workerSig = $('smWorkerSig').value.trim();
       if (!/^0x[0-9a-fA-F]{130}$/.test(workerSig)) {
         $('smErr').textContent = 'Paste the worker\'s 65-byte signature for this exact amount (0x + 130 hex chars).';
@@ -1773,14 +1722,122 @@ $('splitForm').addEventListener('submit', async (e) => {
       toast('Payment split: worker gets ' + fmtAmt(amt) + ' MockUSDC.');
       closeModals();
       await refreshBalances(); await refreshJobs();
-    } else {
-      await sendTx('Voting dispute split', () => escrow.approveDisputeResolution(splitJobId, amt));
-      toast('Vote recorded: worker gets ' + fmtAmt(amt) + ' MockUSDC if 2 arbiters agree.');
-      closeModals();
-      await refreshBalances(); await refreshJobs();
     }
   } catch (err) { $('smErr').textContent = friendlyError(err); $('smErr').style.display = ''; }
   finally { btn.disabled = false; }
+});
+
+/* ---- settle-by-agreement modal: either party signs, the other submits ---- */
+let settleJobId = null, settleTotal = 0n;
+function openSettleModal(id) {
+  settleJobId = id;
+  const job = cachedJobs.find(j => j.id === id);
+  settleTotal = job ? BigInt(job.amount.toString()) : 0n;
+  $('stRange').textContent = 'Between 0 (full refund) and ' + fmtAmt(settleTotal) + ' MockUSDC (full release). No dust rule — both parties chose it.';
+  $('stAmount').value = '';
+  $('stCounterSig').value = '';
+  $('stSigOutWrap').style.display = 'none';
+  $('stSigOut').value = '';
+  $('stErr').style.display = 'none';
+  $('stWhat').innerHTML = '<b>What this does:</b> This settles disputed job #' + id + ' at the amount you enter — ' +
+    'the worker gets that much, the payer gets the rest, and the bond returns to the payer in full. ' +
+    'It needs the other party\'s signature for the exact amount and deadline: sign your approval below, send it to them, and submit once you have theirs.';
+  const dl = $('stDeadline');
+  if (dl) dl.value = fmtLocalInput(new Date(Date.now() + 24 * 3600 * 1000));
+  openModal('settleModal');
+}
+$('stSigCopy').onclick = () => copyText($('stSigOut').value, 'Signature');
+$('stClose').onclick = closeModals;
+$('stSignBtn').onclick = async () => {
+  $('stErr').style.display = 'none';
+  const raw = $('stAmount').value.trim();
+  let amt;
+  try { amt = ethers.parseUnits(raw, tokenDecimals); }
+  catch { $('stErr').textContent = 'Enter a valid MockUSDC amount.'; $('stErr').style.display = ''; return; }
+  if (amt < 0n || amt > settleTotal) { $('stErr').textContent = 'Must be between 0 and ' + fmtAmt(settleTotal) + '.'; $('stErr').style.display = ''; return; }
+  try {
+    const dl = deadlineSecs('stDeadline');
+    toast('Sign the settlement in your wallet…');
+    const sig = await signer.signTypedData(eipDomain(), SETTLE_TYPES,
+      { jobId: BigInt(settleJobId), amountToWorker: amt, deadline: dl });
+    $('stSigOut').value = sig;
+    $('stSigOutWrap').style.display = 'block';
+    const dlNote = $('stSigDeadlineNote');
+    if (dlNote) dlNote.textContent = 'Signed deadline: ' + new Date(Number(dl) * 1000).toLocaleString() + ' (unix ' + dl.toString() + ') — send this with the amount to the other party.';
+    toast('Signed. Send this signature + amount + deadline to the other party.');
+  } catch (err) { $('stErr').textContent = friendlyError(err); $('stErr').style.display = ''; }
+};
+$('settleForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('stSubmit');
+  const raw = $('stAmount').value.trim();
+  $('stErr').style.display = 'none';
+  let amt;
+  try { amt = ethers.parseUnits(raw, tokenDecimals); }
+  catch { $('stErr').textContent = 'Enter a valid MockUSDC amount.'; $('stErr').style.display = ''; return; }
+  if (amt < 0n || amt > settleTotal) { $('stErr').textContent = 'Must be between 0 and ' + fmtAmt(settleTotal) + '.'; $('stErr').style.display = ''; return; }
+  const counterSig = $('stCounterSig').value.trim();
+  if (!/^0x[0-9a-fA-F]{130}$/.test(counterSig)) {
+    $('stErr').textContent = 'Paste the other party\'s 65-byte signature for this exact amount and deadline (0x + 130 hex chars).';
+    $('stErr').style.display = ''; return;
+  }
+  btn.disabled = true;
+  try {
+    const dl = deadlineSecs('stDeadline');
+    await sendTx('Settling by agreement', () => escrow.settleByAgreement(settleJobId, amt, dl, counterSig));
+    toast('Settled by agreement: worker gets ' + fmtAmt(amt) + ' MockUSDC, the rest returns to the payer.');
+    closeModals();
+    await refreshBalances(); await refreshJobs();
+  } catch (err) { $('stErr').textContent = friendlyError(err); $('stErr').style.display = ''; }
+  finally { btn.disabled = false; }
+});
+
+/* ---- deliver modal: delivery, or delivery + dispute in one tx ---- */
+let deliverJobId = null;
+function openDeliverModal(id) {
+  deliverJobId = id;
+  const job = cachedJobs.find(j => j.id === id);
+  $('dvText').value = ''; $('dvReason').value = '';
+  $('dvDispute').checked = false;
+  $('dvReasonWrap').style.display = 'none';
+  $('dvErr').style.display = 'none';
+  $('dvWhat').innerHTML = '<b>What this does:</b> This records your delivery on-chain and starts the ' +
+    (job ? Math.round(Number(job.reviewWindow) / 3600) + '-hour' : '') + ' review window. The payer can release, split, or dispute during it.';
+  $('dvSubmit').textContent = 'Submit delivery';
+  openModal('deliverModal');
+  setTimeout(() => $('dvText').focus(), 50);
+}
+$('dvDispute').addEventListener('change', () => {
+  const on = $('dvDispute').checked;
+  $('dvReasonWrap').style.display = on ? 'block' : 'none';
+  $('dvSubmit').textContent = on ? 'Deliver & dispute' : 'Submit delivery';
+  $('dvWhat').innerHTML = on
+    ? '<b>What this does:</b> This delivers AND raises a dispute in one transaction, so the payer gets no window to act first. No bond is needed — the bond is only posted by the payer.'
+    : '<b>What this does:</b> This records your delivery on-chain and starts the review window. The payer can release, split, or dispute during it.';
+});
+$('dvClose').onclick = closeModals;
+$('deliverForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = $('dvText').value.trim();
+  if (text.length < 3) { $('dvErr').textContent = 'Say what you delivered.'; $('dvErr').style.display = 'block'; return; }
+  const withDispute = $('dvDispute').checked;
+  const reason = $('dvReason').value.trim();
+  if (withDispute && reason.length < 3) { $('dvErr').textContent = 'Add a short dispute reason.'; $('dvErr').style.display = 'block'; return; }
+  const btn = $('dvSubmit');
+  btn.disabled = true; btn.textContent = 'Working…';
+  try {
+    const hash = ethers.keccak256(ethers.toUtf8Bytes('lamplight-pay:' + text));
+    if (withDispute) {
+      await sendTx('Delivering & disputing', () => escrow.submitDeliveryAndDispute(deliverJobId, hash, text, reason));
+      toast('Delivered and disputed on job #' + deliverJobId + '. Decided by AI Judge — judgment is final.');
+    } else {
+      await sendTx('Submitting delivery', () => escrow.submitDelivery(deliverJobId, hash, text));
+      toast('Delivery submitted on job #' + deliverJobId + '.');
+    }
+    closeModals();
+    await refreshBalances(); await refreshJobs();
+  } catch (err) { $('dvErr').textContent = friendlyError(err); $('dvErr').style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = withDispute ? 'Deliver & dispute' : 'Submit delivery'; }
 });
 
 /* ---- network / wallet ---- */
@@ -1809,51 +1866,28 @@ function copyText(t, label) {
     .then(() => toast(label + ' copied.'))
     .catch(() => toast('Could not copy.'));
 }
-$('copyEsc').onclick = () => copyText(CONFIG.ESCROW_ADDRESS, 'Escrow address');
+$('copyEsc').onclick = () => copyText(CONFIG.CONTRACT_ADDRESS, 'Escrow address');
 $('copyTok').onclick = () => copyText(CONFIG.TOKEN_ADDRESS, 'Token address');
 
-
-/* withdrawal */
-let wTokenAddr = null;
+/* withdrawal — MockUSDC only, always to your own wallet */
 $('wCheck').onclick = async () => {
-  const t = $('wToken').value.trim();
   $('wErr').style.display = 'none';
-  $('wBalance').style.display = 'none';
-  $('wWithdraw').style.display = 'none';
-  $('wTo').style.display = 'none';
-  $('wWithdrawTo').style.display = 'none';
-  if (!t || !t.startsWith('0x')) { $('wErr').textContent = 'Enter a valid token address.'; $('wErr').style.display = 'block'; return; }
+  if (!DEPLOYED) { $('wErr').textContent = 'The escrow contract is not deployed yet.'; $('wErr').style.display = 'block'; return; }
   try {
     if (!myAddr) { await doConnect(); }
     if (!myAddr) { $('wErr').textContent = 'Connect your wallet first.'; $('wErr').style.display = 'block'; return; }
-    const bal = await escrow.pendingCredit(t, myAddr);
-    wTokenAddr = t;
-    const dec = 18; // assume 18, display raw
-    $('wBalance').textContent = 'Pending credit: ' + bal.toString() + ' (raw units)';
-    $('wBalance').style.display = 'block';
-    if (bal > 0n) {
-      $('wWithdraw').style.display = 'inline-block';
-      $('wTo').style.display = 'inline-block';
-      $('wWithdrawTo').style.display = 'inline-block';
-    }
+    const bal = await escrow.pendingCredit(CONFIG.TOKEN_ADDRESS, myAddr);
+    $('wBalance').textContent = bal > 0n
+      ? 'Pending credit: ' + fmtAmt(bal) + ' MockUSDC'
+      : 'No pending credit for MockUSDC.';
+    $('wWithdraw').style.display = bal > 0n ? 'inline-flex' : 'none';
   } catch (e) { $('wErr').textContent = friendlyError(e); $('wErr').style.display = 'block'; }
 };
 $('wWithdraw').onclick = async () => {
-  if (!wTokenAddr) return;
   $('wErr').style.display = 'none';
   try {
-    await sendTx('Withdrawing', () => escrow.withdraw(wTokenAddr));
-    toast('Withdrawn.');
-    $('wCheck').click();
-  } catch (e) { $('wErr').textContent = friendlyError(e); $('wErr').style.display = 'block'; }
-};
-$('wWithdrawTo').onclick = async () => {
-  const to = $('wTo').value.trim();
-  if (!wTokenAddr || !to || !to.startsWith('0x')) { $('wErr').textContent = 'Enter a valid destination address.'; $('wErr').style.display = 'block'; return; }
-  $('wErr').style.display = 'none';
-  try {
-    await sendTx('Withdrawing', () => escrow.withdrawTo(wTokenAddr, to));
-    toast('Withdrawn to ' + short(to) + '.');
+    await sendTx('Withdrawing', () => escrow.withdraw(CONFIG.TOKEN_ADDRESS));
+    toast('Withdrawn to your wallet.');
     $('wCheck').click();
   } catch (e) { $('wErr').textContent = friendlyError(e); $('wErr').style.display = 'block'; }
 };
@@ -1862,34 +1896,34 @@ $('wWithdrawTo').onclick = async () => {
 (function () {
   const el = document.getElementById('deployStatus');
   if (!el) return;
-  const addr = (typeof CONFIG !== 'undefined' && CONFIG.ESCROW_ADDRESS) || '';
+  const addr = CONFIG.CONTRACT_ADDRESS || '';
   if (!addr || /^0x0{40}$/i.test(addr)) {
     el.innerHTML = '<span style="color:var(--rose)">Contract not deployed — this UI is not connected.</span>';
-  } else if (/V16CONTRACTADDRESS/.test(addr)) {
-    el.innerHTML = '<span style="color:var(--rose)">V16 contract not deployed yet — escrow address is a placeholder for the deployer to swap in.</span>';
   } else {
     el.textContent = 'Escrow: ' + addr.slice(0, 10) + '…' + addr.slice(-6);
   }
 })();
 
 /* static contract info */
-$('escAddrShort').textContent = short(CONFIG.ESCROW_ADDRESS);
-$('escAddrShort').title = CONFIG.ESCROW_ADDRESS;
+$('escAddrShort').textContent = DEPLOYED ? short(CONFIG.CONTRACT_ADDRESS) : 'Not deployed yet';
+$('escAddrShort').title = CONFIG.CONTRACT_ADDRESS;
 $('tokAddrShort').textContent = short(CONFIG.TOKEN_ADDRESS);
 $('tokAddrShort').title = CONFIG.TOKEN_ADDRESS;
-$('escLink').href = escLink(CONFIG.ESCROW_ADDRESS);
+$('escLink').href = DEPLOYED ? escLink(CONFIG.CONTRACT_ADDRESS) : CONFIG.EXPLORER;
 $('tokLink').href = escLink(CONFIG.TOKEN_ADDRESS);
 
 /* read-only job list even before connecting */
 (async () => {
   try {
-    if (/V16CONTRACTADDRESS/.test(CONFIG.ESCROW_ADDRESS)) {
-      $('jobList').innerHTML = '<div class="empty">V16 contract not deployed yet — the escrow address is still a placeholder.</div>';
+    if (!DEPLOYED) {
+      $('jobList').innerHTML = '<div class="empty">Contract not deployed yet — the escrow address is still a placeholder. Jobs will appear here once the contract is deployed.</div>';
+      $('jobCount').textContent = '0 jobs';
+      updateCreateUI();
       return;
     }
     provider = new ethers.JsonRpcProvider(CONFIG.RPC_URL);
     roProvider = provider; /* keep a read-only handle that connect() never replaces */
-    escrow = new ethers.Contract(CONFIG.ESCROW_ADDRESS, ESCROW_ABI, provider);
+    escrow = new ethers.Contract(CONFIG.CONTRACT_ADDRESS, ESCROW_ABI, provider);
     token = new ethers.Contract(CONFIG.TOKEN_ADDRESS, TOKEN_ABI, provider);
     tokenDecimals = Number(await token.decimals());
     await refreshJobs();
@@ -1897,44 +1931,6 @@ $('tokLink').href = escLink(CONFIG.TOKEN_ADDRESS);
     $('jobList').innerHTML = '<div class="empty">Could not reach the network. Connect a wallet to retry.</div>';
   }
 })();
-</script>
-<footer style="margin-top:3rem; padding:1.5rem 0; border-top:1px solid var(--line); text-align:center;">
-  <p class="muted" style="font-size:0.8rem; max-width:600px; margin:0 auto;">
-    <strong>Dispute disclosure:</strong> Disputes are resolved by 2-of-3 vote of arbiter wallets.
-    If no ruling within 72h after the review window, funds go to the worker automatically.
-    Experimental software — use at your own risk.
-  </p>
-  <p style="margin-top:0.75rem; font-size:0.8rem;">
-    <a href="#" id="termsLink" style="color:var(--amber);">Terms of Service</a>
-    <span class="muted"> · </span>
-    <a href="https://scan.bohr.life/address/0xFf0A50F44f533e48469d56f20003E2f6CCEa8abE" target="_blank" style="color:var(--amber);">Contract</a>
-  </p>
-  <div id="termsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:100; padding:2rem; overflow-y:auto;">
-    <div style="max-width:700px; margin:0 auto; background:var(--panel); border-radius:1rem; padding:2rem; text-align:left;">
-      <h2 style="margin-top:0;">Terms of Service (Draft)</h2>
-      <p class="muted" style="font-size:0.8rem;">Pending legal review before mainnet. Not legal advice.</p>
-      <div style="font-size:0.875rem; line-height:1.6;">
-        <h3>What this is</h3>
-        <p>Lamplight Pay is a decentralized escrow protocol. Payment is held by a smart contract, not by us. This is experimental software provided "as is."</p>
-        <h3>Disputes</h3>
-        <p>Resolved by 2-of-3 vote of arbiter wallets. If no ruling within 72 hours after the review window closes, the dispute settles on the arbiter votes cast: no votes means a full refund to the payer, one vote pays that vote, two votes pay the lower, three votes pay the median. Rulings are final within the protocol.</p>
-        <h3>Risks</h3>
-        <p>Smart contract has not been formally audited. If you lose your wallet keys, we cannot recover funds. You are responsible for compliance with your local laws.</p>
-        <h3>Jurisdiction</h3>
-        <p>Florida law governs. Disputes about these terms (not job disputes) go to courts in Escambia County, FL.</p>
-        <h3>Liability</h3>
-        <p>To the maximum extent permitted by law, we are not liable for indirect or consequential damages. Total liability capped at fees paid in the prior 12 months.</p>
-        <h3>Contact</h3>
-        <p>queenellis2026@gmail.com</p>
-      </div>
-      <button id="termsClose" class="btn" style="margin-top:1rem;">Close</button>
-    </div>
-  </div>
-</footer>
-<script>
-$('termsLink').onclick = (e) => { e.preventDefault(); $('termsModal').style.display = 'block'; };
-$('termsClose').onclick = () => { $('termsModal').style.display = 'none'; };
-$('termsModal').onclick = (e) => { if (e.target === $('termsModal')) $('termsModal').style.display = 'none'; };
 </script>
 </body>
 </html>

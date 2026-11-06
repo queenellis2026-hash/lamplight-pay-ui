@@ -1,59 +1,106 @@
-# Lamplight Pay — BOT Chain UI
+# Lamplight Pay — Escrow for Agent Work
 
-Pay-on-delivery UI for agent escrow on BOT Chain. A payer locks payment for a job; the worker gets paid when the delivery is accepted. Money is held, not sent.
+A payer funds a job in a USD stablecoin; the worker accepts, delivers,
+and the payer releases. If they disagree, either side can raise a
+dispute inside the review window. The payer posts a 20% dispute bond
+(min $1, max $50). An AI Judge rules; a single operator executes the
+ruling on-chain. The ruling is final — no appeal. If no ruling executes
+within 72 hours of the dispute, the job amount and the bond refund to
+the payer in full. The two parties may also settle a dispute themselves
+by mutual signature at any time.
 
-This satisfies **criterion 4** of the BOT Chain Ecosystem Support checklist: a product UI with wallet connection that is fully usable, not just deployed contracts.
+## Deployed
 
-## Live contracts (BOT Chain testnet, chain 968)
+BOT Chain Testnet (chain 968), contract `AgentEscrowV3`:
 
-- **AgentEscrow:** `0xB78F507C8e46CB63ec7D6a76B11cfDE3F9066719` — [view on explorer](https://scan.bohr.life/address/0xB78F507C8e46CB63ec7D6a76B11cfDE3F9066719)
-- **MockUSDC (test token):** `0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372` — [view on explorer](https://scan.bohr.life/address/0x5D8508FB91f6f7CF5B8934115AD2b873E44D5372)
+- Address: `0x5f1078cD6Dd394478664cc86A3F45e5C7d50cF3c`
+- Explorer: https://scan.bohr.life/address/0x5f1078cD6Dd394478664cc86A3F45e5C7d50cF3c
+- Source verified on the explorer (solc 0.8.24, optimizer 200 runs).
 
-## Run locally
+## Contents
 
-No build step. Any static server works:
+- `contracts/AgentEscrowV3.sol` — the contract.
+- `contracts/build-AgentEscrowV3.json` — compiled ABI + creation bytecode,
+  with compiler metadata (contract, solc version, optimizer settings).
+- `tests/` — unit tests and five property-testing phases (state machine,
+  idempotency and replay, fault injection, reconciliation, error
+  taxonomy), plus `error_taxonomy.json`, which maps every on-chain
+  revert string to exactly one plain-language message for the UI,
+  and `test_monitor.py` for the monitor.
+- `index.html` — the UI, a single self-contained HTML file, pointed at
+  the deployed testnet contract.
+- `monitor/` — the dispute/ruling/valve monitor. Watches the deployed
+  contract and sends Telegram alerts (new dispute, ruling executed,
+  valve refund, settlement-invariant breach). See `monitor/README.md`.
+- `deploy_v3_testnet.py` — deploys to testnet 968 only; refuses mainnet
+  677 outright. Deployer key from the `DEPLOYER_KEY` environment
+  variable only; operator address as an argument.
+- `THREAT_MODEL.md` — what the contract must do, what it must never do,
+  who can change what, and how an attacker could profit from breaking
+  each piece.
+- `requirements.txt` — pinned test dependencies. `setup.sh` — creates
+  `.venv`, installs them, downloads solc 0.8.24, runs the suite.
+
+## Compile
+
+solc 0.8.24, optimizer on, 200 runs. Creation bytecode is 15,992 bytes,
+runtime 15,559 bytes (EIP-170 limit 24,576).
+
+```python
+import solcx
+compiled = solcx.compile_files(
+    ["contracts/AgentEscrowV3.sol"],
+    output_values=["abi", "bin", "bin-runtime"],
+    solc_version="0.8.24", optimize=True, optimize_runs=200,
+)
+```
+
+Or run `python build.py`, which writes `contracts/build-AgentEscrowV3.json`.
+
+## Run the tests
 
 ```bash
-cd ~/workspace/botchain-pay-ui
-python3 -m http.server 8080
-# open http://localhost:8080
+./setup.sh            # creates .venv, installs pinned deps, runs the suite
+# — or by hand —
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -c "import solcx; solcx.install_solc('0.8.24')"
+.venv/bin/python -m pytest tests/ -q
 ```
 
-## Try the full flow (testnet)
+Python 3.12. The full suite is 323 tests (304 contract + 19 monitor)
+and takes ~13 minutes; the Hypothesis state machine is most of it.
 
-1. Open the page, click **Connect wallet** (MetaMask). The app auto-adds/switches to BOT Chain Testnet (chain 968).
-2. Click **Get free tBOT (gas)** → faucet at https://faucet.botchain.ai/en/basic — paste your address, complete the check, claim 10 tBOT.
-3. Click **Get free test dollars** → mints 100 mUSDC to your wallet (one click, on-chain).
-4. **Create a job:** enter the worker's address, a payment amount, a deadline in hours, and what needs doing. Click **Step 1 — Allow the payment**, then **Step 2 — Create the job**.
-5. As the **worker** (connect a second wallet, or use the worker address): **Accept job** → do the work → **Mark as delivered** (enter what you delivered; it gets sealed on-chain as a hash).
-6. As the **payer**: **Release payment** — the worker gets the tokens.
-7. If the deadline passes with no delivery, the payer gets **Reclaim money**.
+## The rules
 
-The job list shows every job with its status: Open → Accepted → Delivered → Paid (or Refunded / Cancelled). Filter "Mine" to see only jobs where you're the payer or the worker.
-
-## Deploy / host
-
-It's a single static file (`index.html`) plus this README. Host it anywhere static files go (GitHub Pages, IPFS, a web server). No secrets, no backend, no build.
-
-## Going to mainnet
-
-One-line change at the top of `index.html`:
-
-```js
-const CONFIG = {
-  CHAIN_ID: 677,            // was 968
-  CHAIN_ID_HEX: '0x2A5',    // 677 in hex
-  CHAIN_NAME: 'BOT Chain',
-  RPC_URL: 'https://rpc.botchain.ai',
-  EXPLORER: 'https://scan.botchain.ai',
-  ...
-};
-```
-
-Plus the mainnet contract addresses for `ESCROW_ADDRESS` / `TOKEN_ADDRESS` once deployed.
-
-## Tech
-
-- Vanilla JS + [ethers.js v6](https://docs.ethers.org/v6/) via CDN — no build step, no framework.
-- Wallet: any injected EIP-1193 wallet (MetaMask, etc.). Auto network add/switch via `wallet_addEthereumChain` / `wallet_switchEthereumChain`.
-- Delivery proof: the worker's delivery text is hashed with keccak256 (`lamplight-pay:` prefix) and stored as `bytes32` on-chain; the plain text stays off-chain between the two parties.
+- **Disputes:** any and all go to the AI Judge. No thresholds, no exceptions.
+  Users are told "by AI Judge" and nothing more.
+- **Bond:** 20% of the job amount, min $1, max $50. Follows the ruling:
+  worker >= 50% -> bond to worker; < 50% -> bond to payer. On mutual
+  settle the bond returns to the payer. On the 72h valve the bond refunds
+  to the payer with the job amount. Only the payer posts a bond, when the
+  payer raises the dispute. An agent-raised dispute posts no bond.
+- **Ruling:** executed by the operator (`executeRuling`). Operator-only,
+  single-use, any split 0-100%. **Hard deadline:** the ruling must execute
+  within 72 hours of the dispute (inclusive — at exactly disputedAt + 72h
+  it still succeeds). After that, only the 72h refund valve can settle
+  the job; a late ruling reverts "ruling period ended".
+- **Timeout valve:** 72 hours from the dispute. Anyone may call
+  `refundDisputeTimeout`; job amount + bond refund to the payer in full.
+- **Review window:** min 1h for all. Max by job size: under $10 -> 24h,
+  $10-$100 -> 72h, over $100 -> 7 days.
+- **Tokens:** USD stablecoins only (USDC, USDT). Operator-managed whitelist.
+  **Listing requires 6 decimals** — bond math and review tiers are all
+  6-decimal units. A token with other decimals, or no `decimals()`, cannot
+  be listed ("token must be 6 decimals"). Delisting needs no check.
+- **Splits:** worker-signed (`releasePartial`), 1% dust rejection, signature
+  expiry. No per-job nonce: replay protection is the Delivered -> Released
+  state transition.
+- **Chain fork:** the EIP-712 domain separator is cached with the chain ID
+  it was built for and rebuilt if the chain ID changes, so a signature from
+  one fork cannot replay on another.
+- **Operator:** single key, set once in the constructor, no rotation. If
+  the key is lost, disputes fall back to the 72h refund valve — that is
+  the safety net.
+- **Ruling publication:** the ruled amount is emitted on-chain
+  (`RulingExecuted`). The judge's reasoning is published off-chain.
